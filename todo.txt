@@ -1,0 +1,23 @@
+I've analyzed your bot and created a detailed 
+Roadmap
+ of recommended next steps.
+
+Here is the high-level summary:
+
+Unify Trading Logic (High Priority):
+Problem: The trading logic is currently duplicated (once in 
+execute_trade_logic
+ for live, and again in 
+test
+ for backtesting).
+Goal: Create a shared Strategy class so your backtests guarantee how the bot will behave live.
+Connect the Frontend (Medium Priority):
+Problem: You have a botfrontend folder (React app), but the bot is just a terminal script.
+Goal: Add a small API (FastAPI) to 
+main.py
+ so the frontend can actually show you graphs and logs.
+Professional Backtesting (Medium Priority):
+Goal: Calculate real stats like Win Rate and Max Drawdown to know if your strategy is actually good.
+Dockerization (Deployment):
+Goal: Create the missing Dockerfile so you can host this 24/7 on a server easily.
+I recommend starting with #1 (Unifying Logic) as it makes the bot much stronger and safer to edit in the future. Which one would you like to tackle next?

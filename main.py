@@ -1,78 +1,101 @@
+#!/usr/bin/env python3
+"""
+CryptoBot Main Entry Point
+
+Usage:
+    python main.py          # Start the API server (control via web UI)
+    python main.py --cli    # Use terminal-based mode selection
+"""
 import sys
 import os
-from modules.trading_bot import BinanceTradingBot
+import argparse
+import time
 
 def main():
-    print("Welcome to the Binance Trading Bot")
-    mode = input("Select mode - (L)ive Trading or (T)est/Simulation? [l/t]: ").lower()
+    parser = argparse.ArgumentParser(description='Binance Trading Bot')
+    parser.add_argument('--cli', action='store_true', help='Use terminal/CLI mode instead of web UI')
+    args = parser.parse_args()
 
-    if mode == 'l':
-        print("Starting LIVE trading...")
-        # Confirm with user
-        confirm = input("Are you SURE you want to trade with REAL MONEY? Type 'yes' to confirm: ")
-        if confirm == 'yes':
-            bot = BinanceTradingBot(is_live_trading=True)
-            bot.start()
-            try:
-                # Keep main thread alive
-                while bot.running:
-                    bot.thread.join(1)
-            except KeyboardInterrupt:
-                bot.shutdown_bot()
-        else:
-            print("Live trading cancelled.")
+    print("=" * 50)
+    print("        CryptoBot - Binance Trading Bot")
+    print("=" * 50)
 
-    elif mode == 't' or mode == 'n': # 'n' for backward compatibility with 'no'
-        print("Starting simulation (backtest)...")
+    if args.cli:
+        # Legacy CLI mode
+        run_cli_mode()
+    else:
+        # Default: Start API server only, control via frontend
+        run_server_mode()
+
+def run_server_mode():
+    """Start the API server and wait for commands from the web UI."""
+    from modules import server
+    
+    print("\nStarting in SERVER mode...")
+    print("Open http://localhost:3000 in your browser to control the bot.")
+    print("Press Ctrl+C to stop the server.\n")
+    
+    server.start_server_standalone()
+    
+    # Keep the main thread alive
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nServer stopped.")
+        sys.exit(0)
+
+def run_cli_mode():
+    """Original terminal-based mode selection."""
+    from modules.trading_bot import BinanceTradingBot
+    
+    mode = input("Select mode - (L)ive Trading or (T)est/Simulation? [l/t]: ").strip().lower()
+    is_live = (mode == 'l')
+    filename = None
+    
+    if not is_live:
+        print("\nStarting simulation (backtest)...")
+        data_dir = os.path.join(os.getcwd(), 'data')
         
-        data_dir = 'data'
-        filename = None
-        
-        # List available files
         if os.path.exists(data_dir):
             files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
             if files:
                 print("\nAvailable data files:")
                 for i, f in enumerate(files):
                     print(f"  {i+1}. {f}")
-                print()
                 
-                choice = input(f"Enter file number or name (default: 1 - {files[0]}): ").strip()
+                choice = input(f"\nEnter file number (default: 1): ").strip()
                 
-                if not choice:
-                    filename = os.path.join(data_dir, files[0])
-                elif choice.isdigit():
-                    idx = int(choice) - 1
-                    if 0 <= idx < len(files):
-                        filename = os.path.join(data_dir, files[idx])
-                    else:
-                        print("Invalid selection number.")
-                        return
+                if choice.isdigit() and 1 <= int(choice) <= len(files):
+                    filename = os.path.join(data_dir, files[int(choice)-1])
                 else:
-                    # User typed a name, check normal path or data path
-                    if os.path.exists(choice):
-                        filename = choice
-                    elif os.path.exists(os.path.join(data_dir, choice)):
-                        filename = os.path.join(data_dir, choice)
-                    else:
-                        print(f"File '{choice}' not found.")
-                        return
+                    filename = os.path.join(data_dir, files[0])
+                
+                print(f"Using: {filename}")
             else:
-               print("No CSV files found in 'data/' directory.")
-        
-        if not filename:
-             print("Could not determine data file.")
-             filename = input("Enter full path to historical data CSV: ")
-             if not os.path.exists(filename):
-                 print("File not found.")
-                 return
-
-        print(f"Using data file: {filename}")
-        bot = BinanceTradingBot(is_live_trading=False, filename=filename)
-        bot.run() # Run synchronous in test mode
-        
+                print("No CSV files found in data/")
+                return
+        else:
+            print("data/ directory not found")
+            return
     else:
-        print("Invalid mode selection.")
+        print("Starting LIVE trading...")
+        confirm = input("Trade with REAL MONEY? Type 'yes': ")
+        if confirm != 'yes':
+            print("Cancelled.")
+            return
+    
+    bot = BinanceTradingBot(is_live_trading=is_live, filename=filename)
+    bot.start()
+    
+    try:
+        while bot.thread.is_alive():
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        bot.stop()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)

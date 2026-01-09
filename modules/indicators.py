@@ -50,3 +50,9 @@ def get_dynamic_stop_loss_percent(volatility, base_sl=0.01, multiplier=0.1):
     if volatility is None:
         return base_sl
     return base_sl + (volatility * multiplier)
+
+def calculate_ma(price_series, period):
+    """Calculates Simple Moving Average (SMA)."""
+    if len(price_series) < period:
+        return None
+    return sum(list(price_series)[-period:]) / period
