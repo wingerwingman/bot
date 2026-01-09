@@ -1,34 +1,76 @@
-2026-01-09 11:31:38,238 - INFO - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethereum_half_hourly_historical_data_2_days.csv
-2026-01-09 11:31:38,238 - INFO - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethereum_half_hourly_historical_data_2_days.csv
-2026-01-09 11:31:38,451 - INFO - __init__ completed
-2026-01-09 11:31:38,451 - INFO - __init__ completed
-2026-01-09 11:31:38,509 - INFO - Starting run method...
-2026-01-09 11:31:38,509 - INFO - Starting run method...
-2026-01-09 11:31:38,510 - INFO - Entering main trading loop...
-2026-01-09 11:31:38,510 - INFO - Entering main trading loop...
-2026-01-09 11:31:38,672 - INFO - DEBUG: Attempting to log trade: Buy,0.07791263,3176.635197560125,999.7527472499577
-2026-01-09 11:31:38,672 - INFO - DEBUG: Attempting to log trade: Buy,0.07791263,3176.635197560125,999.7527472499577
-2026-01-09 11:31:38,689 - INFO - DEBUG: Attempting to log trade: Sell,0,3064.3249542923395,988.8621174074316,-3.54%
-2026-01-09 11:31:38,689 - INFO - DEBUG: Attempting to log trade: Sell,0,3064.3249542923395,988.8621174074316,-3.54%
-2026-01-09 11:31:40,125 - INFO - DEBUG: Attempting to log trade: Buy,0.08347008,2932.109012753741,988.6176185324433
-2026-01-09 11:31:40,125 - INFO - DEBUG: Attempting to log trade: Buy,0.08347008,2932.109012753741,988.6176185324433
-2026-01-09 11:31:40,145 - INFO - DEBUG: Attempting to log trade: Sell,0,3692.569308664854,1049.2556085879578,25.94%
-2026-01-09 11:31:40,145 - INFO - DEBUG: Attempting to log trade: Sell,0,3692.569308664854,1049.2556085879578,25.94%
-2026-01-09 11:31:40,272 - INFO - DEBUG: Attempting to log trade: Buy,0.068664,3782.0514313043827,1048.996177239827
-2026-01-09 11:31:40,272 - INFO - DEBUG: Attempting to log trade: Buy,0.068664,3782.0514313043827,1048.996177239827
-2026-01-09 11:31:40,297 - INFO - DEBUG: Attempting to log trade: Sell,0,3737.5001374856483,1043.6302214547852,-1.18%
-2026-01-09 11:31:40,297 - INFO - DEBUG: Attempting to log trade: Sell,0,3737.5001374856483,1043.6302214547852,-1.18%
-2026-01-09 11:31:40,523 - INFO - DEBUG: Attempting to log trade: Buy,0.06703697,3853.075317855708,1043.3721810007485
-2026-01-09 11:31:40,523 - INFO - DEBUG: Attempting to log trade: Buy,0.06703697,3853.075317855708,1043.3721810007485
-2026-01-09 11:31:40,570 - INFO - DEBUG: Attempting to log trade: Stop-loss Sell,0,3600.932995260945,1024.3134077675168,-6.54%
-2026-01-09 11:31:40,570 - INFO - DEBUG: Attempting to log trade: Stop-loss Sell,0,3600.932995260945,1024.3134077675168,-6.54%
-2026-01-09 11:31:40,778 - INFO - DEBUG: Attempting to log trade: Buy,0.07047239,3597.4026898547977,1024.0601434664713
-2026-01-09 11:31:40,778 - INFO - DEBUG: Attempting to log trade: Buy,0.07047239,3597.4026898547977,1024.0601434664713
-2026-01-09 11:31:40,813 - INFO - DEBUG: Attempting to log trade: Sell,0,3934.3142272735668,1045.2837637619223,9.37%
-2026-01-09 11:31:40,813 - INFO - DEBUG: Attempting to log trade: Sell,0,3934.3142272735668,1045.2837637619223,9.37%
-2026-01-09 11:31:41,591 - INFO - DEBUG: Attempting to log trade: Buy,0.07677311,3369.7702324046204,1045.0253144704866
-2026-01-09 11:31:41,591 - INFO - DEBUG: Attempting to log trade: Buy,0.07677311,3369.7702324046204,1045.0253144704866
-2026-01-09 11:31:41,616 - INFO - DEBUG: Attempting to log trade: Stop-loss Sell,0,3158.8387302457536,1026.6647576111202,-6.26%
-2026-01-09 11:31:41,616 - INFO - DEBUG: Attempting to log trade: Stop-loss Sell,0,3158.8387302457536,1026.6647576111202,-6.26%
-2026-01-09 11:31:42,089 - INFO - Test Completed. Final: 1026.6647576111202, Trades: 6
-2026-01-09 11:31:42,089 - INFO - Test Completed. Final: 1026.6647576111202, Trades: 6
+2026-01-09 14:35:03,904 - INFO - __init__: is_live_trading = True, filename = None
+2026-01-09 14:35:03,904 - INFO - __init__: is_live_trading = True, filename = None
+2026-01-09 14:35:03,904 - INFO - __init__: is_live_trading = True, filename = None
+2026-01-09 14:35:03,904 - INFO - __init__: is_live_trading = True, filename = None
+2026-01-09 14:35:03,905 - INFO - Strategy Config: RSI=34, SL=5.8%, Trailing=8.7%
+2026-01-09 14:35:03,905 - INFO - Strategy Config: RSI=34, SL=5.8%, Trailing=8.7%
+2026-01-09 14:35:03,905 - INFO - Strategy Config: RSI=34, SL=5.8%, Trailing=8.7%
+2026-01-09 14:35:03,905 - INFO - Strategy Config: RSI=34, SL=5.8%, Trailing=8.7%
+2026-01-09 14:35:04,086 - INFO - Fetching account balances...
+2026-01-09 14:35:04,086 - INFO - Fetching account balances...
+2026-01-09 14:35:04,086 - INFO - Fetching account balances...
+2026-01-09 14:35:04,086 - INFO - Fetching account balances...
+2026-01-09 14:35:04,336 - INFO - Trading Pair Configured: ETHUSDT
+2026-01-09 14:35:04,336 - INFO - Trading Pair Configured: ETHUSDT
+2026-01-09 14:35:04,336 - INFO - Trading Pair Configured: ETHUSDT
+2026-01-09 14:35:04,336 - INFO - Trading Pair Configured: ETHUSDT
+2026-01-09 14:35:04,337 - INFO - Starting Balances: USDT=194.99781198, ETH=0.0
+2026-01-09 14:35:04,337 - INFO - Starting Balances: USDT=194.99781198, ETH=0.0
+2026-01-09 14:35:04,337 - INFO - Starting Balances: USDT=194.99781198, ETH=0.0
+2026-01-09 14:35:04,337 - INFO - Starting Balances: USDT=194.99781198, ETH=0.0
+2026-01-09 14:35:04,493 - INFO - __init__: Initial Volatility Calculated: 0.029101541329247086
+2026-01-09 14:35:04,493 - INFO - __init__: Initial Volatility Calculated: 0.029101541329247086
+2026-01-09 14:35:04,493 - INFO - __init__: Initial Volatility Calculated: 0.029101541329247086
+2026-01-09 14:35:04,493 - INFO - __init__: Initial Volatility Calculated: 0.029101541329247086
+2026-01-09 14:35:04,493 - INFO - No previous state file found. Starting fresh.
+2026-01-09 14:35:04,493 - INFO - No previous state file found. Starting fresh.
+2026-01-09 14:35:04,493 - INFO - No previous state file found. Starting fresh.
+2026-01-09 14:35:04,493 - INFO - No previous state file found. Starting fresh.
+2026-01-09 14:35:04,494 - INFO - __init__ completed
+2026-01-09 14:35:04,494 - INFO - __init__ completed
+2026-01-09 14:35:04,494 - INFO - __init__ completed
+2026-01-09 14:35:04,494 - INFO - __init__ completed
+2026-01-09 14:35:04,660 - INFO - Starting run method...
+2026-01-09 14:35:04,660 - INFO - Starting run method...
+2026-01-09 14:35:04,660 - INFO - Starting run method...
+2026-01-09 14:35:04,660 - INFO - Starting run method...
+2026-01-09 14:35:04,661 - INFO - Initializing hotkeys...
+2026-01-09 14:35:04,661 - INFO - Initializing hotkeys...
+2026-01-09 14:35:04,661 - INFO - Initializing hotkeys...
+2026-01-09 14:35:04,661 - INFO - Initializing hotkeys...
+2026-01-09 14:35:04,662 - INFO - Hotkeys started.
+2026-01-09 14:35:04,662 - INFO - Hotkeys started.
+2026-01-09 14:35:04,662 - INFO - Hotkeys started.
+2026-01-09 14:35:04,662 - INFO - Hotkeys started.
+2026-01-09 14:35:04,667 - INFO - Entering main trading loop...
+2026-01-09 14:35:04,667 - INFO - Entering main trading loop...
+2026-01-09 14:35:04,667 - INFO - Entering main trading loop...
+2026-01-09 14:35:04,667 - INFO - Entering main trading loop...
+2026-01-09 14:35:05,115 - INFO - Fear & Greed Index: 27 (Fear)
+2026-01-09 14:35:05,115 - INFO - Fear & Greed Index: 27 (Fear)
+2026-01-09 14:35:05,115 - INFO - Fear & Greed Index: 27 (Fear)
+2026-01-09 14:35:05,115 - INFO - Fear & Greed Index: 27 (Fear)
+2026-01-09 14:35:05,115 - INFO - Dynamic Mode: Auto-Tuned Settings based on Volatility 2.91%
+2026-01-09 14:35:05,115 - INFO - Dynamic Mode: Auto-Tuned Settings based on Volatility 2.91%
+2026-01-09 14:35:05,115 - INFO - Dynamic Mode: Auto-Tuned Settings based on Volatility 2.91%
+2026-01-09 14:35:05,115 - INFO - Dynamic Mode: Auto-Tuned Settings based on Volatility 2.91%
+2026-01-09 14:35:05,115 - INFO -   -> RSI: 34, SL: 5.8%, Trail: 8.7%
+2026-01-09 14:35:05,115 - INFO -   -> RSI: 34, SL: 5.8%, Trail: 8.7%
+2026-01-09 14:35:05,115 - INFO -   -> RSI: 34, SL: 5.8%, Trail: 8.7%
+2026-01-09 14:35:05,115 - INFO -   -> RSI: 34, SL: 5.8%, Trail: 8.7%
+2026-01-09 14:35:35,707 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:35:35,707 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:35:35,707 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:35:35,707 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:06,573 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:06,573 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:06,573 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:06,573 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:37,180 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:37,180 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:37,180 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:36:37,180 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:37:07,825 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:37:07,825 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:37:07,825 - INFO - Heartbeat - Current Price: 3083.98 USDT
+2026-01-09 14:37:07,825 - INFO - Heartbeat - Current Price: 3083.98 USDT

@@ -1,8 +1,23 @@
+from collections import deque
 import logging
 import os
 from . import config
+recent_errors = deque(maxlen=100)
 
-def setup_logger():
+class ListHandler(logging.Handler):
+    """Custom handler to store logs in a list."""
+    def emit(self, record):
+        try:
+            log_entry = self.format(record)
+            recent_errors.appendleft(log_entry) # Newest first
+        except Exception:
+            self.handleError(record)
+
+def clear_errors():
+    """Clears the recent error buffer."""
+    recent_errors.clear()
+
+def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
     """Sets up the main logger and the trade-specific logger."""
     
     # 1. Clear log files on startup
@@ -20,13 +35,19 @@ def setup_logger():
 
     fh = logging.FileHandler(config.TRADING_LOG_FILE)  # Main log file
     fh.setLevel(logging.DEBUG)
+    
+    # List Handler for UI Errors
+    lh = ListHandler()
+    lh.setLevel(logging.ERROR) # Only capture Errors and Criticals
 
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     ch.setFormatter(formatter)
     fh.setFormatter(formatter)
+    lh.setFormatter(formatter)
 
     logger.addHandler(ch)
     logger.addHandler(fh)
+    logger.addHandler(lh)
 
     # 3. Trade Logger Setup
     trade_logger = logging.getLogger("trade_logger")

@@ -4,6 +4,8 @@ import threading
 import pandas as pd
 import datetime
 import sys
+import json
+import requests
 from collections import deque
 from binance import Client, BinanceAPIException
 from pynput import keyboard
@@ -24,8 +26,29 @@ class BinanceTradingBot:
         "Number of trades", "Taker buy base asset volume", "Taker buy quote asset volume", "Ignore"
     ]
 
-    def __init__(self, stop_loss_percent=0.01, sell_percent=0.03, fixed_stop_loss_percent=0.02, is_live_trading=False, volatility_period=14, filename=None, trading_fee_percentage=0.01, slippage=0.001, quote_asset=None, base_asset=None):
-        self.slippage = slippage # 0.1% default slippage
+    def __init__(self, 
+                 stop_loss_percent=0.01, 
+                 sell_percent=0.03, 
+                 fixed_stop_loss_percent=0.02, 
+                 is_live_trading=False, 
+                 volatility_period=14, 
+                 filename=None, 
+                 trading_fee_percentage=0.001, 
+                 slippage=0.001, 
+                 quote_asset=None, 
+                 base_asset=None, 
+                 position_size_percent=0.25,
+                 rsi_threshold=40,
+                 stop_loss=0.02,
+                 trailing_stop=0.03,
+                 dynamic_settings=False,
+                 resume_state=True):
+        
+        self.slippage = slippage
+        self.position_size_percent = position_size_percent
+        self.dynamic_settings = dynamic_settings
+        self.resume_state = resume_state
+        self.fear_greed_index = 50 # Default Neutral
 
         self.is_live_trading = is_live_trading
         self.filename = filename
@@ -34,6 +57,7 @@ class BinanceTradingBot:
         self.logger, self.trade_logger = logger_setup.setup_logger()
         
         self.logger.info(f"__init__: is_live_trading = {self.is_live_trading}, filename = {self.filename}")
+        self.logger.info(f"Strategy Config: RSI={rsi_threshold}, SL={stop_loss*100}%, Trailing={trailing_stop*100}%")
         
         self.api_key = config.API_KEY
         self.api_secret = config.API_SECRET
@@ -41,10 +65,11 @@ class BinanceTradingBot:
         
         # Initialize Strategy
         self.strategy = Strategy(
-            stop_loss_percent=stop_loss_percent,
-            sell_percent=sell_percent,
-            fixed_stop_loss_percent=fixed_stop_loss_percent,
-            volatility_period=volatility_period
+            stop_loss_percent=stop_loss,
+            sell_percent=trailing_stop,
+            fixed_stop_loss_percent=stop_loss,
+            volatility_period=volatility_period,
+            rsi_threshold_buy=rsi_threshold
         )
         
         # New: Generic balance variables
@@ -157,6 +182,20 @@ class BinanceTradingBot:
             self.last_volatility = self.calculate_volatility()
             self.strategy.set_volatility(self.last_volatility) # Update strategy
             self.logger.info(f"__init__: Initial Volatility Calculated: {self.last_volatility}")
+            
+            # Load state from previous session (crash recovery)
+            if self.resume_state:
+                self.load_state()
+            else:
+                self.logger.info("Starting FRESH session (Resume disabled).")
+                # Forcefully remove the state file to prevent any ghost data loading
+                state_file = self.get_state_file_path()
+                if os.path.exists(state_file):
+                    try:
+                        os.remove(state_file)
+                        self.logger.info(f"Deleted previous state file: {state_file}")
+                    except Exception as e:
+                        self.logger.error(f"Failed to delete state file: {e}")
 
         self.logger.info("__init__ completed")
 
@@ -215,6 +254,96 @@ class BinanceTradingBot:
         except Exception as e:
             self.logger.exception(f"Error checking trade log: {e}")
 
+    # ================== STATE PERSISTENCE ==================
+    
+    def get_state_file_path(self):
+        """Returns the path to the state file for this trading pair and mode."""
+        mode_prefix = 'live' if self.is_live_trading else 'test'
+        return os.path.join('data', f'state_{mode_prefix}_{self.symbol}.json')
+    
+    def save_state(self):
+        """Saves bot state to JSON for crash recovery."""
+        if not self.is_live_trading:
+            return  # Don't save state for backtests
+        
+        state = {
+            'symbol': self.symbol,
+            'quote_asset': self.quote_asset,
+            'base_asset': self.base_asset,
+            'bought_price': self.bought_price,
+            'base_balance_at_buy': self.base_balance if self.bought_price else None,
+            'position_size_percent': self.position_size_percent,
+            'last_update': datetime.datetime.now().isoformat(),
+            # Metrics
+            'total_trades': self.total_trades,
+            'winning_trades': self.winning_trades,
+            'gross_profit': self.gross_profit,
+            'gross_loss': self.gross_loss,
+            'peak_balance': self.peak_balance,
+            'max_drawdown': self.max_drawdown
+        }
+        
+        try:
+            os.makedirs('data', exist_ok=True)
+            with open(self.get_state_file_path(), 'w') as f:
+                json.dump(state, f, indent=2)
+            self.logger.info(f"State saved: bought_price={self.bought_price}")
+        except Exception as e:
+            self.logger.error(f"Error saving state: {e}")
+    
+    def load_state(self):
+        """Loads bot state from JSON on startup."""
+        if not self.is_live_trading:
+            return  # Don't load state for backtests
+        
+        state_file = self.get_state_file_path()
+        if not os.path.exists(state_file):
+            self.logger.info("No previous state file found. Starting fresh.")
+            return
+        
+        try:
+            with open(state_file, 'r') as f:
+                state = json.load(f)
+            
+            # Verify it's for the same trading pair
+            if state.get('symbol') != self.symbol:
+                self.logger.warning(f"State file is for {state.get('symbol')}, not {self.symbol}. Ignoring.")
+                return
+            
+            # Restore position info
+            saved_bought_price = state.get('bought_price')
+            if saved_bought_price:
+                self.bought_price = saved_bought_price
+                self.logger.info(f"Restored position: bought_price={self.bought_price}")
+                print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}")
+            
+            # Restore metrics
+            self.total_trades = state.get('total_trades', 0)
+            self.winning_trades = state.get('winning_trades', 0)
+            self.gross_profit = state.get('gross_profit', 0)
+            self.gross_loss = state.get('gross_loss', 0)
+            self.peak_balance = state.get('peak_balance', 0)
+            self.max_drawdown = state.get('max_drawdown', 0)
+            
+            last_update = state.get('last_update', 'unknown')
+            self.logger.info(f"State loaded from {last_update}")
+            print(f"📁 Loaded state from: {last_update}")
+            
+        except Exception as e:
+            self.logger.error(f"Error loading state: {e}")
+    
+    def clear_state(self):
+        """Clears the saved state (called after successful position close)."""
+        if not self.is_live_trading:
+            return
+        
+        state_file = self.get_state_file_path()
+        if os.path.exists(state_file):
+            # Don't delete, just update with no position
+            self.save_state()
+            self.logger.info("State cleared (position closed)")
+
+
     def check_price(self):
         try:
             ticker = self.client.get_symbol_ticker(symbol=self.symbol)
@@ -261,10 +390,79 @@ class BinanceTradingBot:
         try:
             # Need to fetch data first
             klines = self.client.get_historical_klines(self.symbol, Client.KLINE_INTERVAL_1DAY, f"{self.strategy.volatility_period} day ago UTC")
-            return indicators.calculate_volatility_from_klines(klines, self.strategy.volatility_period)
+            atr = indicators.calculate_volatility_from_klines(klines, self.strategy.volatility_period)
+            
+            # Normalize to percentage using current price
+            current_price = self.check_price()
+            if current_price and current_price > 0:
+                return atr / current_price
+            return None
         except Exception as e:
             self.logger.error(f"Error calculating ATR: {e}")
             return None
+
+    def fetch_fear_and_greed(self):
+        """Fetches the Fear and Greed Index from alternative.me."""
+        try:
+            url = "https://api.alternative.me/fng/"
+            response = requests.get(url, timeout=5)
+            data = response.json()
+            if data['data']:
+                value = int(data['data'][0]['value'])
+                classification = data['data'][0]['value_classification']
+                self.logger.info(f"Fear & Greed Index: {value} ({classification})")
+                return value
+            return 50 # Neutral default
+        except Exception as e:
+            self.logger.error(f"Error fetching Fear & Greed Index: {e}")
+            return 50
+
+    def calculate_position_size(self, current_price, stop_loss_price):
+        """
+        Calculates position size based on Risk Parity.
+        Risk = Total Account Value * Risk_Per_Trade_Percent
+        Position Size = Risk / (Entry - Stop_Loss)
+        """
+        try:
+            # 1. Determine Risk Per Trade (Default 2%)
+            risk_percent = 0.02
+            
+            # Modulate Risk based on Fear & Greed (if enabled)
+            if self.dynamic_settings:
+                fg_val = getattr(self, 'fear_greed_index', 50)
+                if fg_val <= 20:
+                    risk_percent = 0.025 # Extreme Fear -> Higher Risk (Buy the dip)
+                elif fg_val >= 75:
+                    risk_percent = 0.015 # Extreme Greed -> Lower Risk (Protect capital) 
+
+            # Calculate Dollar Risk
+            # Use total simulated equity (Base + Quote) or just Quote? 
+            # Ideally Total Equity to scale growth.
+            total_equity = self.quote_balance + (self.base_balance * current_price) if hasattr(self, 'quote_balance') else self.get_balance(self.quote_asset)
+            
+            risk_amount = total_equity * risk_percent
+            
+            # Calculate Distance
+            distance_per_unit = abs(current_price - stop_loss_price)
+            if distance_per_unit == 0: return 0
+            
+            # Position Size (Units) = Risk Amount / Loss per Unit
+            position_units = risk_amount / distance_per_unit
+            
+            # Cap at max capital (Can't borrow)
+            max_units = (self.quote_balance / current_price) * 0.99 # 99% to cover fees
+            
+            final_units = min(position_units, max_units)
+            
+            self.logger.info(f"Dynamic Sizing: Risk ${risk_amount:.2f} (2%), Dist ${distance_per_unit:.2f}, Calc Units {position_units:.4f}, Cap {max_units:.4f}")
+            return final_units
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating position size: {e}")
+            # Fallback to fixed %
+            invest_amount = self.get_balance(self.quote_asset) * self.position_size_percent
+            return invest_amount / current_price
+
 
     def sell_on_ctrl_s(self):
         if self.bought_price is not None and self.base_balance > 0:
@@ -367,13 +565,26 @@ class BinanceTradingBot:
                 if self.is_live_trading:
                     # Use quoteOrderQty for easy amount specs
                     order = self.client.create_order(symbol=self.symbol, side=Client.SIDE_BUY, type=Client.ORDER_TYPE_MARKET, quoteOrderQty=invest_amount)
-                    self.bought_price = float(order['fills'][0]['price'])
+                    
+                    # Calculate actual average price from fills or cumulative totals
+                    cummulative_quote_qty = float(order['cummulativeQuoteQty'])
+                    executed_qty = float(order['executedQty'])
+                    
+                    if executed_qty > 0:
+                        self.bought_price = cummulative_quote_qty / executed_qty
+                    else:
+                        self.bought_price = float(order['fills'][0]['price']) # Fallback
                     
                     self.quote_balance = self.get_balance(self.quote_asset)
                     self.base_balance = self.get_balance(self.base_asset)
                     
                     total_val = self.quote_balance + (self.base_balance * self.bought_price)
-                    self.log_trade_wrapper("Buy", self.bought_price, float(order['origQty']), total_val)
+                    
+                    self.logger.info(f"Order Filled: Bought {executed_qty} {self.base_asset} @ {self.bought_price:.2f} (Total {cummulative_quote_qty} {self.quote_asset})")
+                    self.log_trade_wrapper("Buy", self.bought_price, executed_qty, total_val)
+                    
+                    # Save state after buy for crash recovery
+                    self.save_state()
                 else:
                     quantity = round(invest_amount / current_price * (1 - self.trading_fee_percentage), 8)
                     cost_with_fee = quantity * current_price * (1 + self.trading_fee_percentage)
@@ -397,19 +608,30 @@ class BinanceTradingBot:
                 profit_amount = 0
                 
                 if self.is_live_trading:
-                    # Capture exact balance before trade for rough PnL estimate or fetch from order header
-                    # For simplicity in Live, we just estimate based on current price
-                     revenue = self.base_balance * current_price * (1 - self.trading_fee_percentage) # Est
-                     cost_basis = self.base_balance * self.bought_price
-                     profit_amount = revenue - cost_basis # Est USD profit
-                    
-                     self.client.create_order(symbol=self.symbol, side=Client.SIDE_SELL, type=Client.ORDER_TYPE_MARKET, quantity=self.base_balance)
+                     # Execute Order
+                     order = self.client.create_order(symbol=self.symbol, side=Client.SIDE_SELL, type=Client.ORDER_TYPE_MARKET, quantity=self.base_balance)
+                     
+                     # Parse Fill
+                     cummulative_quote_qty = float(order['cummulativeQuoteQty']) # Revenue (Gross)
+                     executed_qty = float(order['executedQty'])
+                     
+                     avg_price = cummulative_quote_qty / executed_qty if executed_qty > 0 else float(order['fills'][0]['price'])
+                     
+                     # Accurate PnL Calculation
+                     revenue = cummulative_quote_qty # Approximate (fees might be deducted if paying in quote)
+                     cost_basis = executed_qty * self.bought_price
+                     profit_amount = revenue - cost_basis
+                     real_profit_percent = ((avg_price - self.bought_price) / self.bought_price) * 100
+                     
+                     # Update State
                      self.quote_balance = self.get_balance(self.quote_asset)
                      self.base_balance = self.get_balance(self.base_asset)
-                     self.log_trade_wrapper(reason, current_price, 0, self.quote_balance, profit)
+                     
+                     self.logger.info(f"Order Filled: Sold {executed_qty} {self.base_asset} @ {avg_price:.2f} (Total {revenue:.2f} {self.quote_asset}, PnL {real_profit_percent:.2f}%)")
+                     self.log_trade_wrapper(reason, avg_price, executed_qty, self.quote_balance, real_profit_percent)
                      
                      # Update Metrics Live
-                     current_equity = self.quote_balance # Roughly (assuming base is sold)
+                     current_equity = self.quote_balance 
                      self.update_metrics(profit_amount, current_equity)
                      self.print_performance_report()
 
@@ -427,6 +649,10 @@ class BinanceTradingBot:
                 
                 self.bought_price = None
                 self.strategy.reset_trailing_stop()  # Reset trailing stop tracker
+                
+                # Save state after sell to clear position (crash recovery)
+                if self.is_live_trading:
+                    self.save_state()
             except Exception as e:
                 self.logger.error(f"Error placing sell order: {e}")
 
@@ -459,10 +685,44 @@ class BinanceTradingBot:
                          self.logger.info(f"Heartbeat - Current Price: {current_price} {self.quote_asset}")
                          last_heartbeat_time = time.time()
 
-                    # Volatility Check
+                    # Volatility Check & Dynamic Auto-Tuning
                     if self.last_volatility_check_time is None or (datetime.datetime.now() - self.last_volatility_check_time).total_seconds() >= volatility_check_interval:
                         self.last_volatility = self.calculate_volatility()
                         self.strategy.set_volatility(self.last_volatility)
+                        
+                        # FETCH SENTIMENT (Fear & Greed)
+                        if self.dynamic_settings:
+                             self.fear_greed_index = self.fetch_fear_and_greed()
+                        
+                        # DYNAMIC SETTINGS LOGIC
+                        if self.dynamic_settings and self.last_volatility is not None:
+                            vol = self.last_volatility
+                            vol_percent = vol * 100
+                            
+                            # FORMULA BASED (Matches Frontend - Safer)
+                            # SL = ~2.0x Vol (was 1.5)
+                            new_sl_percent = max(1.5, vol_percent * 2.0)
+                            
+                            # Trail = ~3.0x Vol (was 2.0)
+                            new_trail_percent = max(2.0, vol_percent * 3.0)
+                            
+                            # RSI Logic - Gentler drop for high vol (Allow more trades)
+                            new_rsi = 40
+                            if vol_percent < 1.0: new_rsi = 45
+                            elif vol_percent > 4.0: new_rsi = 30
+                            else: new_rsi = int(40 - round((vol_percent - 1.0) * 3.0))
+                            new_rsi = max(30, min(50, new_rsi))
+                            
+                            # Convert back to decimal for Python logic
+                            self.strategy.rsi_threshold_buy = new_rsi
+                            self.strategy.stop_loss_percent = new_sl_percent / 100.0
+                            self.strategy.fixed_stop_loss_percent = new_sl_percent / 100.0
+                            # Note: Strategy uses sell_percent as trail distance
+                            self.strategy.sell_percent = new_trail_percent / 100.0 
+                            
+                            self.logger.info(f"Dynamic Mode: Auto-Tuned Settings based on Volatility {vol:.2%}")
+                            self.logger.info(f"  -> RSI: {new_rsi}, SL: {new_sl_percent:.1f}%, Trail: {new_trail_percent:.1f}%")
+                        
                         self.last_volatility_check_time = datetime.datetime.now()
                     
                     # --- EXECUTE STRATEGY ---
@@ -475,7 +735,15 @@ class BinanceTradingBot:
                          if self.bought_price is None:
                               # Buy Check
                               if self.strategy.check_buy_signal(current_price, self.last_price):
-                                   invest_amount = self.get_balance(self.quote_asset) * 0.25
+                                   # Dynamic Position Sizing (Risk Parity)
+                                   sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                   invest_qty = self.calculate_position_size(current_price, sl_price)
+                                   
+                                   # Fallback if calc fails or return low
+                                   if invest_qty == 0:
+                                       invest_qty = (self.get_balance(self.quote_asset) * self.position_size_percent) / current_price
+                                   
+                                   invest_amount = invest_qty * current_price
                                    self.buy(current_price, invest_amount)
                          else:
                               # Sell Checks
@@ -493,7 +761,7 @@ class BinanceTradingBot:
 
                          self.last_price = current_price
                     
-                    time.sleep(1)
+                    time.sleep(3)
             else:
                 self.test()
                 self.running = False
@@ -513,8 +781,22 @@ class BinanceTradingBot:
             self.quote_balance = initial_balance
             self.base_balance = 0
             self.quote_asset = 'USDT'
-            self.base_asset = 'ETH'
-            self.symbol = 'ETHUSDT'
+            
+            # Reset Metrics for Test
+            self.total_trades = 0
+            self.winning_trades = 0
+            self.gross_profit = 0.0
+            self.gross_loss = 0.0
+            self.peak_balance = initial_balance
+            self.max_drawdown = 0.0
+            
+            # Detect Asset from Filename
+            fname = os.path.basename(self.filename).lower()
+            if 'btc' in fname: self.base_asset = 'BTC'; self.symbol = 'BTCUSDT'
+            elif 'sol' in fname: self.base_asset = 'SOL'; self.symbol = 'SOLUSDT'
+            elif 'bnb' in fname: self.base_asset = 'BNB'; self.symbol = 'BNBUSDT'
+            elif 'xrp' in fname: self.base_asset = 'XRP'; self.symbol = 'XRPUSDT'
+            else: self.base_asset = 'ETH'; self.symbol = 'ETHUSDT'
             
             self.last_price = None
             
@@ -534,15 +816,57 @@ class BinanceTradingBot:
                 self.finished_data = True
                 return
 
-            print(f"\nSTARTING BACKTEST on {self.filename}")
+            print(f"\nSTARTING BACKTEST on {self.filename} ({self.symbol})")
             print(f"Initial Balance: ${initial_balance:.2f}")
             print(f"Fee: {self.trading_fee_percentage*100:.2f}%, Slippage: {self.slippage*100:.2f}%")
             print("-" * 50)
+            
+            # Dynamic Tuning Helper
+            last_tuning_index = 0
             
             for index, row in historical_data.iterrows():
                 current_price = row['Price']
                 # current_time = row['Timestamp'] # Unused currently
                 
+                # --- DYNAMIC TUNING (Simulated Periodically) ---
+                # Check every 48 periods (Assuming 30m candles -> 24 hours)?
+                # Simple check: regenerate settings if index % 48 == 0
+                if self.dynamic_settings and index % 48 == 0:
+                     # Recalculate Vol (In real backtest, this should be rolling window, but for now use constant or randomized?
+                     # Actually, backtest reads static file. Volatility changes over time.
+                     # We need meaningful rolling volatility.
+                     # But `calculate_volatility` fetches from API (Live). We can't use that here.
+                     # We will use the `strategy.current_volatility` if updated?
+                     # Strategy updates current_volatility on `update_data`? No, that's price.
+                     
+                     # Simple approximation: Use current volatility derived from recent prices in `historical_data`?
+                     # Too complex to implement rolling ATR from scratch here accurately without large buffer.
+                     # Fallback: Just re-apply the logic using the INITIAL volatility (better than nothing) 
+                     # OR if possible, calculate rolling ATR if we had the array.
+                     
+                     # FOR NOW: Re-run the logic block using the stored `self.last_volatility` 
+                     # (Assuming static vol for backtest file duration is acceptable for now, 
+                     # otherwise we need a full rolling ATR implementation in backtest loop).
+                     
+                     vol_percent = self.last_volatility * 100
+                     
+                     # FORMULA BASED (Matches Frontend - Safer)
+                     # SL = ~2.0x Vol
+                     new_sl_percent = max(1.5, vol_percent * 2.0)
+                     # Trail = ~3.0x Vol
+                     new_trail_percent = max(2.0, vol_percent * 3.0)
+                     # RSI Logic
+                     new_rsi = 40
+                     if vol_percent < 1.0: new_rsi = 45
+                     elif vol_percent > 4.0: new_rsi = 30
+                     else: new_rsi = int(40 - round((vol_percent - 1.0) * 3.0))
+                     new_rsi = max(30, min(50, new_rsi))
+                     
+                     self.strategy.rsi_threshold_buy = new_rsi
+                     self.strategy.stop_loss_percent = new_sl_percent / 100.0
+                     self.strategy.fixed_stop_loss_percent = new_sl_percent / 100.0
+                     self.strategy.sell_percent = new_trail_percent / 100.0
+
                 # Update Equity Curve & Drawdown (Mark-to-Market)
                 current_equity = self.quote_balance + (self.base_balance * current_price)
                 if current_equity > self.peak_balance:
@@ -557,8 +881,17 @@ class BinanceTradingBot:
                 
                 if self.bought_price is None:
                      if self.strategy.check_buy_signal(current_price, self.last_price):
-                          invest_amount = self.quote_balance * 0.25 # Invest 25% of available cash
-                          if self.quote_balance >= invest_amount:
+                          # Dynamic Position Sizing (Risk Parity)
+                          sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
+                          invest_qty = self.calculate_position_size(current_price, sl_price)
+                          
+                          # Fallback logic for backtest (Ensure non-zero)
+                          if invest_qty <= 0:
+                              invest_qty = (self.quote_balance * self.position_size_percent) / current_price
+                          
+                          invest_amount = invest_qty * current_price
+                          
+                          if self.quote_balance >= invest_amount * 0.99: # 99% check for rounding
                                # APPLY SLIPPAGE (Buy Higher)
                                execution_price = current_price * (1 + self.slippage)
                                

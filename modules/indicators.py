@@ -19,6 +19,49 @@ def calculate_rsi(price_series, length=14):
         # Caller handles logging
         raise e
 
+def calculate_macd(price_series, fast=12, slow=26, signal=9):
+    """Calculates MACD, Signal, and Histogram."""
+    try:
+        if len(price_series) < slow + signal:
+            return None, None, None
+            
+        close_series = pd.Series(list(price_series))
+        macd_df = ta.macd(close_series, fast=fast, slow=slow, signal=signal)
+        
+        if macd_df is None or macd_df.empty:
+            return None, None, None
+            
+        # pandas_ta returns columns like: MACD_12_26_9, MACDh_12_26_9, MACDs_12_26_9
+        # We need the last values
+        last_row = macd_df.iloc[-1]
+        
+        # Try finding columns dynamically to be safe
+        # MACD line usually starts with MACD_
+        # Histogram usually starts with MACDh_
+        # Signal usually starts with MACDs_
+        
+        cols = macd_df.columns
+        macd_col = next((c for c in cols if c.startswith(f"MACD_{fast}_{slow}")), None)
+        hist_col = next((c for c in cols if c.startswith(f"MACDh_{fast}_{slow}")), None)
+        sig_col  = next((c for c in cols if c.startswith(f"MACDs_{fast}_{slow}")), None)
+        
+        if not macd_col or not hist_col or not sig_col:
+             # Fallback to positional if naming fails 
+             # (Assume: 0=MACD, 1=Hist, 2=Signal based on standard pandas_ta output)
+             macd_val = macd_df.iloc[-1, 0]
+             hist_val = macd_df.iloc[-1, 1]
+             sig_val  = macd_df.iloc[-1, 2]
+        else:
+             macd_val = last_row[macd_col]
+             hist_val = last_row[hist_col]
+             sig_val  = last_row[sig_col]
+
+        return macd_val, hist_val, sig_val
+        
+    except Exception as e:
+        print(f"Error calculating MACD: {e}")
+        return None, None, None
+
 def calculate_volatility_from_klines(klines, period=14):
     """
     Calculates the 14-day Average True Range (ATR) from Klines.

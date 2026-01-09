@@ -77,12 +77,17 @@ class Strategy:
         if rsi is None or ma_fast is None or ma_slow is None:
             return False
 
-        # 1. TREND FILTER: Only buy in uptrends
+        # 1. TREND FILTER: Only buy in uptrends OR deep oversold bounces
         # If we don't have enough data for 200 MA, skip trend filter
         trend_is_bullish = True
+        
+        # EXCEPTION: If RSI is extremely low (e.g. < 33), buy for a bounce even in downtrend
+        is_deep_dip = rsi < 33
+            
         if ma_trend is not None:
             trend_is_bullish = current_price > ma_trend
-            if not trend_is_bullish:
+            
+            if not trend_is_bullish and not is_deep_dip:
                 # print(f"Debug: Trend filter failed. Price {current_price:.2f} < MA200 {ma_trend:.2f}")
                 return False
 
@@ -90,13 +95,45 @@ class Strategy:
         if rsi >= self.rsi_threshold_buy:
             return False
 
-        # 3. MA CROSS: Short-term bullish momentum
+        # 3. MACD MOMENTUM FILTER (New)
+        # Avoid buying falling knives. Wait for momentum to turn up.
+        macd, hist, signal = indicators.calculate_macd(self.price_history)
+        if hist is not None:
+             # We need previous histogram to check slope. 
+             # Re-calc matches current bar. We can just check if Hist > 0 (Uptrend) or check slope if we had history.
+             # Since we don't store historical MACD easily without recalculating everything...
+             # Let's trust pandas_ta to run on the whole series. 
+             # Actually, calculate_macd runs on the series. We can get the *previous* value by slicing the series -1.
+             # BUT calculate_macd returns scalar.
+             # Let's modify usage: To start simple, just require Histogram > 0 OR (RSI < 25 typically means huge crash, maybe we skip MACD there?)
+             # Better: Strict filter -> Histogram must be increasing (Hist > Prev_Hist).
+             # To do this efficienty, we really should assume we are at the "end". 
+             # For now, let's just use a simple Histogram check: 
+             # If Histogram is VERY negative, DON'T BUY.
+             
+             # Actually, simpler logic:
+             # If Histogram < 0 and Histogram < Signal (or just Histogram is decreasing? We don't know prev).
+             # Let's just stick to: If MACD Line < Signal Line (Hist < 0) AND RSI > 30, DON'T BUY.
+             # (i.e. Only buy normally if MACD is bullish. If MACD Bearish, requires Deep Dip RSI < 30).
+             
+             if hist < 0 and rsi > 30 and not is_deep_dip:
+                 # MACD Bearish (Momentum down) AND RSI not super low. Wait.
+                 # print(f"Debug: MACD Filter. Hist {hist:.4f} < 0")
+                 return False
+
+        # 4. MA CROSS: Short-term bullish momentum
         if ma_fast <= ma_slow:
             return False
 
         # All conditions met!
         trend_str = f"{ma_trend:.2f}" if ma_trend else "N/A"
-        print(f"*** BUY SIGNAL! RSI={rsi:.2f}, FastMA={ma_fast:.2f}, SlowMA={ma_slow:.2f}, TrendMA={trend_str} ***")
+        macd_str = f"{hist:.4f}" if hist is not None else "N/A"
+        
+        # Log the signal
+        import logging
+        logger = logging.getLogger("BinanceTradingBot")
+        logger.info(f"*** BUY SIGNAL! RSI={rsi:.2f}, MACD_Hist={macd_str}, FastMA={ma_fast:.2f}, SlowMA={ma_slow:.2f}, TrendMA={trend_str} ***")
+        
         return True
 
     def check_sell_signal(self, current_price, bought_price):
@@ -133,9 +170,8 @@ class Strategy:
                 return 'SELL'
 
         # 2. HARD STOP LOSS (below entry - protects capital)
+        # Use simple fixed % logic now that settings are auto-tuned externally
         sl_percent = self.fixed_stop_loss_percent
-        if self.current_volatility is not None:
-            sl_percent = indicators.get_dynamic_stop_loss_percent(self.current_volatility, self.stop_loss_percent)
             
         stop_loss_price = bought_price * (1 - sl_percent)
         
