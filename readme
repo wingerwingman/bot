@@ -1,0 +1,82 @@
+# Binance Trading Bot
+
+This is a modular trading bot that interacts with the Binance.US API to automate trading strategies. It supports both backtesting (using historical data) and live trading.
+
+## Project Structure
+
+The project is organized into the following directories:
+
+*   **`main.py`**: The entry point for the application. Run this to start the bot.
+*   **`modules/`**: Contains the core logic and components.
+    *   `config.py`: Configuration settings and API keys.
+    *   `indicators.py`: Technical analysis calculations (RSI, ATR).
+    *   `logger_setup.py`: Logging configuration.
+    *   `trading_bot.py`: The main `BinanceTradingBot` class.
+*   **`data/`**: Stores historical CSV data files.
+*   **`logs/`**: Stores application logs (`trading_us.log`) and trade history (`trades_us.log`).
+*   **`tests/`**: Contains unit tests and test scripts.
+*   **`archive/`**: Contains legacy scripts and unused files.
+
+## Setup Instructions
+
+**1. Install Dependencies:**
+
+*   Create a virtual environment (recommended):
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    ```
+*   Install the required packages:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+**2. Set up Binance.US API:**
+
+*   Create an account on Binance.US.
+*   Generate API keys and a secret key.
+*   **Important**: Securely store your API keys. Never hardcode them directly.
+
+**3. Configure Environment Variables:**
+
+*   Create a `.env` file in the root directory.
+*   Add your credentials:
+    ```
+    BINANCE_US_API_KEY=your_api_key
+    BINANCE_US_API_SECRET=your_api_secret
+    ```
+
+## How to Run
+
+**Run the Bot:**
+
+```bash
+python main.py
+```
+
+Follow the on-screen prompts:
+*   **Test Mode ('t' or 'n')**: Run a backtest simulation using historical data. You can select a CSV file from the `data/` folder.
+*   **Live Trading ('l')**: Run live trading on Binance.US. **Use with caution.**
+
+## Logging
+
+*   **`logs/trading_us.log`**: Detailed operational logs (price updates, indicator values, debug info).
+*   **`logs/trades_us.log`**: Concise CSV formatted log of all executed trades (Buy/Sell, Price, Quantity, Profit).
+
+## key Bot Parameters
+
+You can adjust trading parameters in `modules/config.py` or within the `BinanceTradingBot` class in `modules/trading_bot.py`:
+
+*   **`stop_loss_percent`**: Initial dynamic stop-loss percentage.
+*   **`sell_percent`**: Target profit percentage for selling.
+*   **`volatility_period`**: Days for ATR volatility calculation (default 14).
+
+## Troubleshooting
+
+*   **`FileNotFoundError`**: Ensure your CSV data files are in the `data/` directory.
+*   **API Errors**: Double-check your `.env` file and API permissions on Binance.
+*   **Linux Hotkeys**: If using hotkeys on Linux, you may need additional permissions (run as root or configure udev rules).
+
+## Disclaimer
+
+This bot is provided for educational and informational purposes only. Use it at your own risk. The developers are not responsible for any financial losses incurred while using this bot.
