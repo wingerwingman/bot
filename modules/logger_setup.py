@@ -96,6 +96,21 @@ def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
         trade_fh = logging.FileHandler(config.TRADE_LOG_FILE)
         trade_fh.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
         trade_logger.addHandler(trade_fh)
+        
+    # 4. Tuning Logger Setup (Persistent detailed metrics)
+    tuning_logger = logging.getLogger("tuning_logger")
+    tuning_logger.setLevel(logging.INFO)
+    tuning_logger.propagate = False
+    
+    if not tuning_logger.handlers:
+        tuning_fh = logging.FileHandler(config.TUNING_LOG_FILE)
+        # CSV Header: Timestamp, Symbol, Action, Price, Qty, Profit, Volatility, RangeLow, RangeHigh, Step
+        tuning_fh.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
+        tuning_logger.addHandler(tuning_fh)
+        
+        # Write header if file is empty
+        if os.stat(config.TUNING_LOG_FILE).st_size == 0:
+            tuning_logger.info("Timestamp,Symbol,Action,Price,Qty,Profit,Volatility,RangeLow,RangeHigh,Step,StepPct")
 
     return logger, trade_logger
 
@@ -121,6 +136,27 @@ def log_trade(main_logger, trade_logger, action, price, quantity=None, total_val
             
     except Exception as e:
         main_logger.error(f"Error logging trade: {e}")
+
+def log_tuning(symbol, action, price, qty, profit, volatility, range_low, range_high, step, step_pct):
+    """
+    Logs detailed tuning metrics to CSV.
+    """
+    try:
+        logger = logging.getLogger("tuning_logger")
+        # Ensure handlers exist (lazy init if needed, usually covered by setup)
+        if not logger.handlers:
+            # Fallback if setup wasn't called or handlers lost
+            fh = logging.FileHandler(config.TUNING_LOG_FILE)
+            fh.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
+            logger.addHandler(fh)
+            
+        msg = f"{symbol},{action},{price:.2f},{qty},{profit:.2f},{volatility:.4f},{range_low},{range_high},{step:.2f},{step_pct:.2f}"
+        logger.info(msg)
+        
+        for handler in logger.handlers:
+            handler.flush()
+    except Exception as e:
+        print(f"Error logging tuning metrics: {e}")
 
 def get_audit_logs():
     """Retrieve user audit logs."""

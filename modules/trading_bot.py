@@ -779,8 +779,9 @@ class BinanceTradingBot:
             self.logger.debug("Entering main trading loop...")
             if self.is_live_trading:
                 while self.running:
-                    # Heartbeat
-                    if time.time() - last_heartbeat_time > 30:
+                    # Heartbeat (every hour)
+                    if time.time() - last_heartbeat_time > 3600:
+                         last_heartbeat_time = time.time()
                          current_price = self.check_price()
                          
                          if self.bought_price:
@@ -826,7 +827,9 @@ class BinanceTradingBot:
                             vol_change_pct = abs(self.last_volatility - old_volatility) / old_volatility if old_volatility > 0 else 0
                             if vol_change_pct > 0.20:  # >20% change
                                 direction = "↑ INCREASED" if self.last_volatility > old_volatility else "↓ DECREASED"
-                                logger_setup.log_strategy(f"🌊 VOLATILITY SHIFT: {direction} {vol_change_pct*100:.0f}% | Was: {old_volatility*100:.2f}% → Now: {self.last_volatility*100:.2f}%")
+                                msg = f"🌊 VOLATILITY SHIFT: {direction} {vol_change_pct*100:.0f}% | Was: {old_volatility*100:.2f}% → Now: {self.last_volatility*100:.2f}%"
+                                logger_setup.log_strategy(msg)
+                                notifier.send_telegram_message(f"<b>{msg}</b>")
                         
                         # --- INDICATOR SNAPSHOT (every volatility check = ~10 min) ---
                         if len(self.strategy.price_history) > 14:

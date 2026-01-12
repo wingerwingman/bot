@@ -81,10 +81,24 @@ Places **limit orders** at fixed price intervals to profit from sideways markets
 ### Settings:
 | Setting | Description |
 |---------|-------------|
-| Range | Lower/Upper price bounds (or Auto-Set ±5%) |
-| Levels | Number of grid lines (5-20 recommended for $100+) |
+| Range | Lower/Upper price bounds (or **Auto-Set** based on volatility) |
+| Levels | Number of grid lines (auto-recommended based on volatility) |
 | Capital | $ allocated (synced from Capital Panel) |
 | Live Mode | Toggle real trading vs simulation |
+
+### Volatility-Based Grid Spacing:
+The "Auto-Set Range" button now dynamically adjusts based on market volatility:
+
+| Market Condition | Range | Levels | Why |
+|------------------|-------|--------|-----|
+| 🟢 Low Volatility (<2%) | ±3% | 15 | Tighter range, more frequent small trades |
+| 🟡 Medium Volatility (2-4%) | ±5% | 10 | Balanced settings |
+| 🔴 High Volatility (>4%) | ±8% | 8 | Wider range, fewer larger trades |
+
+**⚠️ Capital-Aware Levels:**
+The bot automatically caps the number of grid levels to ensure each order is at least **$11** (Binance minimum + buffer).
+- *Example*: With $100 capital, max levels = 9 ($100 / $11). Even if Low Volatility recommends 15, it will set 9.
+- **Tuning Logs**: All trades are saved to `logs/tuning.csv` with full context (Volatility, Range, Grid Step) for easy analysis in Excel/Sheets.
 
 ### Fee Break-Even:
 - Grid step must be **>0.2%** to cover Binance fees (0.1% each side)
@@ -113,9 +127,10 @@ Total: $500
 ## 📲 Telegram Notifications
 
 Get real-time alerts for:
-- ✅ Buy executed (price, amount)
-- ✅ Sell executed (price, profit)
-- ❌ Errors (API issues, order failures)
+- ✅ **Sniper Trades**: Buy/Sell execution details
+- 🤖 **Grid Trades**: Grid Buy/Profit alerts (Net Profit $)
+- 🌊 **Volatility Shifts**: Alerts when market volatility changes >20%
+- ❌ **Errors**: API issues, "Bot Crashed" critical alerts
 
 **Setup**: Set `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` in `.env`
 

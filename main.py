@@ -52,15 +52,20 @@ def run_server_mode():
     print("Open http://localhost:3000 in your browser to control the bot.")
     print("Press Ctrl+C to stop the server.\n")
     
-    server.start_server_standalone()
-    
-    # Keep the main thread alive
     try:
+        server.start_server_standalone()
+        
+        # Keep the main thread alive
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         print("\nServer stopped.")
         sys.exit(0)
+    except Exception as e:
+        print(f"\nCRITICAL ERROR: {e}")
+        from modules import notifier
+        notifier.send_telegram_message(f"❌ <b>CRITICAL ERROR</b>\nBot Server Crashed!\nError: {str(e)}")
+        sys.exit(1)
 
 def run_cli_mode():
     """Original terminal-based mode selection."""

@@ -1,6 +1,17 @@
 {
-  "total_capital": 1000,
-  "allocations": {},
+  "total_capital": 1000.0,
+  "allocations": {
+    "signal": {
+      "percent": 1.0,
+      "fixed": null,
+      "reserved": 1000.0
+    },
+    "grid": {
+      "percent": 0.0,
+      "fixed": null,
+      "reserved": 0.0
+    }
+  },
   "pnl": {
     "test_pnl": {
       "starting": 50000,
@@ -15,8 +26,22 @@
       "realized_pnl": 0.0,
       "trades": 0,
       "wins": 0
+    },
+    "signal": {
+      "starting": 1000.0,
+      "current": 1000.0,
+      "realized_pnl": 0.0,
+      "trades": 0,
+      "wins": 0
+    },
+    "grid": {
+      "starting": 0.0,
+      "current": 0.0,
+      "realized_pnl": 0.0,
+      "trades": 0,
+      "wins": 0
     }
   },
   "auto_compound": true,
-  "last_updated": "2026-01-12T12:00:30.863809"
+  "last_updated": "2026-01-12T12:17:22.151477"
 }

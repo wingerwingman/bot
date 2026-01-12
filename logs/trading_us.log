@@ -1,26 +1,25 @@
-2026-01-12 12:04:43,814 - DEBUG - __init__: is_live_trading = True, filename = None
-2026-01-12 12:04:43,814 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 12:04:44,027 - DEBUG - Fetching account balances...
-2026-01-12 12:04:44,206 - DEBUG - Trading Pair Configured: ETHUSDT
-2026-01-12 12:04:44,206 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
-2026-01-12 12:04:44,317 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
-2026-01-12 12:04:44,491 - DEBUG - __init__: Initial Volatility Calculated: 0.027170321977247364
-2026-01-12 12:04:44,491 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 12:04:44,492 - DEBUG - Restored position: bought_price=3096.72
-2026-01-12 12:04:44,492 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+2026-01-12 14:13:57,426 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-12 14:13:57,426 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-12 14:13:57,704 - DEBUG - Fetching account balances...
+2026-01-12 14:13:57,969 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-12 14:13:57,969 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-12 14:13:58,086 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-12 14:13:58,268 - DEBUG - __init__: Initial Volatility Calculated: 0.02714908738046076
+2026-01-12 14:13:58,268 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-12 14:13:58,268 - DEBUG - Restored position: bought_price=3096.72
+2026-01-12 14:13:58,268 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
    • Symbol: ETHUSDT
    • Position: OPEN @ 3096.72
    • Metrics: Net Profit $0.00 (0 trades)
    • Peak Balance: $195.00 (Max Drawdown: 0.00%)
-2026-01-12 12:04:44,492 - DEBUG - __init__ completed
-2026-01-12 12:04:44,657 - DEBUG - Starting run method...
-2026-01-12 12:04:44,657 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
-2026-01-12 12:04:44,658 - DEBUG - Initializing hotkeys...
-2026-01-12 12:04:44,658 - DEBUG - Hotkeys started.
-2026-01-12 12:04:44,659 - DEBUG - Entering main trading loop...
-2026-01-12 12:04:45,110 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 12:04:45,110 - DEBUG - Dynamic Update: Volatility 2.72% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2970.51 (Profit Activates > 3102.91)
-2026-01-12 12:04:47,907 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2947.48-$3257.74
-2026-01-12 12:05:16,020 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.83 | PnL: 0.33% | Trail Stop: 2980.21 (Profit: -3.76%) | SL < 2928.44
-2026-01-12 12:05:46,680 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.83 | PnL: 0.33% | Trail Stop: 2980.21 (Profit: -3.76%) | SL < 2928.44
-2026-01-12 12:06:17,327 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3109.14 | PnL: 0.40% | Trail Stop: 2982.43 (Profit: -3.69%) | SL < 2928.44
+2026-01-12 14:13:58,268 - DEBUG - __init__ completed
+2026-01-12 14:13:58,447 - DEBUG - Starting run method...
+2026-01-12 14:13:58,447 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-12 14:13:58,447 - DEBUG - Initializing hotkeys...
+2026-01-12 14:13:58,448 - DEBUG - Hotkeys started.
+2026-01-12 14:13:58,448 - DEBUG - Entering main trading loop...
+2026-01-12 14:13:58,854 - DEBUG - Fear & Greed Index: 27 (Fear)
+2026-01-12 14:13:58,854 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2970.61 (Profit Activates > 3102.91)
+2026-01-12 14:14:01,719 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2856.06-$3352.76
+2026-01-12 14:19:00,327 - DEBUG - Fear & Greed Index: 27 (Fear)
+2026-01-12 14:19:00,329 - DEBUG - Dynamic Update: Volatility 2.73% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.5%, Trail:4.1% | New Trail Sell: <2982.16 (Profit Activates > 3102.91)

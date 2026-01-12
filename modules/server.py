@@ -658,17 +658,25 @@ def grid_status():
 
 @app.route('/api/grid/auto-range', methods=['GET'])
 def grid_auto_range():
-    """Calculate auto range based on ATR."""
+    """Calculate auto range based on volatility and capital."""
     symbol = request.args.get('symbol', 'ETHUSDT')
-    lower, upper = calculate_auto_range(symbol)
+    use_volatility = request.args.get('use_volatility', 'true').lower() == 'true'
+    capital = float(request.args.get('capital', 100))
     
-    if lower is None:
+    result = calculate_auto_range(symbol, use_volatility=use_volatility, capital=capital)
+    
+    if result is None:
         return jsonify({"error": "Could not calculate range"}), 500
     
     return jsonify({
         "symbol": symbol,
-        "lower_bound": lower,
-        "upper_bound": upper
+        "lower_bound": result['lower_bound'],
+        "upper_bound": result['upper_bound'],
+        "recommended_levels": result['recommended_levels'],
+        "volatility_percent": result['volatility_percent'],
+        "range_percent": result['range_percent'],
+        "current_price": result['current_price'],
+        "max_levels_for_capital": result.get('max_levels_for_capital')
     })
 
 @app.route('/api/grid/clear', methods=['POST'])

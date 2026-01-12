@@ -13,6 +13,7 @@ from binance import Client
 from . import config
 from . import logger_setup
 from . import indicators
+from . import notifier
 
 
 class GridBot:
@@ -300,6 +301,49 @@ class GridBot:
                 
                 self.logger.info(f"  → Gross: ${gross_profit:.2f}, Fee: ${fee:.2f}, Net: ${net_profit:.2f}")
                 
+                # TUNING METRICS: Log context for analysis
+                current_vol = self.volatility if hasattr(self, 'volatility') else "N/A"
+                vol_display = f"{current_vol*100:.2f}%" if isinstance(current_vol, float) else "N/A"
+                grid_step_pct = (grid_step / order['price']) * 100
+                
+                self.logger.info(f"  → Context: Vol={vol_display} | Range=${self.lower_bound}-${self.upper_bound} | Step={grid_step:.2f} ({grid_step_pct:.2f}%)")
+                
+                # PERSISTENT TUNING LOG (CSV)
+                try:
+                    logger_setup.log_tuning(
+                        symbol=self.symbol,
+                        action=order['side'],
+                        price=order['price'],
+                        qty=order['qty'],
+                        profit=net_profit,
+                        volatility=current_vol if isinstance(current_vol, float) else 0.0,
+                        range_low=self.lower_bound,
+                        range_high=self.upper_bound,
+                        step=grid_step,
+                        step_pct=grid_step_pct
+                    )
+                except Exception as e:
+                    self.logger.error(f"Failed to log tuning metrics: {e}")
+                
+                # TELEGRAM NOTIFICATION
+                try:
+                    if order['side'] == 'SELL':
+                         notifier.send_telegram_message(
+                            f"🤖 <b>GRID PROFIT</b>\n"
+                            f"Symbol: {self.symbol}\n"
+                            f"Price: {order['price']:.2f}\n"
+                            f"Profit: ${net_profit:.2f} (Net)"
+                         )
+                    else:
+                         notifier.send_telegram_message(
+                            f"🤖 <b>GRID BUY</b>\n"
+                            f"Symbol: {self.symbol}\n"
+                            f"Price: {order['price']:.2f}\n"
+                            f"Qty: {order['qty']}"
+                         )
+                except Exception as e:
+                    self.logger.error(f"Failed to send Telegram alert: {e}")
+                
                 # Save state after each fill
                 self._save_state()
     
@@ -368,11 +412,19 @@ class GridBot:
         self.logger.info("Grid Bot stopping...")
 
 
-def calculate_auto_range(symbol='ETHUSDT', range_percent=5):
+def calculate_auto_range(symbol='ETHUSDT', use_volatility=True, capital=100.0):
     """
-    Auto-calculate grid range based on a percentage of current price.
-    Default: ±5% from current price.
-    Returns (lower_bound, upper_bound).
+    Auto-calculate grid range based on market volatility and available capital.
+    
+    - Low volatility (<2%): Tighter range (±3%), more levels
+    - Medium volatility (2-4%): Normal range (±5%), standard levels
+    - High volatility (>4%): Wider range (±8%), fewer levels
+    
+    Constraints:
+    - Minimum order size per level ~$11 (providing buffet over $10 limit)
+    - Max levels = Capital / 11
+    
+    Returns dict with: lower_bound, upper_bound, recommended_levels, volatility
     """
     try:
         client = Client(config.API_KEY, config.API_SECRET, tld='us')
@@ -381,15 +433,67 @@ def calculate_auto_range(symbol='ETHUSDT', range_percent=5):
         ticker = client.get_symbol_ticker(symbol=symbol)
         current_price = float(ticker['price'])
         
-        # Simple percentage-based range
-        # E.g., 5% means ±5% from current price
-        range_amount = current_price * (range_percent / 100)
+        # Default range
+        range_percent = 5
+        recommended_levels = 10
+        volatility = None
         
+        if use_volatility:
+            # Fetch klines for ATR calculation
+            klines = client.get_klines(symbol=symbol, interval='1h', limit=24)
+            volatility = indicators.calculate_volatility_from_klines(klines)
+            
+            if volatility is not None:
+                vol_percent = volatility * 100
+                
+                # Volatility-based grid sizing
+                if vol_percent < 2.0:
+                    # Low volatility: Tight range, more levels
+                    range_percent = 3
+                    recommended_levels = 15
+                    logging.info(f"Grid: LOW volatility ({vol_percent:.2f}%) → Tight range ±{range_percent}%, {recommended_levels} levels")
+                elif vol_percent > 4.0:
+                    # High volatility: Wide range, fewer levels
+                    range_percent = 8
+                    recommended_levels = 8
+                    logging.info(f"Grid: HIGH volatility ({vol_percent:.2f}%) → Wide range ±{range_percent}%, {recommended_levels} levels")
+                else:
+                    # Medium volatility: Standard settings
+                    range_percent = 5
+                    recommended_levels = 10
+                    logging.info(f"Grid: MEDIUM volatility ({vol_percent:.2f}%) → Normal range ±{range_percent}%, {recommended_levels} levels")
+        
+        # --- Capital Constraints ---
+        # Binance min order is usually $10. We use $11 to be safe.
+        min_order_value = 11.0
+        max_levels_for_capital = int(capital / min_order_value)
+        
+        # Ensure we have at least 2 levels if capital allows, else 0/error logic usually handled by UI
+        if max_levels_for_capital < 2:
+            max_levels_for_capital = 2 # Let it fail on validation if really too low, but don't return 0
+            
+        # Clamp recommended levels
+        if recommended_levels > max_levels_for_capital:
+            logging.warning(f"Grid: Clamping levels from {recommended_levels} to {max_levels_for_capital} due to capital constraint (${capital})")
+            recommended_levels = max(2, max_levels_for_capital)
+        
+        # Calculate bounds
+        range_amount = current_price * (range_percent / 100)
         lower = current_price - range_amount
         upper = current_price + range_amount
         
-        return round(lower, 2), round(upper, 2)
+        return {
+            'lower_bound': round(lower, 2),
+            'upper_bound': round(upper, 2),
+            'recommended_levels': recommended_levels,
+            'volatility': volatility,
+            'volatility_percent': (volatility * 100) if volatility else None,
+            'range_percent': range_percent,
+            'current_price': current_price,
+            'max_levels_for_capital': max_levels_for_capital
+        }
     
     except Exception as e:
         logging.error(f"Auto-range error: {e}")
-        return None, None
+        return None
+
