@@ -817,8 +817,30 @@ class BinanceTradingBot:
 
                     # Volatility Check & Dynamic Auto-Tuning
                     if self.last_volatility_check_time is None or (datetime.datetime.now() - self.last_volatility_check_time).total_seconds() >= volatility_check_interval:
+                        old_volatility = self.last_volatility
                         self.last_volatility = self.calculate_volatility()
                         self.strategy.set_volatility(self.last_volatility)
+                        
+                        # --- VOLATILITY CHANGE ALERT (>20% shift) ---
+                        if old_volatility is not None and self.last_volatility is not None:
+                            vol_change_pct = abs(self.last_volatility - old_volatility) / old_volatility if old_volatility > 0 else 0
+                            if vol_change_pct > 0.20:  # >20% change
+                                direction = "↑ INCREASED" if self.last_volatility > old_volatility else "↓ DECREASED"
+                                logger_setup.log_strategy(f"🌊 VOLATILITY SHIFT: {direction} {vol_change_pct*100:.0f}% | Was: {old_volatility*100:.2f}% → Now: {self.last_volatility*100:.2f}%")
+                        
+                        # --- INDICATOR SNAPSHOT (every volatility check = ~10 min) ---
+                        if len(self.strategy.price_history) > 14:
+                            snap_rsi = indicators.calculate_rsi(self.strategy.price_history)
+                            snap_macd, snap_hist, _ = indicators.calculate_macd(self.strategy.price_history)
+                            snap_ma_fast = indicators.calculate_ma(self.strategy.price_history, self.strategy.ma_fast_period)
+                            snap_ma_slow = indicators.calculate_ma(self.strategy.price_history, self.strategy.ma_slow_period)
+                            snap_price = self.strategy.price_history[-1] if self.strategy.price_history else 0
+                            
+                            trend = "📈 BULLISH" if snap_ma_fast and snap_ma_slow and snap_ma_fast > snap_ma_slow else "📉 BEARISH"
+                            hist_str = f"{snap_hist:+.4f}" if snap_hist else "N/A"
+                            rsi_str = f"{snap_rsi:.1f}" if snap_rsi else "N/A"
+                            
+                            logger_setup.log_strategy(f"📊 SNAPSHOT: Price=${snap_price:.2f} | RSI={rsi_str} | MACD_Hist={hist_str} | Trend={trend} | Vol={self.last_volatility*100:.2f}%")
                         
                         # FETCH SENTIMENT (Fear & Greed)
                         if self.dynamic_settings:

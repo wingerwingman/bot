@@ -1,6 +1,11 @@
 from collections import deque
+import logging
 from . import config
 from . import indicators
+from . import logger_setup
+
+# Logger for strategy decisions
+strategy_logger = logging.getLogger("Strategy")
 
 class Strategy:
     """
@@ -96,11 +101,12 @@ class Strategy:
             trend_is_bullish = current_price > ma_trend
             
             if not trend_is_bullish and not is_deep_dip:
-                # print(f"Debug: Trend filter failed. Price {current_price:.2f} < MA200 {ma_trend:.2f}")
+                logger_setup.log_strategy(f"📉 BUY REJECTED: Trend filter failed. Price ${current_price:.2f} < MA200 ${ma_trend:.2f} (RSI={rsi:.1f})")
                 return False
 
         # 2. RSI CHECK: Buy when not overbought
         if rsi >= self.rsi_threshold_buy:
+            logger_setup.log_strategy(f"📉 BUY REJECTED: RSI too high. RSI={rsi:.1f} >= threshold {self.rsi_threshold_buy}")
             return False
 
         # 3. MACD MOMENTUM FILTER (New)
@@ -126,11 +132,12 @@ class Strategy:
              
              if hist < 0 and rsi > 30 and not is_deep_dip:
                  # MACD Bearish (Momentum down) AND RSI not super low. Wait.
-                 # print(f"Debug: MACD Filter. Hist {hist:.4f} < 0")
+                 logger_setup.log_strategy(f"📉 BUY REJECTED: MACD bearish. Histogram={hist:.4f} < 0, RSI={rsi:.1f}")
                  return False
 
         # 4. MA CROSS: Short-term bullish momentum
         if ma_fast <= ma_slow:
+            logger_setup.log_strategy(f"📉 BUY REJECTED: MA cross bearish. FastMA={ma_fast:.2f} <= SlowMA={ma_slow:.2f}")
             return False
 
         # All conditions met!
@@ -175,9 +182,21 @@ class Strategy:
             trail_distance = self.sell_percent  # Use sell_percent as trailing distance
             trailing_stop_price = self.peak_price_since_buy * (1 - trail_distance)
             
+            # Calculate how close we are to selling
+            drop_from_peak = (self.peak_price_since_buy - current_price) / self.peak_price_since_buy
+            drop_needed = trail_distance
+            closeness = (drop_from_peak / drop_needed) * 100 if drop_needed > 0 else 0
+            
+            # Log near-misses (>70% of way to trailing stop)
+            if closeness > 70 and closeness < 100:
+                profit_pct = ((current_price - bought_price) / bought_price) * 100
+                logger_setup.log_strategy(f"⚠️ NEAR-MISS SELL: {closeness:.0f}% to trailing stop. Profit={profit_pct:.1f}%, Peak=${self.peak_price_since_buy:.2f}")
+            
             # Make sure trailing stop is above entry (lock in some profit)
             # Actually, if we are trailing, we respect the trail.
             if current_price < trailing_stop_price:
+                profit_pct = ((current_price - bought_price) / bought_price) * 100
+                logger_setup.log_strategy(f"✅ TRAILING STOP triggered at ${current_price:.2f} (Peak: ${self.peak_price_since_buy:.2f}, Profit: {profit_pct:.1f}%)")
                 print(f"*** TRAILING STOP triggered at {current_price:.2f} (Peak: {self.peak_price_since_buy:.2f}, BreakEven: {break_even_price:.2f}) ***")
                 self.reset_trailing_stop()
                 return 'SELL'

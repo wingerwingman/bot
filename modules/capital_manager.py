@@ -64,6 +64,12 @@ class CapitalManager:
         # Load saved state
         self._load_state()
     
+    @classmethod
+    def reset_for_testing(cls):
+        """Reset singleton instance for unit testing."""
+        with cls._lock:
+            cls._instance = None
+    
     def _save_state(self):
         """Persist state to file."""
         try:
@@ -288,7 +294,8 @@ class CapitalManager:
             try:
                 ticker = client.get_symbol_ticker(symbol='ETHUSDT')
                 eth_price = float(ticker['price'])
-            except:
+            except Exception as e:
+                logger.error(f"Failed to get ETH price: {e}")
                 eth_price = 0.0
             
             eth_value_usd = eth_balance * eth_price

@@ -1,8 +1,4 @@
-read me update
-check buy sell logging
+
 set the valuse of coin to change with what its using if its not
-figure out what would hlep to log for tweaking automation of percentages for sell buy
-check for security issues 
-logs of all operation user inputs
 update docker files when this thing is working fully not now
 backup to github when I am ready dont ask

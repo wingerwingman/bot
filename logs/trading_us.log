@@ -1,65 +1,26 @@
-2026-01-12 11:16:55,030 - DEBUG - __init__: is_live_trading = True, filename = None
-2026-01-12 11:16:55,031 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 11:16:55,226 - DEBUG - Fetching account balances...
-2026-01-12 11:16:55,466 - DEBUG - Trading Pair Configured: ETHUSDT
-2026-01-12 11:16:55,466 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
-2026-01-12 11:16:55,604 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
-2026-01-12 11:16:55,778 - DEBUG - __init__: Initial Volatility Calculated: 0.02709549350761904
-2026-01-12 11:16:55,778 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 11:16:55,779 - DEBUG - Restored position: bought_price=3096.72
-2026-01-12 11:16:55,779 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+2026-01-12 12:04:43,814 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-12 12:04:43,814 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-12 12:04:44,027 - DEBUG - Fetching account balances...
+2026-01-12 12:04:44,206 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-12 12:04:44,206 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-12 12:04:44,317 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-12 12:04:44,491 - DEBUG - __init__: Initial Volatility Calculated: 0.027170321977247364
+2026-01-12 12:04:44,491 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-12 12:04:44,492 - DEBUG - Restored position: bought_price=3096.72
+2026-01-12 12:04:44,492 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
    • Symbol: ETHUSDT
    • Position: OPEN @ 3096.72
    • Metrics: Net Profit $0.00 (0 trades)
    • Peak Balance: $195.00 (Max Drawdown: 0.00%)
-2026-01-12 11:16:55,779 - DEBUG - __init__ completed
-2026-01-12 11:16:55,938 - DEBUG - Starting run method...
-2026-01-12 11:16:55,938 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
-2026-01-12 11:16:55,939 - DEBUG - Initializing hotkeys...
-2026-01-12 11:16:55,940 - DEBUG - Hotkeys started.
-2026-01-12 11:16:55,940 - DEBUG - Entering main trading loop...
-2026-01-12 11:16:56,404 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 11:16:56,405 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2970.86 (Profit Activates > 3102.91)
-2026-01-12 11:17:27,048 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3115.41 | PnL: 0.60% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:17:57,869 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.11 | PnL: 0.30% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:18:28,517 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.11 | PnL: 0.30% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:18:59,159 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3107.51 | PnL: 0.35% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:19:29,793 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3107.51 | PnL: 0.35% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:20:00,426 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3107.51 | PnL: 0.35% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:20:05,231 - INFO - AUDIT WARN: User Action [CAPITAL_UPDATE] via 127.0.0.1: Total: 194.53273732
-2026-01-12 11:20:28,798 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2947.48-$3257.74
-2026-01-12 11:20:31,068 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3107.51 | PnL: 0.35% | Trail Stop: 2988.79 (Profit: -3.49%) | SL < 2928.91
-2026-01-12 11:21:01,703 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.43 (Profit: -3.43%) | SL < 2928.91
-2026-01-12 11:21:32,417 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.43 (Profit: -3.43%) | SL < 2928.91
-2026-01-12 11:21:57,335 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 11:21:57,342 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 99.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2990.50 (Profit Activates > 3102.91)
-2026-01-12 11:22:03,507 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.50 (Profit: -3.43%) | SL < 2929.00
-2026-01-12 11:22:34,152 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.50 (Profit: -3.43%) | SL < 2929.00
-2026-01-12 11:23:04,791 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.50 (Profit: -3.43%) | SL < 2929.00
-2026-01-12 11:23:35,438 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.12 | PnL: 0.66% | Trail Stop: 2990.50 (Profit: -3.43%) | SL < 2929.00
-2026-01-12 11:24:06,099 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.72 | PnL: 0.68% | Trail Stop: 2990.50 (Profit: -3.43%) | SL < 2929.00
-2026-01-12 11:24:36,776 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.72 | PnL: 0.68% | Trail Stop: 2991.08 (Profit: -3.41%) | SL < 2929.00
-2026-01-12 11:25:07,436 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3117.72 | PnL: 0.68% | Trail Stop: 2991.08 (Profit: -3.41%) | SL < 2929.00
-2026-01-12 11:25:38,093 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.25 (Profit: -3.34%) | SL < 2929.00
-2026-01-12 11:26:08,752 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.25 (Profit: -3.34%) | SL < 2929.00
-2026-01-12 11:26:39,427 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.25 (Profit: -3.34%) | SL < 2929.00
-2026-01-12 11:26:58,214 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 11:26:58,216 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 100.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2993.37 (Profit Activates > 3102.91)
-2026-01-12 11:27:12,077 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:27:42,826 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:28:13,484 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:28:44,153 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:29:14,805 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:29:45,456 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:30:16,124 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:30:46,813 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:31:17,471 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.99 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:31:48,156 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:32:00,809 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 11:32:00,811 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 0.3), SL:5.4%, Trail:4.1% | New Trail Sell: <2993.37 (Profit Activates > 3102.91)
-2026-01-12 11:32:19,217 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:32:49,877 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:33:20,564 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:33:51,240 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:34:21,916 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
-2026-01-12 11:34:52,592 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3119.92 | PnL: 0.75% | Trail Stop: 2993.37 (Profit: -3.34%) | SL < 2929.15
+2026-01-12 12:04:44,492 - DEBUG - __init__ completed
+2026-01-12 12:04:44,657 - DEBUG - Starting run method...
+2026-01-12 12:04:44,657 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-12 12:04:44,658 - DEBUG - Initializing hotkeys...
+2026-01-12 12:04:44,658 - DEBUG - Hotkeys started.
+2026-01-12 12:04:44,659 - DEBUG - Entering main trading loop...
+2026-01-12 12:04:45,110 - DEBUG - Fear & Greed Index: 27 (Fear)
+2026-01-12 12:04:45,110 - DEBUG - Dynamic Update: Volatility 2.72% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2970.51 (Profit Activates > 3102.91)
+2026-01-12 12:04:47,907 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2947.48-$3257.74
+2026-01-12 12:05:16,020 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.83 | PnL: 0.33% | Trail Stop: 2980.21 (Profit: -3.76%) | SL < 2928.44
+2026-01-12 12:05:46,680 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3106.83 | PnL: 0.33% | Trail Stop: 2980.21 (Profit: -3.76%) | SL < 2928.44
+2026-01-12 12:06:17,327 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3109.14 | PnL: 0.40% | Trail Stop: 2982.43 (Profit: -3.69%) | SL < 2928.44
