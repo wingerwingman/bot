@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Python Backend (API + Trading Bot)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cryptobot-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist logs and data between restarts
+      - ./logs:/app/logs
+      - ./data:/app/data
+    environment:
+      # IMPORTANT: Set these in a .env file or pass at runtime
+      - BINANCE_US_API_KEY=${BINANCE_US_API_KEY}
+      - BINANCE_US_API_SECRET=${BINANCE_US_API_SECRET}
+    networks:
+      - cryptobot-network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./botfrontend
+      dockerfile: Dockerfile
+    container_name: cryptobot-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - cryptobot-network
+
+networks:
+  cryptobot-network:
+    driver: bridge

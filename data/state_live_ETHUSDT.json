@@ -1,0 +1,15 @@
+{
+  "symbol": "ETHUSDT",
+  "quote_asset": "USDT",
+  "base_asset": "ETH",
+  "bought_price": 3096.72,
+  "base_balance_at_buy": 0.0216692,
+  "position_size_percent": 0.25,
+  "last_update": "2026-01-10T08:49:17.141975",
+  "total_trades": 0,
+  "winning_trades": 0,
+  "gross_profit": 0.0,
+  "gross_loss": 0.0,
+  "peak_balance": 194.99781198,
+  "max_drawdown": 0.0
+}

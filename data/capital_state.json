@@ -1,0 +1,33 @@
+{
+  "total_capital": 194.53273732,
+  "allocations": {
+    "signal": {
+      "percent": 0.5,
+      "fixed": null,
+      "reserved": 97.26636866
+    },
+    "grid": {
+      "percent": 0.5,
+      "fixed": null,
+      "reserved": 97.26636866
+    }
+  },
+  "pnl": {
+    "signal": {
+      "starting": 97.26636866,
+      "current": 97.26636866,
+      "realized_pnl": 0.0,
+      "trades": 0,
+      "wins": 0
+    },
+    "grid": {
+      "starting": 97.26636866,
+      "current": 97.26636866,
+      "realized_pnl": 0.0,
+      "trades": 0,
+      "wins": 0
+    }
+  },
+  "auto_compound": true,
+  "last_updated": "2026-01-12T11:20:05.231029"
+}
