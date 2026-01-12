@@ -7,77 +7,133 @@ CryptoBot/
 ├── docker-compose.yml         # Container orchestration config.
 ├── Dockerfile                 # Docker build definition.
 ├── requirements.txt           # Python dependencies.
-├── .env                       # Environment variables (API Keys).
+├── .env                       # Environment variables (API Keys, Telegram, Admin).
 │
 ├── modules/                   # 🧠 Backend Logic
-│   ├── trading_bot.py         # CORE: Main loop, Order execution, State management, Restoration.
-│   ├── server.py              # API: Flask server, Endpoints for Frontend, Status polling.
-│   ├── strategy.py            # LOGIC: Signal generation (RSI/MACD/Bollinger), Buy/Sell rules.
-│   ├── indicators.py          # MATH: Technical analysis calculations (ATR, RSI, etc).
-│   ├── logger_setup.py        # LOGS: Logging configuration, Handlers, Formatting.
-│   └── config.py              # CONFIG: Loads env vars and constants.
+│   ├── trading_bot.py         # CORE: Main loop, Order execution, State management.
+│   ├── server.py              # API: Flask server, Endpoints for Frontend.
+│   ├── strategy.py            # LOGIC: Signal generation (RSI/MACD/Bollinger, DCA).
+│   ├── indicators.py          # MATH: Technical analysis calculations (ATR, RSI).
+│   ├── logger_setup.py        # LOGS: Logging configuration, Audit trail.
+│   ├── config.py              # CONFIG: Loads env vars and constants.
+│   ├── grid_bot.py            # 🪜 GRID BOT: Separate grid trading strategy.
+│   ├── capital_manager.py     # 💰 CAPITAL: Allocation & P&L tracking per bot.
+│   └── notifier.py            # 📲 TELEGRAM: Real-time trade notifications.
 │
 ├── botfrontend/               # 💻 Frontend UI (React)
 │   └── src/
 │       └── components/
 │           ├── App.js                 # Main UI Container & Routing.
-│           ├── LiveDashboard.js       # Real-time Charts, Metrics, Log Tabs ("System" / "Strategy").
-│           ├── ControlPanel.js        # Start/Stop buttons, Dynamic Settings Display, Restore Toggle.
+│           ├── LiveDashboard.js       # Real-time Charts, Metrics, Logs.
+│           ├── ControlPanel.js        # Signal Bot controls, DCA toggle.
+│           ├── GridBotPanel.js        # 🪜 Grid Bot controls & status.
+│           ├── CapitalPanel.js        # 💰 Capital allocation sliders.
+│           ├── LogsPage.js            # Log viewer with CSV export.
 │           └── BacktestDashboard.js   # Historical simulation interface.
 │
 ├── data/                      # 💾 Persistence
-│   └── state_live_*.json      # Session state files (Position, Entry Price, Metrics) for recovery.
+│   ├── bot_state.json         # Signal Bot state (position, metrics).
+│   ├── grid_state.json        # Grid Bot state (orders, fills, profit).
+│   └── capital_state.json     # Capital allocations & P&L history.
 │
 └── logs/                      # 📝 Log Storage
-    └── trading.log            # Full debug logs.
+    ├── trading_bot.log        # Full debug logs.
+    ├── strategy.log           # Strategy tuning logs.
+    └── audit.log              # User action audit trail.
 ```
 
 ## 🚀 Feature Map
 
-| Feature Category | Feature Name | Primary Implemented File(s) | Description |
+| Category | Feature | File(s) | Description |
 | :--- | :--- | :--- | :--- |
-| **Core Trading** | **Live Trading Loop** | `modules/trading_bot.py` | Main `run()` loop handles price checks, order execution. |
-| | **Session Restoration** | `modules/trading_bot.py` | `load_state()`, `save_state()` handle crash recovery. |
-| | **Precision Handling** | `modules/trading_bot.py` | `fetch_exchange_filters()` ensures API compliance. |
-| **Strategy** | **Dynamic Auto-Tuning** | `modules/trading_bot.py` | Updates RSI/SL/Trail based on Volatility (ATR). |
-| | **Signal Logic** | `modules/strategy.py` | `check_buy_signal`, `check_sell_signal` methods. |
-| | **Volatility Calc** | `modules/indicators.py` | `calculate_volatility_from_klines`. |
-| **Frontend UI** | **Real-time Dashboard** | `LiveDashboard.js` | Displays Price, Balance, PnL, Active Position. |
-| | **Log Tabs** | `LiveDashboard.js` | Separates "System Activity" from "Strategy Tuning". |
-| | **Remote Control** | `ControlPanel.js` | Start/Stop bot via API calls. |
-| **System** | **Logging Architecture** | `modules/logger_setup.py` | Handles distinct log streams (System vs Strategy). |
-| | **API Server** | `modules/server.py` | Flask API serving data to React Frontend. |
-| | **Dockerization** | `Dockerfile` | Container setup for deployment. |
+| **Signal Bot** | Live Trading Loop | `trading_bot.py` | Main buy/sell loop with indicators. |
+| | Session Restoration | `trading_bot.py` | `load_state()`/`save_state()` for crash recovery. |
+| | Dynamic Auto-Tuning | `trading_bot.py` | Adjusts RSI/SL/Trail based on ATR volatility. |
+| | DCA (Sniper Mode) | `strategy.py`, `trading_bot.py` | Dollar-cost averaging on RSI oversold + price drop. |
+| **Grid Bot** | Grid Trading | `grid_bot.py` | Limit orders at fixed intervals within a range. |
+| | Auto-Range | `grid_bot.py` | ±5% range calculation from current price. |
+| | Fee Simulation | `grid_bot.py` | 0.1% fee deducted in test mode for realistic P&L. |
+| | State Persistence | `grid_bot.py` | Saves fills/profit to `grid_state.json`. |
+| **Capital Manager** | Allocation | `capital_manager.py` | Set % of capital per bot (Signal/Grid). |
+| | P&L Tracking | `capital_manager.py` | Tracks profit per bot separately. |
+| | Auto-Compound | `capital_manager.py` | Toggle to reinvest profits automatically. |
+| | Binance Sync | `capital_manager.py` | Fetch real USDT+ETH balance. |
+| **Notifications** | Telegram Alerts | `notifier.py` | Real-time buy/sell/error notifications. |
+| **Security** | Env-based Auth | `config.py`, `server.py` | Admin credentials via environment variables. |
+| | CORS Lock | `server.py` | Restricted to `localhost:3000` only. |
+| **Logging** | Audit Trail | `logger_setup.py` | Logs all user actions (start/stop/config). |
+| | Trade Export | `server.py`, `LogsPage.js` | Download trade history as CSV. |
+| **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, P&L display. |
+| | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history. |
+| | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
 
-## 🛠️ Key Module Details
+---
 
-### `modules/trading_bot.py`
-The heart of the system. It initializes the `Binance` client, manages the websocket connection (or polling loop), and executes trades. It owns the `Strategy` instance and feeds it price data.
+## 🪜 Grid Bot
 
-### `modules/strategy.py`
-Pure logic component. Contains no trading execution code. It only looks at price history and returns `True`/`False` for Buy/Sell signals.
+Places **limit orders** at fixed price intervals to profit from sideways markets.
 
-### `modules/server.py`
-The bridge between the Python bot and the React UI. It runs a background thread to keep the bot alive and serves endpoints like `/api/status`, `/api/start`, and `/api/logs`.
+### How It Works:
+- **Buy orders** below current price
+- **Sell orders** above current price  
+- When price oscillates, orders fill and re-place on opposite side
 
-### `botfrontend/src/components/LiveDashboard.js`
-The main "Cockpit". It polls the server every few seconds to update charts and tables. It contains the logic to separate logs into the two distinct tabs.
+### Settings:
+| Setting | Description |
+|---------|-------------|
+| Range | Lower/Upper price bounds (or Auto-Set ±5%) |
+| Levels | Number of grid lines (5-20 recommended for $100+) |
+| Capital | $ allocated (synced from Capital Panel) |
+| Live Mode | Toggle real trading vs simulation |
 
-## 📊 Data Sources & Strategy Logic
+### Fee Break-Even:
+- Grid step must be **>0.2%** to cover Binance fees (0.1% each side)
+- Recommended: **0.5%+ step** for comfortable profit
 
-### 1. Market Data
-*   **Price Feed**: Live ticker data from **Binance.US API** (`get_symbol_ticker`).
-*   **Volatility**: Calculated locally using **14-day ATR (Average True Range)**.
-    *   *Source*: 14 days of daily Klines (candlesticks) from Binance.
-    *   *Usage*: Determines Dynamic Stop Loss and Trailing Stop percentages.
+---
 
-### 2. Sentiment Data
-*   **Fear & Greed Index**: Fetched from [Alternative.me API](https://api.alternative.me/fng/).
-    *   *Usage*: Logged for user reference (currently). Can be used to adjust buy aggression.
+## 💰 Capital Manager
 
-### 3. Technical Indicators (pandas_ta)
-*   **RSI (Relative Strength Index)**: Used for Buy signals (Default < 40).
-*   **MACD (Moving Average Convergence Divergence)**: Used for momentum confirmation.
-*   **MA (Moving Averages)**:
-    *   **200 MA**: Trend Filter (Buy only if Price > 200 MA).
-    *   **Fast/Slow MA**: Crossover logic.
+Prevents bots from competing for the same funds:
+```
+Total: $500
+├── Signal Bot: 60% = $300
+├── Grid Bot:   30% = $150
+└── Buffer:     10% = $50
+```
+
+### Features:
+- **Sliders** to adjust allocation percentage
+- **P&L per bot** with win rate stats
+- **Auto-Compound toggle** to reinvest profits
+- **Sync from Binance** button for real balance
+
+---
+
+## 📲 Telegram Notifications
+
+Get real-time alerts for:
+- ✅ Buy executed (price, amount)
+- ✅ Sell executed (price, profit)
+- ❌ Errors (API issues, order failures)
+
+**Setup**: Set `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` in `.env`
+
+---
+
+## 🛡️ DCA (Defense Mode)
+
+"Sniper" dollar-cost averaging triggers when:
+1. RSI < 30 (oversold)
+2. Price dropped > 2% from entry
+
+Calculates **Weighted Average Price** for multiple buys.
+Max 3 DCA buys per position. Toggle on/off in Control Panel.
+
+---
+
+## 🔐 Security
+
+- **Admin credentials** loaded from environment variables (`ADMIN_USER`, `ADMIN_PASS`, `ADMIN_TOKEN`)
+- **CORS** restricted to `localhost:3000` only
+- **Audit logging** for all user actions
