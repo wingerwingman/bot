@@ -12,18 +12,64 @@ class ListHandler(logging.Handler):
         try:
             log_entry = self.format(record)
             recent_errors.appendleft(log_entry) # Newest first
+            
+            # Persist to file
+            try:
+                with open(config.ERROR_LOG_FILE, 'a', encoding='utf-8') as f:
+                    f.write(log_entry + "\n")
+            except Exception:
+                pass
         except Exception:
             self.handleError(record)
 
 def clear_errors():
-    """Clears the recent error buffer."""
+    """Clears the recent error buffer and file."""
     recent_errors.clear()
+    if os.path.exists(config.ERROR_LOG_FILE):
+        with open(config.ERROR_LOG_FILE, 'w') as f:
+            f.truncate(0)
 
-def log_strategy(message):
+def log_strategy(message, persist=True):
     """Logs a strategy update message."""
     import datetime
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    strategy_logs.appendleft(f"{timestamp} - {message}")
+    entry = f"{timestamp} - {message}"
+    
+    # 1. Update In-Memory Deque (for UI)
+    strategy_logs.appendleft(entry)
+    
+    # 2. Persist to file (Append Mode)
+    if persist:
+        try:
+            with open(config.STRATEGY_HISTORY_FILE, 'a', encoding='utf-8') as f:
+                f.write(entry + "\n")
+        except Exception:
+            pass # Non-critical if logging fails
+
+def load_strategy_history():
+    """Restores last 50 logs from history file on startup."""
+    try:
+        if os.path.exists(config.STRATEGY_HISTORY_FILE):
+             with open(config.STRATEGY_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                 lines = f.readlines()
+                 # Take last 50 lines, reverse them (newest first for deque)
+                 last_lines = lines[-50:]
+                 for line in reversed(last_lines):
+                     strategy_logs.append(line.strip())
+    except Exception as e:
+        print(f"Failed to load strategy history: {e}")
+
+def load_error_history():
+    """Restores last 100 errors from history file on startup."""
+    try:
+        if os.path.exists(config.ERROR_LOG_FILE):
+             with open(config.ERROR_LOG_FILE, 'r', encoding='utf-8') as f:
+                 lines = f.readlines()
+                 last_lines = lines[-100:]
+                 for line in reversed(last_lines):
+                     recent_errors.append(line.strip())
+    except Exception as e:
+        print(f"Failed to load error history: {e}")
 
 def log_audit(action, details, ip_address="Unknown"):
     """
@@ -41,20 +87,59 @@ def log_audit(action, details, ip_address="Unknown"):
     audit_logs.appendleft(entry) # Newest first
     # Also log to system file for permanence
     logging.getLogger("BinanceTradingBot").info(f"AUDIT WARN: User Action [{action}] via {ip_address}: {details}")
+    
+    # Persist structured audit log
+    try:
+        import json
+        with open(config.AUDIT_LOG_FILE, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception:
+        pass
+
+def load_audit_history():
+    """Restores last 100 audit logs from history file on startup."""
+    try:
+        import json
+        if os.path.exists(config.AUDIT_LOG_FILE):
+             with open(config.AUDIT_LOG_FILE, 'r', encoding='utf-8') as f:
+                 lines = f.readlines()
+                 last_lines = lines[-100:]
+                 for line in reversed(last_lines):
+                     try:
+                         entry = json.loads(line.strip())
+                         audit_logs.append(entry)
+                     except:
+                         pass
+    except Exception as e:
+        print(f"Failed to load audit history: {e}")
+
+def clear_audit_logs():
+    """Clears audit logs."""
+    audit_logs.clear()
+    if os.path.exists(config.AUDIT_LOG_FILE):
+        with open(config.AUDIT_LOG_FILE, 'w') as f:
+            f.truncate(0)
 
 def clear_all_logs():
-    """Clears both system and strategy logs."""
+    """Clears both system and strategy logs from memory AND disk."""
     recent_errors.clear()
     strategy_logs.clear()
+    
+    # Clear persistence files
+    files_to_clear = [config.STRATEGY_HISTORY_FILE, config.TUNING_LOG_FILE, config.AUDIT_LOG_FILE, config.ERROR_LOG_FILE]
+    for file_path in files_to_clear:
+        if os.path.exists(file_path):
+            with open(file_path, 'w') as f:
+                f.truncate(0)
 
 def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
     """Sets up the main logger and the trade-specific logger."""
     
-    # 1. Clear log files on startup
-    if os.path.exists(config.TRADING_LOG_FILE):
-        open(config.TRADING_LOG_FILE, 'w').close()
-    if os.path.exists(config.TRADE_LOG_FILE):
-        open(config.TRADE_LOG_FILE, 'w').close()
+    # 1. Clear log files on startup - DISABLED per user request for persistence
+    # if os.path.exists(config.TRADING_LOG_FILE):
+    #     open(config.TRADING_LOG_FILE, 'w').close()
+    # if os.path.exists(config.TRADE_LOG_FILE):
+    #     open(config.TRADE_LOG_FILE, 'w').close()
 
     # 2. Main Logger Setup
     logger = logging.getLogger("BinanceTradingBot")
@@ -111,6 +196,11 @@ def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
         # Write header if file is empty
         if os.stat(config.TUNING_LOG_FILE).st_size == 0:
             tuning_logger.info("Timestamp,Symbol,Action,Price,Qty,Profit,Volatility,RangeLow,RangeHigh,Step,StepPct")
+            
+    # 5. Load History
+    load_strategy_history()
+    load_audit_history()
+    load_error_history()
 
     return logger, trade_logger
 

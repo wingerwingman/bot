@@ -20,9 +20,13 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 # File Names
 
 # File Names
+# File Names
 TRADING_LOG_FILE = 'logs/trading_us.log'
 TRADE_LOG_FILE = 'logs/trades_us.log'
 TUNING_LOG_FILE = 'logs/tuning.csv'
+STRATEGY_HISTORY_FILE = 'logs/strategy_history.log'
+AUDIT_LOG_FILE = 'logs/audit.log'
+ERROR_LOG_FILE = 'logs/errors.log'
 
 # Trading Defaults
 DEFAULT_MA_FAST_PERIOD = 7

@@ -1,4 +1,8 @@
 
-set the valuse of coin to change with what its using if its not
+
+I also want to have a drop down that allows me to run several bot of both types so i can run it on multiple coins.
+
+
 update docker files when this thing is working fully not now
 backup to github when I am ready dont ask
+check if this bot could be breaking my sound on my pc and also interferring with say rockstar login or anything else.

@@ -67,7 +67,7 @@ class GridBot:
         self._fetch_precision()
         
         # State file
-        self.state_file = "data/grid_state.json"
+        self.state_file = f"data/grid_state_{symbol}.json"
         self.resume_state = resume_state
         
         # Load saved state if resume enabled

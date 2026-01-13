@@ -198,6 +198,7 @@ class BinanceTradingBot:
         self.winning_trades = 0
         self.gross_profit = 0.0
         self.gross_loss = 0.0
+        self.total_fees = 0.0 # Track total fees (in Quote Asset approx)
         self.peak_balance = 0.0 # Will be set on start/resume
         self.max_drawdown = 0.0
 
@@ -567,6 +568,7 @@ class BinanceTradingBot:
 
             except Exception as e:
                 self.logger.error(f"Error placing sell order on Ctrl+Alt+S: {e}")
+                notifier.send_telegram_message(f"❌ <b>PANIC SELL FAILED</b>\nError: {e}")
                 return
         else:
             self.logger.info(f"No {self.base_asset} to sell.")
@@ -660,7 +662,9 @@ class BinanceTradingBot:
                              
                              # Count DCA
                              self.dca_count += 1
-                             self.logger.info(f"DCA #{self.dca_count} Executed. New Avg Price: {self.bought_price:.2f}")
+                             msg = f"🛡️ DEFENSE BUY #{self.dca_count} FILLED. New Avg Price: {self.bought_price:.2f}"
+                             self.logger.info(msg)
+                             logger_setup.log_strategy(msg)
                         else:
                              self.bought_price = cummulative_quote_qty / executed_qty
                              self.dca_count = 0 # Reset on fresh buy
@@ -675,6 +679,11 @@ class BinanceTradingBot:
                     self.logger.info(f"Order Filled: Bought {executed_qty} {self.base_asset} @ {self.bought_price:.2f} (Total {cummulative_quote_qty} {self.quote_asset})")
                     notifier.send_telegram_message(f"🟢 <b>BUY EXECUTION</b>\nSymbol: {self.symbol}\nPrice: {self.bought_price:.2f}\nQty: {executed_qty}\nTotal: {cummulative_quote_qty:.2f} {self.quote_asset}")
                     self.log_trade_wrapper("Buy", self.bought_price, executed_qty, total_val)
+                    
+                    # Track Fees (Estimate: Quote Qty * Fee Rate)
+                    # Note: If BNB is used, value is same.
+                    est_fee = cummulative_quote_qty * self.trading_fee_percentage
+                    self.total_fees += est_fee
                     
                     # Save state after buy for crash recovery
                     self.save_state()
@@ -726,6 +735,10 @@ class BinanceTradingBot:
                      self.logger.info(f"Order Filled: Sold {executed_qty} {self.base_asset} @ {avg_price:.2f} (Total {revenue:.2f} {self.quote_asset}, PnL {real_profit_percent:.2f}%)")
                      notifier.send_telegram_message(f"🔴 <b>SELL EXECUTION</b>\nSymbol: {self.symbol}\nPrice: {avg_price:.2f}\nPnL: {real_profit_percent:.2f}%")
                      self.log_trade_wrapper(reason, avg_price, executed_qty, self.quote_balance, real_profit_percent)
+                     
+                     # Track Fees (Approx Revenue * Fee Rate)
+                     est_fee = revenue * self.trading_fee_percentage
+                     self.total_fees += est_fee
                      
                      # Update Metrics Live
                      current_equity = self.quote_balance 
@@ -899,19 +912,33 @@ class BinanceTradingBot:
                             
                             current_rsi_val = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
                             
+                            # Log only if changed significantly or long time passed
+                            # Check if we stored previous params to compare? 
+                            # For now, simplifying the message as requested to make it readable.
+                            
                             sell_context = ""
                             if self.bought_price:
                                 peak = self.strategy.peak_price_since_buy or self.bought_price
                                 new_trail_price = peak * (1 - (new_trail_percent / 100.0))
-                                
-                                # Also show Profit Activation Price (Break Even) based on fees
-                                # Note: Fees don't change with volatility, but good to see context
                                 break_even = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
-                                sell_context = f" | New Trail Sell: <{new_trail_price:.2f} (Profit Activates > {break_even:.2f})"
+                                # Concise Sell Context
+                                sell_context = f" | Trail Sell < ${new_trail_price:.2f}"
 
-                            msg = f"Dynamic Update: Volatility {vol:.2%} -> RSI Target:{new_rsi}{fg_msg} (Current RSI: {current_rsi_val:.1f}), SL:{new_sl_percent:.1f}%, Trail:{new_trail_percent:.1f}%{sell_context}"
-                            self.logger.debug(msg) # Hidden from System Log
-                            logger_setup.log_strategy(msg) # Visible in Strategy Tab
+                            # Simplified Log Format
+                            msg = f"🔄 TUNING: Vol {vol:.2%} -> RSI Buy < {new_rsi}{fg_msg} | SL {new_sl_percent:.1f}% | Trail {new_trail_percent:.1f}%{sell_context}"
+                            
+                            # Only log if Volatility changed > 0.1% OR first run to reduce spam
+                            # Using last_vol_logged to track
+                            if not hasattr(self, 'last_vol_logged') or abs(self.last_vol_logged - vol) > 0.001:
+                                self.last_vol_logged = vol
+                                self.logger.debug(msg) 
+                                logger_setup.log_strategy(msg)
+                            elif self.bought_price:
+                                # If holding, maybe log less frequently but still log to show trail updates?
+                                # Let's log but Keep it concise. 
+                                # Actually user complained about "Dynamic Update" spam.
+                                # Let's purely limit by change.
+                                pass
                         
                         self.last_volatility_check_time = datetime.datetime.now()
                     
@@ -941,8 +968,14 @@ class BinanceTradingBot:
                               dca_triggered = False
                               if self.dca_count < config.DCA_MAX_RETRIES:
                                   if self.strategy.check_dca_signal(current_price, self.bought_price):
+                                      # Calc trigger details for log
+                                      dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
+                                      drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100
+                                      
                                       self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
-                                      notifier.send_telegram_message(f"🛡️ <b>DCA SNIPER ACTIVATED</b>\nSymbol: {self.symbol}\nReason: RSI Oversold & Price Drop")
+                                      logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
+                                      
+                                      notifier.send_telegram_message(f"🛡️ <b>DCA SNIPER ACTIVATED</b>\nSymbol: {self.symbol}\nReason: RSI Oversold ({dca_rsi:.1f}) & Price Drop (-{drop_pct:.2f}%)")
                                       
                                       # Calculate Buy Size (Use standard logic * Scale Factor)
                                       # Logic: Try to buy 1x Standard Position Size
@@ -1148,6 +1181,8 @@ class BinanceTradingBot:
                                # Log (Simulated)
                                total_val = self.quote_balance + (self.base_balance * current_price)
                                self.log_trade_wrapper("Buy", execution_price, quantity, total_val)
+                               # Backtest Fee
+                               self.total_fees += (quantity * execution_price * self.trading_fee_percentage)
                 else:
                      action = self.strategy.check_sell_signal(current_price, self.bought_price)
                      if action in ['SELL', 'STOP_LOSS']:
@@ -1160,6 +1195,12 @@ class BinanceTradingBot:
                           
                           self.quote_balance += revenue
                           self.base_balance = 0
+                          
+                          # Backtest Fee
+                          self.total_fees += (self.base_balance * execution_price * self.trading_fee_percentage) # wait base is 0 line above
+                          # Correct: using pre-reset values implies logic error in my patch attempt.
+                          # self.base_balance was zeroed. Recalculating fee based on revenue.
+                          self.total_fees += (revenue * self.trading_fee_percentage)
                           
                           # Metrics Update via Helper
                           self.update_metrics(profit_amount, self.quote_balance)

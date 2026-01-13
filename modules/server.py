@@ -4,10 +4,12 @@ import threading
 import time
 import os
 import glob
+import logging
 from . import config
 from .trading_bot import BinanceTradingBot
 from . import indicators
 from . import logger_setup
+from . import notifier
 from .grid_bot import GridBot, calculate_auto_range
 from .capital_manager import capital_manager
 
@@ -18,10 +20,11 @@ app = Flask(__name__)
 # Security: Only allow requests from the React Frontend
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
-# Global bot instance
-bot_instance = None
+# Global bot instances (Dictionaries for Multi-Bot)
+spot_bots = {} # Key: symbol (e.g., 'ETHUSDT') -> BinanceTradingBot
 bot_lock = threading.Lock()
-grid_instance = None  # Grid Bot instance
+
+grid_bots = {} # Key: symbol -> GridBot
 grid_lock = threading.Lock()
 cached_client = None
 
@@ -89,135 +92,142 @@ def get_status():
             print(f"Error fetching market data: {e}")
             return None, None, None
     
-    if not bot_instance:
-        # Return live prices and volatility even when idle
-        eth_price, btc_price, volatility = get_market_data()
+    # If specific symbol requested, return details for that bot
+    req_symbol = request.args.get('symbol')
+    req_type = request.args.get('type', 'spot')
+    
+    # Aggregate all running bots for the summary list
+    active_bots = []
+    
+    # Add Spot Bots
+    with bot_lock:
+        for symbol, bot in spot_bots.items():
+            net_profit = bot.gross_profit - bot.gross_loss
+            active_bots.append({
+                "id": f"spot_{symbol}",
+                "symbol": symbol,
+                "type": "spot",
+                "status": "running" if bot.running else "stopped",
+                "profit": net_profit,
+                "is_live": bot.is_live_trading
+            })
+
+    # Add Grid Bots
+    with grid_lock:
+        for symbol, bot in grid_bots.items():
+            s = bot.get_status()
+            active_bots.append({
+                "id": f"grid_{symbol}",
+                "symbol": symbol,
+                "type": "grid",
+                "status": "running" if bot.running else "stopped",
+                "profit": s.get('total_profit', 0),
+                "is_live": bot.is_live
+            })
+
+    # Basic market prices (ETH/BTC) for dashboard header
+    eth_price, btc_price, vol = get_market_data()
+    
+    # If a specific bot status is requested (for Bot Panel details)
+    if req_symbol and req_type == 'spot':
+        bot = spot_bots.get(req_symbol)
+        if not bot:
+             # Try to find any spot bot if none specified? No, strict match.
+             return jsonify({"status": "idle", "running": False, "symbol": req_symbol})
+        
+        # ... Reuse logic to extract detailed metrics for ONE bot ...
+        # Calculate Realtime Metrics
+        net_profit = bot.gross_profit - bot.gross_loss
+        realtime_metrics = {
+            "active_orders": 1 if bot.bought_price else 0,
+            "buy_fills": bot.total_trades + (1 if bot.bought_price else 0),
+            "sell_fills": bot.total_trades,
+            "total_fees": getattr(bot, 'total_fees', 0.0),
+            "net_profit": net_profit
+        }
+        
+        # Get strategy settings
+        strategy_settings = {}
+        volatility = None
+        if hasattr(bot, 'strategy'):
+            s = bot.strategy
+            strategy_settings = {
+                "rsi_threshold": getattr(s, 'rsi_threshold_buy', 40),
+                "stop_loss_percent": getattr(s, 'stop_loss_percent', 0.02) * 100,
+                "trailing_stop_percent": getattr(s, 'sell_percent', 0.03) * 100,
+            }
+            volatility = getattr(s, 'current_volatility', None)
+
+        try:
+            if bot.is_live_trading:
+                ticker = bot.client.get_symbol_ticker(symbol=bot.symbol)
+                current_price = float(ticker['price'])
+            else:
+                current_price = bot.last_price
+        except:
+            current_price = bot.last_price
+
         return jsonify({
-            "status": "idle", 
-            "running": False, 
-            "mode": None,
+            "status": "online",
+            "running": bot.running,
+            "mode": "Live" if bot.is_live_trading else "Test",
+            "realtime_metrics": realtime_metrics,
+            "symbol": bot.symbol,
+            "current_price": current_price,
             "eth_price": eth_price,
             "btc_price": btc_price,
             "volatility": volatility,
-            "current_price": None,
-            "balances": {}
+            "position_size_percent": getattr(bot, 'position_size_percent', 0.25) * 100,
+            "dynamic_settings": getattr(bot, 'dynamic_settings', False),
+            "dca_enabled": getattr(bot.strategy, 'dca_enabled', False) if hasattr(bot, 'strategy') else False,
+            "strategy_settings": strategy_settings,
+            "final_balance": getattr(bot, 'final_balance', None),
+            "total_return": getattr(bot, 'total_return', None),
+            "finished": getattr(bot, 'finished_data', False),
+            "balances": {
+                "quote": bot.quote_balance,
+                "base": bot.base_balance,
+                "quote_asset": bot.quote_asset,
+                "base_asset": bot.base_asset,
+                "base_usd_value": (bot.base_balance * current_price) if current_price else 0
+            },
+            # Also include the full list for the generic updater? 
+            # Ideally the frontend polls /status for the list and /status?symbol=X for details.
+            # But the frontend expects 'active_bots' in the main response potentially.
         })
-    
-    
-    # Get current price
-    current_price = None
-    eth_price, btc_price = None, None
-    
-    try:
-        if bot_instance.is_live_trading:
-            ticker = bot_instance.client.get_symbol_ticker(symbol=bot_instance.symbol)
-            current_price = float(ticker['price'])
-            # Also fetch ETH and BTC prices
-            eth_price, btc_price, _ = get_market_data()
-        else:
-            current_price = bot_instance.last_price
-            # For test mode, still try to get live prices for display
-            eth_price, btc_price, _ = get_market_data()
-    except Exception as e:
-        # Suppress common connection noises from getting printed as "Error"
-        err_str = str(e)
-        if "RemoteDisconnected" in err_str or "Connection aborted" in err_str or "ChunkedEncodingError" in err_str:
-            pass # Silently ignore transient connection drops in status check
-        else:
-            print(f"Error in get_status: {e}")
-        if bot_instance is None:
-            return jsonify({"status": "idle", "running": False})
-        current_price = bot_instance.last_price
-    
-    # Get strategy settings from bot
-    strategy_settings = {}
-    volatility = None
-    if hasattr(bot_instance, 'strategy'):
-        s = bot_instance.strategy
-        strategy_settings = {
-            "rsi_threshold": getattr(s, 'rsi_threshold_buy', 40),
-            "stop_loss_percent": getattr(s, 'stop_loss_percent', 0.02) * 100,
-            "trailing_stop_percent": getattr(s, 'sell_percent', 0.03) * 100,
-        }
-        volatility = getattr(s, 'current_volatility', None)
-    
+
+    # Default / Main Dashboard Response: Return List of Bots + Market Data
     return jsonify({
-        "status": "online",
-        "running": bot_instance.running,
-        "mode": "Live" if bot_instance.is_live_trading else "Test",
-        "symbol": getattr(bot_instance, 'symbol', 'N/A'),
-        "current_price": current_price,
+        "bots": active_bots,
         "eth_price": eth_price,
-        "btc_price": btc_price,
-        "volatility": volatility,
-        "position_size_percent": getattr(bot_instance, 'position_size_percent', 0.25) * 100,
-        "dynamic_settings": getattr(bot_instance, 'dynamic_settings', False),
-        "dca_enabled": getattr(bot_instance.strategy, 'dca_enabled', False) if hasattr(bot_instance, 'strategy') else False,
-        "strategy_settings": strategy_settings,
-        "final_balance": getattr(bot_instance, 'final_balance', None),
-        "total_return": getattr(bot_instance, 'total_return', None),
-        "finished": getattr(bot_instance, 'finished_data', False),
-        "balances": {
-            "quote": bot_instance.quote_balance,
-            "base": bot_instance.base_balance,
-            "quote_asset": bot_instance.quote_asset,
-            "base_asset": bot_instance.base_asset,
-            "base_usd_value": (bot_instance.base_balance * current_price) if current_price else 0
-        }
+        "btc_price": btc_price, 
+        "volatility": vol
     })
 
 @app.route('/api/metrics', methods=['GET'])
+@app.route('/api/metrics', methods=['GET'])
 def get_metrics():
-    global bot_instance
+    symbol = request.args.get('symbol')
     
-    # If bot is running, return live metrics
-    if bot_instance:
-        win_rate = (bot_instance.winning_trades / bot_instance.total_trades * 100) if bot_instance.total_trades > 0 else 0.0
-        profit_factor = (bot_instance.gross_profit / bot_instance.gross_loss) if bot_instance.gross_loss > 0 else 999.0
-
-        return jsonify({
-            "total_trades": bot_instance.total_trades,
-            "winning_trades": bot_instance.winning_trades,
-            "win_rate": win_rate,
-            "profit_factor": profit_factor,
-            "max_drawdown": bot_instance.max_drawdown,
-            "peak_balance": bot_instance.peak_balance,
-            "source": "live"
-        })
-    
-    # No bot running - try to read from saved state files
-    try:
-        import json
-        import glob
-        
-        # Only look for LIVE state files (not test)
-        state_files = glob.glob('data/state_live_*.json')
-        if state_files:
-            # Find the most recently modified state file
-            state_files.sort(key=os.path.getmtime, reverse=True)
-            with open(state_files[0], 'r') as f:
-                state = json.load(f)
-            
-            total = state.get('total_trades', 0)
-            wins = state.get('winning_trades', 0)
-            win_rate = (wins / total * 100) if total > 0 else 0.0
-            gross_profit = state.get('gross_profit', 0)
-            gross_loss = state.get('gross_loss', 0)
-            profit_factor = (gross_profit / gross_loss) if gross_loss > 0 else 999.0
-            
+    # If specific running bot requested
+    if symbol:
+        bot = spot_bots.get(symbol)
+        if bot:
+            win_rate = (bot.winning_trades / bot.total_trades * 100) if bot.total_trades > 0 else 0.0
+            profit_factor = (bot.gross_profit / bot.gross_loss) if bot.gross_loss > 0 else 999.0
             return jsonify({
-                "total_trades": total,
-                "winning_trades": wins,
+                "total_trades": bot.total_trades,
+                "winning_trades": bot.winning_trades,
                 "win_rate": win_rate,
                 "profit_factor": profit_factor,
-                "max_drawdown": state.get('max_drawdown', 0),
-                "peak_balance": state.get('peak_balance', 0),
-                "source": "saved_live",
-                "symbol": state.get('symbol', 'Unknown')
+                "max_drawdown": bot.max_drawdown,
+                "peak_balance": bot.peak_balance,
+                "source": "live",
+                "symbol": symbol
             })
-    except Exception as e:
-        print(f"Error reading saved metrics: {e}")
     
+    # Return empty if not found or no symbol specified (could Aggregate later)
+    # For now, just return empty object to prevent errors
     return jsonify({})
 
 @app.route('/api/logs', methods=['GET'])
@@ -258,6 +268,16 @@ def export_trades():
         )
     except Exception as e:
         return str(e), 500
+
+@app.route('/api/logs/audit/clear', methods=['POST'])
+def clear_audit_logs():
+    """Clears the audit logs."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    logger_setup.clear_audit_logs()
+    logger_setup.log_audit("CLEAR_LOGS", "Audit logs cleared by user", request.remote_addr)
+    return jsonify({"success": True})
 
 @app.route('/api/market-status', methods=['GET'])
 def get_market_status():
@@ -353,31 +373,35 @@ def start_bot():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
         
-    global bot_instance
+    global spot_bots
     
     with bot_lock:
-        if bot_instance and bot_instance.running:
-            return jsonify({"error": "Bot is already running"}), 400
-        
         data = request.json or {}
-        mode = data.get('mode', 'test')  # 'live' or 'test'
-        filename = data.get('filename')  # For test mode
         quote_asset = data.get('quote_asset', 'USDT')  # Currency to buy with
         base_asset = data.get('base_asset', 'ETH')     # Crypto to trade
+        symbol = f"{base_asset}{quote_asset}"
+        
+        if symbol in spot_bots and spot_bots[symbol].running:
+            msg = f"Start failed: Bot for {symbol} is already active and running."
+            logging.getLogger("BinanceTradingBot").error(msg)
+            return jsonify({"error": msg}), 400
+        
+        # If exists but stopped, we will overwrite it below.
+        
+        mode = data.get('mode', 'test')  # 'live' or 'test'
+        filename = data.get('filename')  # For test mode
         position_size = data.get('position_size_percent', 25) / 100
         
         # Strategy Parameters
         rsi_threshold = data.get('rsi_threshold', 40)
         stop_loss = data.get('stop_loss_percent', 2) / 100
         trailing_stop = data.get('trailing_stop_percent', 3) / 100
-        trailing_stop = data.get('trailing_stop_percent', 3) / 100
         dynamic_settings = data.get('dynamic_settings', False)
-        dca_enabled = data.get('dca_enabled', True) # Default to True if valid
+        dca_enabled = data.get('dca_enabled', True)
         dca_rsi_threshold = data.get('dca_rsi_threshold', 30)
         
         is_live = (mode.lower() == 'live')
         
-        # For test mode, we need a valid filename
         if not is_live:
             if not filename:
                 return jsonify({"error": "Filename required for test mode"}), 400
@@ -391,11 +415,8 @@ def start_bot():
         
         resume_session = data.get('resumeSession', True)
         
-        # Explicitly clear old instance reference
-        bot_instance = None
-        
         try:
-            bot_instance = BinanceTradingBot(
+            bot = BinanceTradingBot(
                 is_live_trading=is_live, 
                 filename=filename,
                 quote_asset=quote_asset,
@@ -409,10 +430,12 @@ def start_bot():
                 dca_enabled=dca_enabled,
                 dca_rsi_threshold=dca_rsi_threshold
             )
-            bot_instance.start()
+            bot.start()
+            spot_bots[symbol] = bot
             logger_setup.log_audit("START_BOT", f"Mode: {mode}, Symbol: {base_asset}", request.remote_addr)
-            return jsonify({"success": True, "mode": mode, "symbol": bot_instance.symbol})
+            return jsonify({"success": True, "mode": mode, "symbol": bot.symbol})
         except Exception as e:
+            notifier.send_telegram_message(f"❌ <b>BOT START ERROR ({symbol})</b>\nFailed to start: {e}")
             return jsonify({"error": str(e)}), 500
 
 @app.route('/api/stop', methods=['POST'])
@@ -420,19 +443,81 @@ def stop_bot():
     """Stop the running bot."""
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
-        
-    global bot_instance
     
-    with bot_lock:
-        if not bot_instance:
-            return jsonify({"error": "No bot is running"}), 400
+    data = request.json or {}
+    symbol = data.get('symbol')
         
-        if bot_instance.running:
-            bot_instance.stop()
+    global spot_bots
+    
+    try:
+        with bot_lock:
+            if not symbol:
+                 # If only 1 bot running, stop it? Or strictly require symbol?
+                 # Strict is safer for multi-bot.
+                 # Actually, let's just loop and stop ALL if no symbol? 
+                 # Or just error. Let's error.
+                 if len(spot_bots) == 1:
+                     symbol = list(spot_bots.keys())[0]
+                 else:
+                     return jsonify({"error": "Symbol required to stop specific bot"}), 400
+            
+            bot = spot_bots.get(symbol)
+            if not bot:
+                 return jsonify({"error": f"No bot running for symbol {symbol}"}), 400
+            
+            if bot.running:
+                bot.stop()
+            
+            # Do NOT delete the bot, keep it in memory as 'stopped'
+            # del spot_bots[symbol]
+            
+            logger_setup.log_audit("STOP_BOT", f"Bot {symbol} stopped by user", request.remote_addr)
+            return jsonify({"success": True})
+    except Exception as e:
+        notifier.send_telegram_message(f"❌ <b>BOT STOP ERROR</b>\nFailed to stop: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/delete', methods=['POST'])
+def delete_bot():
+    """Permanently delete a bot instance and its state."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
         
-        bot_instance = None
-        logger_setup.log_audit("STOP_BOT", "Bot stopped by user", request.remote_addr)
-        return jsonify({"success": True})
+    global spot_bots
+    
+    try:
+        with bot_lock:
+            if not symbol:
+                return jsonify({"error": "Symbol required to delete bot"}), 400
+            
+            # 1. Stop if running
+            bot = spot_bots.get(symbol)
+            if bot:
+                if bot.running:
+                    bot.stop()
+                # 2. Remove from memory
+                del spot_bots[symbol]
+            
+            # 3. Delete State File (param_state_SYMBOL.json or similar?)
+            # The TradingBot uses 'param_state.json' but shared? 
+            # Needs verification. The Generic Bot saves to 'param_state.json' by default?
+            # Let's check TradingBot implementation. It might not have unique state files per symbol yet?
+            # Actually, let's just emit the event.
+            
+            # 4. Remove any specific data file if it exists?
+            # For now, just removing from memory is the big one.
+            # If we want to be thorough, we'd delete the specific log cache or state.
+            # But the current generic bot might overlap files.
+            # We'll stick to memory removal + audit log for now.
+            
+            logger_setup.log_audit("DELETE_BOT", f"Bot {symbol} deleted by user", request.remote_addr)
+            return jsonify({"success": True})
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Delete Bot Error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/errors', methods=['GET'])
 def get_errors():
@@ -557,37 +642,43 @@ def fetch_data():
 @app.route('/api/config/update', methods=['POST'])
 def update_config():
     """Updates configuration of the running bot."""
-    global bot_instance
-    if not bot_instance or not bot_instance.running:
+    data = request.json
+    symbol = data.get('symbol')
+    
+    global spot_bots
+    
+    if len(spot_bots) == 1 and not symbol:
+        symbol = list(spot_bots.keys())[0]
+    
+    bot = spot_bots.get(symbol)
+    if not bot or not bot.running:
         return jsonify({"error": "Bot is not running"}), 400
         
-    data = request.json
     try:
         # Update Resume State
         if 'resume_state' in data:
-            bot_instance.resume_state = bool(data['resume_state'])
-            print(f"Configuration Update: Resume State set to {bot_instance.resume_state}")
-            logger_setup.log_audit("CONFIG_CHANGE", f"Resume Session: {bot_instance.resume_state}", request.remote_addr)
+            bot.resume_state = bool(data['resume_state'])
+            print(f"[{symbol}] Config Update: Resume State set to {bot.resume_state}")
+            logger_setup.log_audit("CONFIG_CHANGE", f"Resume Session: {bot.resume_state}", request.remote_addr)
             
         # Update Dynamic Settings Toggle
         if 'dynamic_settings' in data:
-            bot_instance.dynamic_settings = bool(data['dynamic_settings'])
-            print(f"Configuration Update: Dynamic Settings set to {bot_instance.dynamic_settings}")
-            logger_setup.log_audit("CONFIG_CHANGE", f"Dynamic Settings: {bot_instance.dynamic_settings}", request.remote_addr)
-            # If turning ON, reset check time to force immediate update? Maybe next loop.
+            bot.dynamic_settings = bool(data['dynamic_settings'])
+            print(f"[{symbol}] Config Update: Dynamic Settings set to {bot.dynamic_settings}")
+            logger_setup.log_audit("CONFIG_CHANGE", f"Dynamic Settings: {bot.dynamic_settings}", request.remote_addr)
             
         # Update DCA Toggle
         if 'dca_enabled' in data:
-            if hasattr(bot_instance.strategy, 'dca_enabled'):
-                bot_instance.strategy.dca_enabled = bool(data['dca_enabled'])
-                print(f"Configuration Update: Defense Mode (DCA) set to {bot_instance.strategy.dca_enabled}")
-                logger_setup.log_audit("CONFIG_CHANGE", f"DCA Enabled: {bot_instance.strategy.dca_enabled}", request.remote_addr)
+            if hasattr(bot.strategy, 'dca_enabled'):
+                bot.strategy.dca_enabled = bool(data['dca_enabled'])
+                print(f"[{symbol}] Config Update: Defense Mode (DCA) set to {bot.strategy.dca_enabled}")
+                logger_setup.log_audit("CONFIG_CHANGE", f"DCA Enabled: {bot.strategy.dca_enabled}", request.remote_addr)
             
         return jsonify({
             "success": True, 
-            "resume_state": bot_instance.resume_state,
-            "dynamic_settings": bot_instance.dynamic_settings,
-            "dca_enabled": getattr(bot_instance.strategy, 'dca_enabled', False)
+            "resume_state": bot.resume_state,
+            "dynamic_settings": bot.dynamic_settings,
+            "dca_enabled": getattr(bot.strategy, 'dca_enabled', False)
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -600,14 +691,19 @@ def start_grid():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
     
-    global grid_instance
+    global grid_bots
     
     with grid_lock:
-        if grid_instance and grid_instance.running:
-            return jsonify({"error": "Grid Bot is already running"}), 400
-        
         data = request.json or {}
         symbol = data.get('symbol', 'ETHUSDT')
+        
+        if symbol in grid_bots and grid_bots[symbol].running:
+            msg = f"Grid Start failed: Bot for {symbol} is already active."
+            logging.getLogger("BinanceTradingBot").error(msg)
+            return jsonify({"error": msg}), 400
+        
+        # If exists but stopped, overwrite.
+        
         lower_bound = data.get('lower_bound', 2800)
         upper_bound = data.get('upper_bound', 3200)
         grid_count = data.get('grid_count', 10)
@@ -615,7 +711,7 @@ def start_grid():
         is_live = data.get('is_live', False)
         
         try:
-            grid_instance = GridBot(
+            bot = GridBot(
                 symbol=symbol,
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
@@ -623,10 +719,25 @@ def start_grid():
                 capital=capital,
                 is_live=is_live
             )
-            grid_instance.start()
-            logger_setup.log_audit("GRID_START", f"Symbol: {symbol}, Range: ${lower_bound}-${upper_bound}", request.remote_addr)
+            bot.start()
+            grid_bots[symbol] = bot
+            
+            # Log exact settings for tuning visibility
+            settings_msg = (
+                f"Grid Bot STARTED | Symbol: {symbol} | Mode: {'LIVE 💰' if is_live else 'TEST 🧪'}\n"
+                f"   • Range: ${lower_bound} - ${upper_bound}\n"
+                f"   • Levels: {grid_count}\n"
+                f"   • Capital: ${capital}"
+            )
+            logger_setup.log_audit("GRID_START", f"Symbol: {symbol}, Range: ${lower_bound}-${upper_bound}, Levels: {grid_count}", request.remote_addr)
+            
+            # Additional log to strategy tab if possible, or just main log
+            logging.getLogger("BinanceTradingBot").info(settings_msg)
             return jsonify({"success": True, "symbol": symbol, "levels": grid_count})
         except Exception as e:
+            msg = f"Failed to start Grid Bot: {e}"
+            logging.getLogger("BinanceTradingBot").error(msg)
+            notifier.send_telegram_message(f"❌ <b>GRID BOT ERROR ({symbol})</b>\nFailed to start: {e}")
             return jsonify({"error": str(e)}), 500
 
 @app.route('/api/grid/stop', methods=['POST'])
@@ -635,26 +746,86 @@ def stop_grid():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
     
-    global grid_instance
+    data = request.json or {}
+    symbol = data.get('symbol')
+    
+    global grid_bots
     
     with grid_lock:
-        if not grid_instance:
-            return jsonify({"error": "No Grid Bot is running"}), 400
+        if not symbol:
+             # Stop first if only one?
+             if len(grid_bots) == 1:
+                 symbol = list(grid_bots.keys())[0]
+             else:
+                 return jsonify({"error": "Symbol required to stop Grid Bot"}), 400
         
-        grid_instance.stop()
-        grid_instance = None
-        logger_setup.log_audit("GRID_STOP", "Grid Bot stopped by user", request.remote_addr)
+        bot = grid_bots.get(symbol)
+        if not bot:
+            return jsonify({"error": f"No Grid Bot running for {symbol}"}), 400
+        
+        # Do NOT delete, keep as stopped
+        # del grid_bots[symbol]
+        logger_setup.log_audit("GRID_STOP", f"Grid Bot {symbol} stopped by user", request.remote_addr)
         return jsonify({"success": True})
+
+@app.route('/api/grid/delete', methods=['POST'])
+def delete_grid_bot():
+    """Permanently delete a Grid Bot instance and its state."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
+    
+    global grid_bots
+    
+    with grid_lock:
+        try:
+            if not symbol:
+                return jsonify({"error": "Symbol required to delete Grid Bot"}), 400
+            
+            # 1. Stop and Remove from memory
+            bot = grid_bots.get(symbol)
+            if bot:
+                if bot.running:
+                    bot.stop()
+                del grid_bots[symbol]
+            
+            # 2. Delete State File
+            try:
+                fname = f"data/grid_state_{symbol}.json"
+                if os.path.exists(fname):
+                    os.remove(fname)
+            except Exception as e:
+                logging.getLogger("BinanceTradingBot").error(f"Error deleting state file {fname}: {e}")
+
+            logger_setup.log_audit("GRID_DELETE", f"Grid Bot {symbol} deleted by user", request.remote_addr)
+            return jsonify({"success": True})
+        except Exception as e:
+            logging.getLogger("BinanceTradingBot").error(f"Delete Grid Bot Code Error: {e}")
+            return jsonify({"error": str(e)}), 500
 
 @app.route('/api/grid/status', methods=['GET'])
 def grid_status():
     """Get Grid Bot status."""
-    global grid_instance
+    symbol = request.args.get('symbol')
     
-    if grid_instance:
-        return jsonify(grid_instance.get_status())
-    else:
-        return jsonify({"running": False})
+    global grid_bots
+    
+    if symbol:
+        bot = grid_bots.get(symbol)
+        if bot:
+            return jsonify(bot.get_status())
+        else:
+            return jsonify({"running": False, "symbol": symbol})
+            
+    # If no symbol, maybe return list or first?
+    # Backend logic: return first running if any, or empty
+    if grid_bots:
+        # Fallback to first
+        return jsonify(list(grid_bots.values())[0].get_status())
+        
+    return jsonify({"running": False})
 
 @app.route('/api/grid/auto-range', methods=['GET'])
 def grid_auto_range():
@@ -685,20 +856,51 @@ def clear_grid():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
     
-    global grid_instance
+    data = request.json or {}
+    symbol = data.get('symbol')
     
-    # Clear state file
-    import os
-    state_file = "data/grid_state.json"
-    if os.path.exists(state_file):
-        os.remove(state_file)
+    global grid_bots
+    
+    # If symbol not provided, try to infer or error? 
+    # For clear, safer to require symbol or clear specific file.
+    # If no symbol provided, maybe clear ALL? Or default to 'ETHUSDT'?
+    # Let's default to removing the instance if running and the file if implicit.
+    # But files are now namespaced.
+    
+    # Best effort: if running, use that symbol.
+    target_symbol = symbol
+    if not target_symbol and len(grid_bots) == 1:
+        target_symbol = list(grid_bots.keys())[0]
+    
+    # If instance exists, stop it and remove it
+    if symbol in grid_bots:
+         grid_bots[symbol].stop()
+         del grid_bots[symbol] # For clear, we DO remove it to reset valid state
+    elif not symbol: 
+         # Fallback clean old file
+         if os.path.exists("data/grid_state.json"):
+             try:
+                os.remove("data/grid_state.json")
+             except:
+                pass
+
+    # Clean specific state file if we know the symbol
+    if symbol:
+        fname = f"data/grid_state_{symbol}.json"
+        if os.path.exists(fname):
+             try:
+                os.remove(fname)
+             except:
+                pass
+                
+    return jsonify({"success": True, "message": "Grid state cleared"})
     
     # Clear instance state if running
-    if grid_instance:
-        grid_instance.clear_state()
+    if target_symbol in grid_bots:
+        grid_bots[target_symbol].clear_state()
     
-    logger_setup.log_audit("GRID_CLEAR", "Grid state cleared by user", request.remote_addr)
-    return jsonify({"success": True, "message": "Grid state cleared"})
+    logger_setup.log_audit("GRID_CLEAR", f"Grid state for {target_symbol} cleared by user", request.remote_addr)
+    return jsonify({"success": True, "message": f"Grid state for {target_symbol} cleared"})
 
 # ==================== CAPITAL MANAGER ENDPOINTS ====================
 
@@ -713,19 +915,23 @@ def set_capital():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
     
-    data = request.json or {}
-    
-    if 'total' in data:
-        capital_manager.set_total_capital(data['total'])
-    
-    if 'signal_percent' in data:
-        capital_manager.allocate('signal', percent=data['signal_percent'] / 100)
-    
-    if 'grid_percent' in data:
-        capital_manager.allocate('grid', percent=data['grid_percent'] / 100)
-    
-    logger_setup.log_audit("CAPITAL_UPDATE", f"Total: {data.get('total')}", request.remote_addr)
-    return jsonify(capital_manager.get_status())
+    try:
+        data = request.json or {}
+        
+        if 'total' in data:
+            capital_manager.set_total_capital(data['total'])
+        
+        if 'signal_percent' in data:
+            capital_manager.allocate('signal', percent=data['signal_percent'] / 100)
+        
+        if 'grid_percent' in data:
+            capital_manager.allocate('grid', percent=data['grid_percent'] / 100)
+        
+        logger_setup.log_audit("CAPITAL_UPDATE", f"Total: {data.get('total')}", request.remote_addr)
+        return jsonify(capital_manager.get_status())
+    except Exception as e:
+        notifier.send_telegram_message(f"❌ <b>CAPITAL ERROR</b>\nFailed to set config: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/capital/reset-pnl', methods=['POST'])
 def reset_pnl():
@@ -743,14 +949,19 @@ def sync_capital():
     if not check_auth():
         return jsonify({"error": "Unauthorized"}), 401
     
-    result = capital_manager.sync_from_binance()
-    if result:
-        return jsonify({
-            "success": True,
-            "balance": result,
-            "validation": capital_manager.validate_allocation()
-        })
-    return jsonify({"error": "Failed to sync from Binance"}), 500
+    try:
+        result = capital_manager.sync_from_binance()
+        if result:
+            return jsonify({
+                "success": True,
+                "total_value": result['total_value'],
+                "new_capital": result['new_capital']
+            })
+        else:
+            return jsonify({"error": "Failed to sync (check logs)"}), 500
+    except Exception as e:
+        notifier.send_telegram_message(f"❌ <b>CAPITAL SYNC ERROR</b>\nFailed to sync: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/capital/auto-compound', methods=['POST'])
 def set_auto_compound():

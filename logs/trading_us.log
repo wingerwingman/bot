@@ -1,25 +1,325 @@
-2026-01-12 14:13:57,426 - DEBUG - __init__: is_live_trading = True, filename = None
-2026-01-12 14:13:57,426 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 14:13:57,704 - DEBUG - Fetching account balances...
-2026-01-12 14:13:57,969 - DEBUG - Trading Pair Configured: ETHUSDT
-2026-01-12 14:13:57,969 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
-2026-01-12 14:13:58,086 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
-2026-01-12 14:13:58,268 - DEBUG - __init__: Initial Volatility Calculated: 0.02714908738046076
-2026-01-12 14:13:58,268 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
-2026-01-12 14:13:58,268 - DEBUG - Restored position: bought_price=3096.72
-2026-01-12 14:13:58,268 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+2026-01-13 07:23:56,057 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 07:23:56,057 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 07:23:56,260 - DEBUG - Fetching account balances...
+2026-01-13 07:23:56,501 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 07:23:56,501 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 07:23:56,609 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 07:23:56,778 - DEBUG - __init__: Initial Volatility Calculated: 0.026889172106207396
+2026-01-13 07:23:56,778 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 07:23:56,778 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 07:23:56,778 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
    • Symbol: ETHUSDT
    • Position: OPEN @ 3096.72
    • Metrics: Net Profit $0.00 (0 trades)
    • Peak Balance: $195.00 (Max Drawdown: 0.00%)
-2026-01-12 14:13:58,268 - DEBUG - __init__ completed
-2026-01-12 14:13:58,447 - DEBUG - Starting run method...
-2026-01-12 14:13:58,447 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
-2026-01-12 14:13:58,447 - DEBUG - Initializing hotkeys...
-2026-01-12 14:13:58,448 - DEBUG - Hotkeys started.
-2026-01-12 14:13:58,448 - DEBUG - Entering main trading loop...
-2026-01-12 14:13:58,854 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 14:13:58,854 - DEBUG - Dynamic Update: Volatility 2.71% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.4%, Trail:4.1% | New Trail Sell: <2970.61 (Profit Activates > 3102.91)
-2026-01-12 14:14:01,719 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2856.06-$3352.76
-2026-01-12 14:19:00,327 - DEBUG - Fear & Greed Index: 27 (Fear)
-2026-01-12 14:19:00,329 - DEBUG - Dynamic Update: Volatility 2.73% -> RSI Target:37 (+2 Fear) (Current RSI: 0.0), SL:5.5%, Trail:4.1% | New Trail Sell: <2982.16 (Profit Activates > 3102.91)
+2026-01-13 07:23:56,778 - DEBUG - __init__ completed
+2026-01-13 07:23:56,950 - DEBUG - Starting run method...
+2026-01-13 07:23:56,950 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 07:23:56,951 - DEBUG - Initializing hotkeys...
+2026-01-13 07:23:56,951 - DEBUG - Hotkeys started.
+2026-01-13 07:23:56,951 - DEBUG - Entering main trading loop...
+2026-01-13 07:23:57,382 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:23:57,383 - DEBUG - 🔄 TUNING: Vol 2.69% -> RSI Buy < 37 (+2 Fear) | SL 5.4% | Trail 4.0% | Trail Sell < $2971.82
+2026-01-13 07:23:59,741 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 07:23:59,742 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 07:29:00,843 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:32:05,647 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 07:32:05,647 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 07:32:05,811 - DEBUG - Fetching account balances...
+2026-01-13 07:32:06,056 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 07:32:06,056 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 07:32:06,167 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 07:32:06,328 - DEBUG - __init__: Initial Volatility Calculated: 0.026902918690195694
+2026-01-13 07:32:06,328 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 07:32:06,328 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 07:32:06,329 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 07:32:06,329 - DEBUG - __init__ completed
+2026-01-13 07:32:06,502 - DEBUG - Starting run method...
+2026-01-13 07:32:06,502 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 07:32:06,502 - DEBUG - Initializing hotkeys...
+2026-01-13 07:32:06,503 - DEBUG - Hotkeys started.
+2026-01-13 07:32:06,503 - DEBUG - Entering main trading loop...
+2026-01-13 07:32:06,905 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:32:06,905 - DEBUG - 🔄 TUNING: Vol 2.69% -> RSI Buy < 37 (+2 Fear) | SL 5.4% | Trail 4.0% | Trail Sell < $2971.75
+2026-01-13 07:32:08,146 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 07:32:08,146 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 07:37:10,389 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:42:13,607 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:47:16,999 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:52:20,310 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 07:57:23,671 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:02:24,077 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:07:27,377 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:12:28,482 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:17:31,973 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:22:35,205 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:27:38,617 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:32:07,857 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3136.79 | PnL: 1.29% | Trail Stop: 3037.78 (Profit: -1.90%) | SL < 2928.21
+2026-01-13 08:32:41,955 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:37:45,301 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:42:48,605 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:47:49,157 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:56:24,601 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 08:56:24,602 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 08:56:24,818 - DEBUG - Fetching account balances...
+2026-01-13 08:56:25,057 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 08:56:25,057 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 08:56:25,166 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 08:56:25,337 - DEBUG - __init__: Initial Volatility Calculated: 0.027105460691025304
+2026-01-13 08:56:25,337 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 08:56:25,338 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 08:56:25,338 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 08:56:25,338 - DEBUG - __init__ completed
+2026-01-13 08:56:25,507 - DEBUG - Starting run method...
+2026-01-13 08:56:25,508 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 08:56:25,508 - DEBUG - Initializing hotkeys...
+2026-01-13 08:56:25,510 - DEBUG - Hotkeys started.
+2026-01-13 08:56:25,515 - DEBUG - Entering main trading loop...
+2026-01-13 08:56:25,955 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 08:56:25,956 - DEBUG - 🔄 TUNING: Vol 2.71% -> RSI Buy < 37 (+2 Fear) | SL 5.4% | Trail 4.1% | Trail Sell < $2970.81
+2026-01-13 09:01:28,537 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:06:31,878 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:11:32,602 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:16:21,506 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 09:16:21,507 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 09:16:33,182 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:21:36,479 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:26:39,889 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:31:43,200 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:36:46,656 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:41:50,137 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:45:53,845 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 09:45:53,846 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 09:45:54,037 - DEBUG - Fetching account balances...
+2026-01-13 09:45:54,276 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 09:45:54,276 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 09:45:54,387 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 09:45:54,549 - DEBUG - __init__: Initial Volatility Calculated: 0.02742280367470405
+2026-01-13 09:45:54,549 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 09:45:54,550 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 09:45:54,550 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 09:45:54,551 - DEBUG - __init__ completed
+2026-01-13 09:45:54,730 - DEBUG - Starting run method...
+2026-01-13 09:45:54,731 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 09:45:54,731 - DEBUG - Initializing hotkeys...
+2026-01-13 09:45:54,732 - DEBUG - Hotkeys started.
+2026-01-13 09:45:54,732 - DEBUG - Entering main trading loop...
+2026-01-13 09:45:55,140 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:45:55,141 - DEBUG - 🔄 TUNING: Vol 2.74% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2969.34
+2026-01-13 09:46:12,422 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 09:46:12,423 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 09:46:41,934 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 09:46:45,191 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 09:46:45,192 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 09:47:00,975 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot BTCUSDT stopped by user
+2026-01-13 09:47:04,812 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 09:47:04,812 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 09:50:58,479 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:55:24,550 - INFO - AUDIT WARN: User Action [LOGIN_FAIL] via 127.0.0.1: Failed login attempt for user: admin
+2026-01-13 09:55:29,990 - INFO - AUDIT WARN: User Action [LOGIN] via 127.0.0.1: Admin login successful
+2026-01-13 09:55:39,356 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 09:55:39,356 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 09:55:39,579 - DEBUG - Fetching account balances...
+2026-01-13 09:55:39,752 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 09:55:39,753 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 09:55:39,935 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 09:55:40,097 - DEBUG - __init__: Initial Volatility Calculated: 0.027405793981716636
+2026-01-13 09:55:40,098 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 09:55:40,098 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 09:55:40,098 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 09:55:40,098 - DEBUG - __init__ completed
+2026-01-13 09:55:40,260 - DEBUG - Starting run method...
+2026-01-13 09:55:40,260 - DEBUG - Initializing hotkeys...
+2026-01-13 09:55:40,260 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 09:55:40,262 - DEBUG - Hotkeys started.
+2026-01-13 09:55:40,263 - DEBUG - Entering main trading loop...
+2026-01-13 09:55:40,718 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 09:55:40,719 - DEBUG - 🔄 TUNING: Vol 2.74% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2969.42
+2026-01-13 09:55:44,422 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 09:55:44,423 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 09:59:01,840 - INFO - AUDIT WARN: User Action [LOGIN] via 127.0.0.1: Admin login successful
+2026-01-13 09:59:18,483 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $85944.81-$100891.73, Levels: 8
+2026-01-13 09:59:18,484 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $85944.81 - $100891.73
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 09:59:38,410 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 09:59:43,662 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2934.72-$3445.1, Levels: 8
+2026-01-13 09:59:43,662 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2934.72 - $3445.1
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:00:01,296 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 10:00:44,144 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:05:47,498 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:10:50,817 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:15:54,302 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:20:54,803 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:26:21,100 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 10:26:21,100 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:26:21,346 - DEBUG - Fetching account balances...
+2026-01-13 10:26:21,597 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 10:26:21,598 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 10:26:21,710 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 10:26:21,877 - DEBUG - __init__: Initial Volatility Calculated: 0.027489931102344524
+2026-01-13 10:26:21,877 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:26:21,878 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 10:26:21,878 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 10:26:21,878 - DEBUG - __init__ completed
+2026-01-13 10:26:22,042 - DEBUG - Starting run method...
+2026-01-13 10:26:22,042 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 10:26:22,043 - DEBUG - Initializing hotkeys...
+2026-01-13 10:26:22,044 - DEBUG - Hotkeys started.
+2026-01-13 10:26:22,044 - DEBUG - Entering main trading loop...
+2026-01-13 10:26:22,457 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:26:22,457 - DEBUG - 🔄 TUNING: Vol 2.75% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2969.03
+2026-01-13 10:26:43,057 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $85940.23-$100886.35, Levels: 8
+2026-01-13 10:26:43,057 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $85940.23 - $100886.35
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:26:58,592 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2927.77-$3436.95, Levels: 8
+2026-01-13 10:26:58,592 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2927.77 - $3436.95
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:27:17,670 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot BTCUSDT stopped by user
+2026-01-13 10:27:20,996 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $85940.23-$100886.35, Levels: 8
+2026-01-13 10:27:20,996 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $85940.23 - $100886.35
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:27:29,306 - ERROR - Grid Start failed: Bot for BTCUSDT is already active.
+2026-01-13 10:28:18,909 - ERROR - Grid Start failed: Bot for BTCUSDT is already active.
+2026-01-13 10:30:55,162 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 10:30:55,163 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:30:55,281 - DEBUG - Fetching account balances...
+2026-01-13 10:30:55,519 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 10:30:55,519 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 10:30:55,628 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 10:30:55,812 - DEBUG - __init__: Initial Volatility Calculated: 0.02746067869194291
+2026-01-13 10:30:55,812 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:30:55,812 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 10:30:55,812 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 10:30:55,813 - DEBUG - __init__ completed
+2026-01-13 10:30:55,981 - DEBUG - Starting run method...
+2026-01-13 10:30:55,981 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 10:30:55,982 - DEBUG - Initializing hotkeys...
+2026-01-13 10:30:55,983 - DEBUG - Hotkeys started.
+2026-01-13 10:30:55,983 - DEBUG - Entering main trading loop...
+2026-01-13 10:30:56,383 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:30:56,384 - DEBUG - 🔄 TUNING: Vol 2.75% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2969.16
+2026-01-13 10:31:15,019 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $2930.89-$3440.61, Levels: 8
+2026-01-13 10:31:15,020 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $2930.89 - $3440.61
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:31:51,717 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2930.89-$3440.61, Levels: 8
+2026-01-13 10:31:51,718 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2930.89 - $3440.61
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:32:12,571 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 10:32:18,450 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot BTCUSDT stopped by user
+2026-01-13 10:32:25,017 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $2930.89-$3440.61, Levels: 8
+2026-01-13 10:32:25,017 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $2930.89 - $3440.61
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:32:34,715 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2930.89-$3440.61, Levels: 8
+2026-01-13 10:32:34,715 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2930.89 - $3440.61
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:35:59,847 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:36:10,453 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 10:36:15,502 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2930.89-$3440.61, Levels: 8
+2026-01-13 10:36:15,503 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2930.89 - $3440.61
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:38:10,913 - ERROR - Start failed: Bot for ETHUSDT is already active and running.
+2026-01-13 10:41:03,270 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:42:38,767 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot BTCUSDT stopped by user
+2026-01-13 10:44:58,658 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 10:44:58,659 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:44:58,915 - DEBUG - Fetching account balances...
+2026-01-13 10:44:59,154 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 10:44:59,154 - DEBUG - Starting Balances: USDT=127.48931598, ETH=0.0216692
+2026-01-13 10:44:59,264 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 10:44:59,436 - DEBUG - __init__: Initial Volatility Calculated: 0.02753371011325878
+2026-01-13 10:44:59,436 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 10:44:59,436 - DEBUG - Restored position: bought_price=3096.72
+2026-01-13 10:44:59,436 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 10:44:59,436 - DEBUG - __init__ completed
+2026-01-13 10:44:59,599 - DEBUG - Starting run method...
+2026-01-13 10:44:59,599 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 10:44:59,600 - DEBUG - Initializing hotkeys...
+2026-01-13 10:44:59,601 - DEBUG - Hotkeys started.
+2026-01-13 10:44:59,601 - DEBUG - Entering main trading loop...
+2026-01-13 10:45:00,030 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 10:45:00,031 - DEBUG - 🔄 TUNING: Vol 2.75% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2968.82
+2026-01-13 10:45:15,953 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-13 10:45:15,953 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: TEST 🧪
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $1000
+2026-01-13 10:45:29,372 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: BTCUSDT, Range: $85913.81-$100855.35, Levels: 8
+2026-01-13 10:45:29,372 - INFO - Grid Bot STARTED | Symbol: BTCUSDT | Mode: TEST 🧪
+   • Range: $85913.81 - $100855.35
+   • Levels: 8
+   • Capital: $1000
+2026-01-13 10:45:38,758 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot BTCUSDT stopped by user
+2026-01-13 10:45:41,304 - INFO - AUDIT WARN: User Action [GRID_DELETE] via 127.0.0.1: Grid Bot BTCUSDT deleted by user
+2026-01-13 10:46:04,820 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-13 10:46:10,917 - INFO - AUDIT WARN: User Action [CLEAR_LOGS] via 127.0.0.1: Audit logs cleared by user
+2026-01-13 10:50:03,284 - DEBUG - Fear & Greed Index: 26 (Fear)
