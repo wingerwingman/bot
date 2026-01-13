@@ -23,15 +23,17 @@ A powerful, modular trading bot with a **modern Web Dashboard**, supporting mult
 - **Auto-Range**: Automatically sets grid bounds and levels based on **Market Volatility (ATR)**.
   - *Low Vol*: Tighter range, more levels.
   - *High Vol*: Wider range, fewer levels.
-- **Capital Safe**: Intellegently caps grid levels based on available capital (min $10/order).
-- **Fee Awareness**: Simulates Binance fees to track *true* Net Profit.
-- **Tuning Logs**: Saves trade context (Volatility, Range, Step) to `logs/tuning.csv` for analysis.
-- **State Persistence**: Remembers active orders and P&L across restarts.
+- **Dynamic Capital Limit**: Respects allocated capital slider + automatically **reinvests Net Profits** for compounding growth.
+- **Pause & Resume**: Stopping the bot moves it to "Pause" state (keeping orders active). Resuming picks up exactly where it left off.
+- **Robust Persistence**: State is saved after every trade. Crash-proof design ensures no data loss.
+- **Smart Partitioning**: 
+  - **Grid Awareness**: Spot Bot is aware of Grid Bot's locked funds and will not sell them.
+  - **Grid Reservation**: Grid Bot respects Spot Bot's holdings and starts empty if funds are occupied.
 
-### 4. 💰 Capital Manager
-- **Centralized Budget**: Allocates funds between Signal Bot and Grid Bot.
+### 4. 💰 Capital Manager & Partitioning
+- **Strict Separation**: Spot Strategies and Grid Strategies run on the same account but **never** can touch each other's funds.
 - **P&L Tracking**: Tracks wins/losses and auto-compounds profits per bot.
-- **Sync**: Bots automatically sync their available capital from the manager.
+- **Live Sync**: "Sync" button on dashboard instantly refreshes all balances from Binance.
 
 ### 5. 📱 Notifications
 - **Smart Alerts**:

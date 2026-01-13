@@ -461,16 +461,26 @@ class GridBot:
         base_balance = 0.0
         base_asset = self.symbol.replace('USDT', '')
         
+        # Fetch real balances if live (Throttled to prevent API Ban)
+        # Weight of get_account is 20. Excessive polling triggers 429.
+        current_time = time.time()
+        
         if self.is_live:
-            try:
-                account = self.client.get_account()
-                for b in account['balances']:
+            if not hasattr(self, 'last_balance_fetch') or (current_time - self.last_balance_fetch > 30):
+                try:
+                    account = self.client.get_account()
+                    self.last_balance_fetch = current_time
+                    self.cached_balances = account['balances']
+                except:
+                    pass
+            
+            # Use cached balances
+            if hasattr(self, 'cached_balances'):
+                for b in self.cached_balances:
                     if b['asset'] == 'USDT':
                         usdt_balance = float(b['free']) + float(b['locked'])
                     elif b['asset'] == base_asset:
                         base_balance = float(b['free']) + float(b['locked'])
-            except:
-                pass
         
         current_price = self.get_current_price() or 0
         

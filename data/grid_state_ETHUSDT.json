@@ -2,7 +2,7 @@
   "symbol": "ETHUSDT",
   "lower_bound": 2955.72,
   "upper_bound": 3469.76,
-  "grid_count": 5,
+  "grid_count": 10,
   "capital": 98.425562514,
   "active_orders": [
     {

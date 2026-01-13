@@ -1,7 +1,5 @@
 
 
-I also want to have a drop down that allows me to run several bot of both types so i can run it on multiple coins.
-
 
 update docker files when this thing is working fully not now
 backup to github when I am ready dont ask

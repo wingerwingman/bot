@@ -972,3 +972,70 @@
    • Range: $2955.72 - $3469.76
    • Levels: 5
    • Capital: $98.425562514
+2026-01-13 13:38:42,311 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:39:58,876 - ERROR - Binance API Error: APIError(code=-1003): Too much request weight used; current limit is 1200 request weight per 1 MINUTE. Please use WebSocket Streams for live updates to avoid polling the API.
+2026-01-13 13:47:49,115 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 13:47:49,115 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:47:49,369 - DEBUG - Fetching account balances...
+2026-01-13 13:47:49,544 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-13 13:47:49,544 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 13:47:49,544 - DEBUG - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-13 13:47:49,724 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 13:47:49,889 - DEBUG - __init__: Initial Volatility Calculated: 0.02779762704435668
+2026-01-13 13:47:49,889 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:47:49,889 - DEBUG - Restored position: bought_price=3096.72, base_balance=0.0216692
+2026-01-13 13:47:49,889 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:47:49,889 - DEBUG - __init__ completed
+2026-01-13 13:47:49,998 - DEBUG - Grid Bot active. Using free ETH: 0.0216692 (Grid funds locked)
+2026-01-13 13:47:50,054 - DEBUG - Starting run method...
+2026-01-13 13:47:50,055 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 13:47:50,055 - DEBUG - Initializing hotkeys...
+2026-01-13 13:47:50,056 - DEBUG - Hotkeys started.
+2026-01-13 13:47:50,057 - DEBUG - Entering main trading loop...
+2026-01-13 13:47:50,435 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:47:50,436 - DEBUG - 🔄 TUNING: Vol 2.78% -> RSI Buy < 37 (+2 Fear) | SL 5.6% | Trail 4.2% | Trail Sell < $2967.60
+2026-01-13 13:47:55,661 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 10
+2026-01-13 13:47:55,661 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 10
+   • Capital: $98.425562514
+2026-01-13 13:49:02,922 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-13 13:49:06,641 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5
+2026-01-13 13:49:06,641 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-13 13:51:38,643 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 13:51:38,643 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:51:38,893 - DEBUG - Fetching account balances...
+2026-01-13 13:51:39,152 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-13 13:51:39,152 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 13:51:39,152 - DEBUG - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-13 13:51:39,258 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 13:51:39,427 - DEBUG - __init__: Initial Volatility Calculated: 0.027789986493318278
+2026-01-13 13:51:39,427 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:51:39,427 - DEBUG - Restored position: bought_price=3096.72, base_balance=0.0216692
+2026-01-13 13:51:39,427 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:51:39,428 - DEBUG - __init__ completed
+2026-01-13 13:51:39,535 - DEBUG - Grid Bot active. Using free ETH: 0.0216692 (Grid funds locked)
+2026-01-13 13:51:39,591 - DEBUG - Starting run method...
+2026-01-13 13:51:39,591 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 13:51:39,591 - DEBUG - Initializing hotkeys...
+2026-01-13 13:51:39,592 - DEBUG - Hotkeys started.
+2026-01-13 13:51:39,592 - DEBUG - Entering main trading loop...
+2026-01-13 13:51:40,041 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:51:40,041 - DEBUG - 🔄 TUNING: Vol 2.78% -> RSI Buy < 37 (+2 Fear) | SL 5.6% | Trail 4.2% | Trail Sell < $2967.63
+2026-01-13 13:51:46,709 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5
+2026-01-13 13:51:46,710 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-13 13:56:43,455 - DEBUG - Fear & Greed Index: 26 (Fear)

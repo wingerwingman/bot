@@ -822,6 +822,10 @@ class BinanceTradingBot:
                              sl_price = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
                              break_even = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
                              
+                             # EXPOSE FOR UI
+                             self.current_trail_price = trail_price
+                             self.current_hard_stop = sl_price
+                             
                              # Determine status
                              if peak > break_even:
                                  trail_profit_pct = ((trail_price - self.bought_price) / self.bought_price) * 100
@@ -1006,6 +1010,14 @@ class BinanceTradingBot:
                                            logger_setup.log_strategy(msg)
 
                               if not dca_triggered:
+                                  # UPDATE UI REAL-TIME STATUS (Trail/SL)
+                                  if self.bought_price:
+                                      u_peak = self.strategy.peak_price_since_buy or current_price
+                                      u_trail = u_peak * (1 - self.strategy.sell_percent)
+                                      u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                      self.current_trail_price = u_trail
+                                      self.current_hard_stop = u_sl
+                                  
                                   # Sell Checks
                                   action = self.strategy.check_sell_signal(current_price, self.bought_price)
                                   if action == 'SELL' or action == 'STOP_LOSS':
