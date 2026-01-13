@@ -5,6 +5,7 @@ import time
 import os
 import glob
 import logging
+import json
 from . import config
 from .trading_bot import BinanceTradingBot
 from . import indicators
@@ -66,7 +67,6 @@ def login():
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    global bot_instance
     
     # Helper to get live prices and volatility
     def get_market_data():
@@ -189,7 +189,8 @@ def get_status():
                 "base": bot.base_balance,
                 "quote_asset": bot.quote_asset,
                 "base_asset": bot.base_asset,
-                "base_usd_value": (bot.base_balance * current_price) if current_price else 0
+                "base_usd_value": (bot.base_balance * current_price) if current_price else 0,
+                "bought_price": bot.bought_price  # Entry price for current position
             },
             # Also include the full list for the generic updater? 
             # Ideally the frontend polls /status for the list and /status?symbol=X for details.
@@ -204,7 +205,6 @@ def get_status():
         "volatility": vol
     })
 
-@app.route('/api/metrics', methods=['GET'])
 @app.route('/api/metrics', methods=['GET'])
 def get_metrics():
     symbol = request.args.get('symbol')
@@ -319,6 +319,33 @@ def get_datafiles():
     
     files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
     return jsonify(files)
+
+@app.route('/api/symbols', methods=['GET'])
+def get_symbols():
+    """Returns all available USDT trading pairs from Binance."""
+    try:
+        from binance import Client
+        client = Client(config.API_KEY, config.API_SECRET, tld='us')
+        
+        exchange_info = client.get_exchange_info()
+        
+        # Filter for USDT pairs that are actively trading
+        usdt_symbols = []
+        for s in exchange_info['symbols']:
+            if s['quoteAsset'] == 'USDT' and s['status'] == 'TRADING':
+                usdt_symbols.append({
+                    'symbol': s['symbol'],
+                    'baseAsset': s['baseAsset'],
+                    'quoteAsset': s['quoteAsset']
+                })
+        
+        # Sort alphabetically by base asset
+        usdt_symbols.sort(key=lambda x: x['baseAsset'])
+        
+        return jsonify(usdt_symbols)
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Error fetching symbols: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/balances', methods=['GET'])
 def get_balances():
@@ -709,6 +736,43 @@ def start_grid():
         grid_count = data.get('grid_count', 10)
         capital = data.get('capital', 1000)
         is_live = data.get('is_live', False)
+        resume_state = data.get('resume_state', True)
+        
+        # BALANCE VALIDATION for Live Mode (includes ETH holdings)
+        if is_live:
+            try:
+                from binance import Client
+                client = Client(config.API_KEY, config.API_SECRET, tld='us')
+                account = client.get_account()
+                usdt_balance = 0.0
+                eth_balance = 0.0
+                
+                for b in account['balances']:
+                    if b['asset'] == 'USDT':
+                        usdt_balance = float(b['free']) + float(b['locked'])
+                    elif b['asset'] == 'ETH':
+                        eth_balance = float(b['free']) + float(b['locked'])
+                
+                # Get ETH price to calculate total capital
+                eth_price = 0.0
+                try:
+                    ticker = client.get_symbol_ticker(symbol='ETHUSDT')
+                    eth_price = float(ticker['price'])
+                except:
+                    pass
+                
+                eth_value_usd = eth_balance * eth_price
+                total_capital = usdt_balance + eth_value_usd
+                
+                if total_capital < capital:
+                    msg = f"Insufficient capital. Required: ${capital:.2f}, Available: ${total_capital:.2f} (USDT: ${usdt_balance:.2f} + ETH: ${eth_value_usd:.2f})"
+                    logging.getLogger("BinanceTradingBot").error(msg)
+                    return jsonify({"error": msg}), 400
+                    
+            except Exception as e:
+                msg = f"Failed to check balance: {e}"
+                logging.getLogger("BinanceTradingBot").error(msg)
+                return jsonify({"error": msg}), 500
         
         try:
             bot = GridBot(
@@ -717,7 +781,8 @@ def start_grid():
                 upper_bound=upper_bound,
                 grid_count=grid_count,
                 capital=capital,
-                is_live=is_live
+                is_live=is_live,
+                resume_state=resume_state
             )
             bot.start()
             grid_bots[symbol] = bot
@@ -763,10 +828,66 @@ def stop_grid():
         if not bot:
             return jsonify({"error": f"No Grid Bot running for {symbol}"}), 400
         
-        # Do NOT delete, keep as stopped
-        # del grid_bots[symbol]
+        if bot.running:
+            bot.stop()
+        
         logger_setup.log_audit("GRID_STOP", f"Grid Bot {symbol} stopped by user", request.remote_addr)
         return jsonify({"success": True})
+
+@app.route('/api/grid/clear', methods=['POST'])
+def clear_grid_state():
+    """Clear Grid Bot state (fills, profits, orders)."""
+    # Log entry immediately
+    data = request.json or {}
+    symbol = data.get('symbol')
+    logging.getLogger("BinanceTradingBot").info(f"Received request to clear grid state for {symbol}")
+
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    global grid_bots
+    
+    with grid_lock:
+        bot = grid_bots.get(symbol)
+        if bot:
+            # If bot is loaded, use its method (clears runtime state + active file)
+            bot.clear_state()
+            
+    # Always check for and clean up legacy file (data/grid_state.json)
+    # This ensures older state files are removed even if the bot is using the new filename schema
+    try:
+        legacy_path = "data/grid_state.json"
+        if os.path.exists(legacy_path):
+             try:
+                with open(legacy_path, 'r') as f:
+                    state = json.load(f)
+                if state.get('symbol') == symbol:
+                    os.remove(legacy_path)
+                    logging.getLogger("BinanceTradingBot").info(f"Deleted legacy state file: {legacy_path}")
+                else:
+                    logging.getLogger("BinanceTradingBot").warning(f"Legacy file symbol {state.get('symbol')} mismatches {symbol}")
+             except Exception as e:
+                logging.getLogger("BinanceTradingBot").error(f"Failed to delete legacy file: {e}")
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Error in legacy cleanup block: {e}")
+
+    # If bot was loaded, we are done
+    if bot:
+        return jsonify({"success": True, "message": f"State cleared for {symbol}"})
+            
+    # If bot not loaded, try to delete the specific file manually
+    try:
+        # Check specific symbol file
+        path = f"data/grid_state_{symbol}.json"
+        if os.path.exists(path):
+            os.remove(path)
+            logging.getLogger("BinanceTradingBot").info(f"Deleted state file: {path}")
+            return jsonify({"success": True, "message": f"Deleted state file for {symbol}"})
+                
+        return jsonify({"success": True, "message": "No state file found to clear"})
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to clear state: {e}"}), 500
 
 @app.route('/api/grid/delete', methods=['POST'])
 def delete_grid_bot():
@@ -796,8 +917,17 @@ def delete_grid_bot():
                 fname = f"data/grid_state_{symbol}.json"
                 if os.path.exists(fname):
                     os.remove(fname)
+                
+                # ALSO Delete legacy file if it matches
+                legacy_path = "data/grid_state.json"
+                if os.path.exists(legacy_path):
+                     with open(legacy_path, 'r') as f:
+                         state = json.load(f)
+                     if state.get('symbol') == symbol:
+                         os.remove(legacy_path)
+                         logging.getLogger("BinanceTradingBot").info(f"Deleted legacy state file on delete: {legacy_path}")
             except Exception as e:
-                logging.getLogger("BinanceTradingBot").error(f"Error deleting state file {fname}: {e}")
+                logging.getLogger("BinanceTradingBot").error(f"Error deleting state file: {e}")
 
             logger_setup.log_audit("GRID_DELETE", f"Grid Bot {symbol} deleted by user", request.remote_addr)
             return jsonify({"success": True})
@@ -954,12 +1084,13 @@ def sync_capital():
         if result:
             return jsonify({
                 "success": True,
-                "total_value": result['total_value'],
-                "new_capital": result['new_capital']
+                "balance": result  # Contains usdt, eth, eth_price, eth_value_usd, total_usd
             })
         else:
+            logging.getLogger("BinanceTradingBot").error("Capital sync returned None")
             return jsonify({"error": "Failed to sync (check logs)"}), 500
     except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Capital sync error: {e}")
         notifier.send_telegram_message(f"❌ <b>CAPITAL SYNC ERROR</b>\nFailed to sync: {e}")
         return jsonify({"error": str(e)}), 500
 

@@ -1,0 +1,3 @@
+2026-01-13 13:04:55,102 - ERROR - Failed to delete legacy file: name 'json' is not defined
+2026-01-13 13:12:47,621 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-13 13:17:20,180 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'

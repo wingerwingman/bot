@@ -348,8 +348,15 @@ class BinanceTradingBot:
             saved_bought_price = state.get('bought_price')
             if saved_bought_price:
                 self.bought_price = saved_bought_price
-                self.logger.debug(f"Restored position: bought_price={self.bought_price}")
-                print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}")
+                # Also restore the base balance (ETH quantity) from saved state
+                saved_base_balance = state.get('base_balance_at_buy')
+                if saved_base_balance:
+                    self.base_balance = saved_base_balance
+                    self.logger.debug(f"Restored position: bought_price={self.bought_price}, base_balance={self.base_balance}")
+                    print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}, Qty: {self.base_balance:.6f}")
+                else:
+                    self.logger.debug(f"Restored position: bought_price={self.bought_price}")
+                    print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}")
             
             # Restore metrics
             self.total_trades = state.get('total_trades', 0)
@@ -421,7 +428,12 @@ class BinanceTradingBot:
                 account_info = self.client.get_account()
                 for balance in account_info['balances']:
                     if balance['asset'] == asset:
-                        return float(balance['free'])
+                        free = float(balance['free'])
+                        # Grid Bot Awareness: If Grid Bot is running, its funds are LOCKED. 
+                        # This FREE balance is safe to use.
+                        if asset == self.base_asset and os.path.exists(f"data/grid_state_{self.symbol}.json"):
+                             self.logger.debug(f"Grid Bot active. Using free {asset}: {free} (Grid funds locked)")
+                        return free
                 self.logger.warning(f"{asset} balance not found. Returning 0.0.")
                 return 0.0
             else:

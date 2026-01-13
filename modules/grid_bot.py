@@ -138,14 +138,26 @@ class GridBot:
                     self.step_size = float(f['stepSize'])
         except Exception as e:
             self.logger.error(f"Error fetching precision: {e}")
+        
+        # Calculate decimal places from tick/step sizes
+        self.price_decimals = len(str(self.tick_size).split('.')[-1].rstrip('0')) if '.' in str(self.tick_size) else 0
+        self.qty_decimals = len(str(self.step_size).split('.')[-1].rstrip('0')) if '.' in str(self.step_size) else 0
     
     def round_price(self, price):
-        """Round price to tick size."""
-        return round(price / self.tick_size) * self.tick_size
+        """Round price to tick size and format properly."""
+        from decimal import Decimal, ROUND_DOWN
+        tick = Decimal(str(self.tick_size))
+        p = Decimal(str(price))
+        rounded = float((p / tick).quantize(Decimal('1'), rounding=ROUND_DOWN) * tick)
+        return round(rounded, self.price_decimals)
     
     def round_qty(self, qty):
-        """Round quantity to step size."""
-        return round(qty / self.step_size) * self.step_size
+        """Round quantity DOWN to step size."""
+        from decimal import Decimal, ROUND_DOWN
+        step = Decimal(str(self.step_size))
+        q = Decimal(str(qty))
+        rounded = float((q / step).quantize(Decimal('1'), rounding=ROUND_DOWN) * step)
+        return round(rounded, self.qty_decimals)
     
     def calculate_grid_levels(self):
         """
@@ -190,25 +202,96 @@ class GridBot:
             return
         
         levels = self.calculate_grid_levels()
-        order_value = self.calculate_order_size()
         
-        self.logger.info(f"Grid Levels: {levels}")
-        self.logger.info(f"Order Value per Level: ${order_value:.2f}")
+        # In LIVE mode, fetch actual USDT balance for buy orders
+        available_usdt = self.capital  # Default to config capital
+        available_base = 0.0  # For sell orders
+        
+        if self.is_live:
+            try:
+                account = self.client.get_account()
+                usdt_locked = 0.0
+                base_locked = 0.0
+                for b in account['balances']:
+                    if b['asset'] == 'USDT':
+                        available_usdt = float(b['free'])
+                        usdt_locked = float(b['locked'])
+                    elif b['asset'] == self.symbol.replace('USDT', ''):
+                        available_base = float(b['free'])
+                        base_locked = float(b['locked'])
+                
+                self.logger.info(f"💰 USDT: ${available_usdt:.2f} free, ${usdt_locked:.2f} locked | {self.symbol.replace('USDT', '')}: {available_base:.6f} free, {base_locked:.6f} locked")
+                
+                # STRICT SEPARATION: Check if Spot Bot is holding funds and reserve them
+                try:
+                    # Check for live state file first
+                    spot_state_file = f"data/state_live_{self.symbol}.json"
+                    
+                    # Fallback to test state if not found? No, only care about live funds.
+                    if os.path.exists(spot_state_file):
+                        with open(spot_state_file, 'r') as f:
+                            spot_state = json.load(f)
+                        
+                        spot_holdings = float(spot_state.get('base_balance_at_buy') or spot_state.get('base_balance', 0.0))
+                        
+                        # Only subtract if the Spot Bot is actually holding a position (bought entry)
+                        if spot_state.get('bought_price'):
+                            available_base -= spot_holdings
+                            if available_base < 0: available_base = 0 # Prevent negative
+                            self.logger.info(f"🛑 Reserved {spot_holdings:.6f} {self.symbol.replace('USDT', '')} for Spot Bot. Available for Grid: {available_base:.6f}")
+                except Exception as e:
+                    self.logger.warning(f"Failed to check Spot Bot reservations: {e}")
+                    
+            except Exception as e:
+                self.logger.error(f"Error fetching balance: {e}")
+        
+        # Count buy/sell levels
+        buy_levels = [p for p in levels if p < current_price * 0.995]
+        sell_levels = [p for p in levels if p > current_price * 1.005]
+        
+        # SMART LEVEL REDUCTION: Ensure each order is profitable after fees
+        # Minimum order value to cover ~$0.50 fee threshold and be meaningful
+        min_profitable_order = 15.0  # $15 min to make profit after 0.2% round-trip fees
+        
+        # Reduce buy levels if each order would be too small
+        while len(buy_levels) > 0 and (available_usdt / len(buy_levels)) < min_profitable_order:
+            buy_levels = buy_levels[1:]  # Remove lowest buy level
+            self.logger.info(f"⚠️ Reduced buy levels to {len(buy_levels)} for profitability")
+        
+        # Calculate order sizes based on available capital
+        buy_order_value = available_usdt / len(buy_levels) if buy_levels else 0
+        sell_order_qty = available_base / len(sell_levels) if sell_levels else 0
+        
+        if len(buy_levels) == 0:
+            self.logger.warning("⚠️ No buy levels placed - insufficient USDT for profitable grid")
+        if len(sell_levels) == 0 and available_base < 0.0001:
+            self.logger.warning("⚠️ No sell levels placed - no base asset holdings")
+        
+        self.logger.info(f"Grid: {len(buy_levels)} BUY levels (${buy_order_value:.2f} each), {len(sell_levels)} SELL levels ({sell_order_qty:.6f} each)")
         
         for price in levels:
             if price < current_price * 0.995:  # Buy levels (with buffer)
                 side = 'BUY'
-                qty = order_value / price
+                if buy_order_value < 10:
+                    self.logger.warning(f"Skipping BUY @ {price:.2f}: Insufficient USDT (${available_usdt:.2f} total)")
+                    continue
+                qty = buy_order_value / price
             elif price > current_price * 1.005:  # Sell levels (with buffer)
                 side = 'SELL'
-                # For sell, we need to already hold the asset
-                # In grid trading, we typically start with capital, so sells are placed after buys fill
-                # For simplicity, we'll just track virtual sells
-                qty = order_value / price
+                if sell_order_qty < 0.0001:  # Min ETH qty
+                    self.logger.warning(f"Skipping SELL @ {price:.2f}: Insufficient base asset ({available_base:.6f})")
+                    continue
+                qty = sell_order_qty
             else:
                 continue  # Skip levels too close to current price
             
             qty = self.round_qty(qty)
+            
+            # Skip if order value is below minimum ($10)
+            actual_order_value = qty * price
+            if actual_order_value < 10.0:
+                self.logger.warning(f"Skipping {side} @ {price:.2f}: Order value ${actual_order_value:.2f} below minimum $10")
+                continue
             
             if self.is_live:
                 try:
@@ -364,8 +447,27 @@ class GridBot:
     
     def get_status(self):
         """Return current grid status for UI."""
+        # Fetch real balances if live
+        usdt_balance = 0.0
+        base_balance = 0.0
+        base_asset = self.symbol.replace('USDT', '')
+        
+        if self.is_live:
+            try:
+                account = self.client.get_account()
+                for b in account['balances']:
+                    if b['asset'] == 'USDT':
+                        usdt_balance = float(b['free']) + float(b['locked'])
+                    elif b['asset'] == base_asset:
+                        base_balance = float(b['free']) + float(b['locked'])
+            except:
+                pass
+        
+        current_price = self.get_current_price() or 0
+        
         return {
             'running': self.running,
+            'is_live': self.is_live,
             'symbol': self.symbol,
             'lower_bound': self.lower_bound,
             'upper_bound': self.upper_bound,
@@ -376,7 +478,11 @@ class GridBot:
             'sell_fills': self.sell_fills,
             'total_profit': self.total_profit,
             'total_fees': self.total_fees,
-            'current_price': self.get_current_price()
+            'current_price': current_price,
+            'usdt_balance': usdt_balance,
+            'base_balance': base_balance,
+            'base_asset': base_asset,
+            'base_usd_value': base_balance * current_price
         }
     
     def run(self):
@@ -385,16 +491,24 @@ class GridBot:
         
         # Place initial orders
         self.place_grid_orders()
+        self._save_state()  # Save after placing orders
         
         while self.running:
             try:
+                fills_before = self.buy_fills + self.sell_fills
                 self.check_order_fills()
+                
+                # Save state if any fills occurred
+                if (self.buy_fills + self.sell_fills) > fills_before:
+                    self._save_state()
+                    
                 time.sleep(5)  # Check every 5 seconds
             except Exception as e:
                 self.logger.error(f"Grid loop error: {e}")
                 time.sleep(10)
         
-        # Cleanup
+        # Cleanup - save final state
+        self._save_state()
         self.cancel_all_orders()
         self.logger.info("Grid Bot stopped.")
     

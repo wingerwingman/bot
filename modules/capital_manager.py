@@ -299,15 +299,22 @@ class CapitalManager:
                 eth_price = 0.0
             
             eth_value_usd = eth_balance * eth_price
-            total_usd = usdt_balance + eth_value_usd
+            
+            # USDT is the tradable capital - ETH is considered "in positions"
+            # Only sync USDT as available capital for new trades
+            available_capital = usdt_balance
             
             self.binance_balance = {
                 'usdt': usdt_balance,
                 'eth': eth_balance,
                 'eth_price': eth_price,
                 'eth_value_usd': eth_value_usd,
-                'total_usd': total_usd
+                'total_usd': usdt_balance + eth_value_usd,  # For reference only
+                'available_capital': available_capital  # USDT only - what's actually usable
             }
+            
+            # Update total capital to only usable USDT
+            self.total_capital = available_capital
             
             self._save_state()
             return self.binance_balance

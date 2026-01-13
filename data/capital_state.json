@@ -1,15 +1,15 @@
 {
-  "total_capital": 1000.0,
+  "total_capital": 127.48931598,
   "allocations": {
     "signal": {
-      "percent": 1.0,
+      "percent": 0.5,
       "fixed": null,
-      "reserved": 1000.0
+      "reserved": 98.425562514
     },
     "grid": {
-      "percent": 0.0,
+      "percent": 0.5,
       "fixed": null,
-      "reserved": 0.0
+      "reserved": 98.425562514
     }
   },
   "pnl": {
@@ -43,5 +43,5 @@
     }
   },
   "auto_compound": true,
-  "last_updated": "2026-01-12T12:17:22.151477"
+  "last_updated": "2026-01-13T12:48:57.179961"
 }
