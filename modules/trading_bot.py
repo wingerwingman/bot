@@ -1015,8 +1015,20 @@ class BinanceTradingBot:
                                       u_peak = self.strategy.peak_price_since_buy or current_price
                                       u_trail = u_peak * (1 - self.strategy.sell_percent)
                                       u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                      
+                                      # Calculate Target to Lock Profit (Break Even Trail)
+                                      # Goal: Peak * (1 - sell_pct) > Entry
+                                      # Peak > Entry / (1 - sell_pct)
+                                      if self.strategy.sell_percent < 1:
+                                           u_target = self.bought_price / (1 - self.strategy.sell_percent)
+                                      else:
+                                           u_target = 0
+                                           
                                       self.current_trail_price = u_trail
                                       self.current_hard_stop = u_sl
+                                      self.lock_profit_price = u_target
+                                  
+                                  # Sell Checks
                                   
                                   # Sell Checks
                                   action = self.strategy.check_sell_signal(current_price, self.bought_price)

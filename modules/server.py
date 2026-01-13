@@ -192,7 +192,8 @@ def get_status():
                 "base_usd_value": (bot.base_balance * current_price) if current_price else 0,
                 "bought_price": bot.bought_price,  # Entry price for current position
                 "trail_price": getattr(bot, 'current_trail_price', None),
-                "stop_loss_price": getattr(bot, 'current_hard_stop', None)
+                "stop_loss_price": getattr(bot, 'current_hard_stop', None),
+                "lock_profit_price": getattr(bot, 'lock_profit_price', None)
             },
             # Also include the full list for the generic updater? 
             # Ideally the frontend polls /status for the list and /status?symbol=X for details.

@@ -1039,3 +1039,32 @@
    • Levels: 5
    • Capital: $98.425562514
 2026-01-13 13:56:43,455 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:59:48,953 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 13:59:48,953 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:59:49,165 - DEBUG - Fetching account balances...
+2026-01-13 13:59:49,330 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-13 13:59:49,330 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 13:59:49,330 - DEBUG - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-13 13:59:49,436 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 13:59:49,605 - DEBUG - __init__: Initial Volatility Calculated: 0.027731346500125566
+2026-01-13 13:59:49,605 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:59:49,606 - DEBUG - Restored position: bought_price=3096.72, base_balance=0.0216692
+2026-01-13 13:59:49,606 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:59:49,606 - DEBUG - __init__ completed
+2026-01-13 13:59:49,716 - DEBUG - Grid Bot active. Using free ETH: 0.0216692 (Grid funds locked)
+2026-01-13 13:59:49,769 - DEBUG - Starting run method...
+2026-01-13 13:59:49,769 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 13:59:49,769 - DEBUG - Initializing hotkeys...
+2026-01-13 13:59:49,770 - DEBUG - Hotkeys started.
+2026-01-13 13:59:49,770 - DEBUG - Entering main trading loop...
+2026-01-13 13:59:50,230 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:59:50,231 - DEBUG - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.2% | Trail Sell < $2967.91
+2026-01-13 13:59:53,560 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5
+2026-01-13 13:59:53,561 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 5
+   • Capital: $98.425562514

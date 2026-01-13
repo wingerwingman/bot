@@ -74,3 +74,5 @@
 {"timestamp": "2026-01-13 13:49:06", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5"}
 {"timestamp": "2026-01-13 13:51:39", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
 {"timestamp": "2026-01-13 13:51:46", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5"}
+{"timestamp": "2026-01-13 13:59:49", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-13 13:59:53", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5"}
