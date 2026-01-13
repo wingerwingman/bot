@@ -222,6 +222,15 @@ class GridBot:
                 
                 self.logger.info(f"💰 USDT: ${available_usdt:.2f} free, ${usdt_locked:.2f} locked | {self.symbol.replace('USDT', '')}: {available_base:.6f} free, {base_locked:.6f} locked")
                 
+                # LIMIT CAPITAL USAGE: Respect the slider allocation + Reinvest Net Profit
+                # This allows the bot to use its own winnings but not touch extra wallet funds.
+                allowable_capital = self.capital + self.total_profit
+                if allowable_capital < 0: allowable_capital = 0 # Safety if heavy losses
+                
+                if available_usdt > allowable_capital:
+                    self.logger.info(f"🔒 Limiting USDT usage to alloc+profit: ${allowable_capital:.2f} (Init: ${self.capital:.1f} + Net: ${self.total_profit:.2f})")
+                    available_usdt = allowable_capital
+                
                 # STRICT SEPARATION: Check if Spot Bot is holding funds and reserve them
                 try:
                     # Check for live state file first
@@ -490,8 +499,11 @@ class GridBot:
         self.logger.info(f"Grid Bot started: {self.symbol} ${self.lower_bound}-${self.upper_bound} x{self.grid_count}")
         
         # Place initial orders
-        self.place_grid_orders()
-        self._save_state()  # Save after placing orders
+        if self.active_orders:
+            self.logger.info(f"♻️ Resuming session with {len(self.active_orders)} active orders loaded from state.")
+        else:
+            self.place_grid_orders()
+            self._save_state()  # Save after placing orders
         
         while self.running:
             try:
@@ -508,9 +520,11 @@ class GridBot:
                 time.sleep(10)
         
         # Cleanup - save final state
+        # USER PREFERENCE: Treat Stop as Pause. Do NOT cancel orders.
+        # This allows resuming exactly where left off.
         self._save_state()
-        self.cancel_all_orders()
-        self.logger.info("Grid Bot stopped.")
+        # self.cancel_all_orders() # Commented out to enable Pause/Resume behavior
+        self.logger.info("Grid Bot paused/stopped. Orders remain active.")
     
     def start(self):
         """Start the grid bot in a thread."""

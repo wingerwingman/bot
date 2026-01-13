@@ -6,24 +6,24 @@
   "capital": 98.425562514,
   "active_orders": [
     {
-      "order_id": 1348565970,
+      "order_id": 1348571341,
       "price": 2955.72,
       "side": "BUY",
-      "qty": 0.0143,
+      "qty": 0.0111,
       "status": "OPEN"
     },
     {
-      "order_id": 1348565971,
+      "order_id": 1348571342,
       "price": 3058.52,
       "side": "BUY",
-      "qty": 0.0138,
+      "qty": 0.0107,
       "status": "OPEN"
     },
     {
-      "order_id": 1348565972,
+      "order_id": 1348571345,
       "price": 3161.33,
       "side": "BUY",
-      "qty": 0.0134,
+      "qty": 0.0103,
       "status": "OPEN"
     }
   ],
@@ -32,5 +32,5 @@
   "total_fees": 0.0,
   "buy_fills": 0,
   "sell_fills": 0,
-  "running": true
+  "running": false
 }

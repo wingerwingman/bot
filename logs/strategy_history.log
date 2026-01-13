@@ -395,3 +395,69 @@
    • Peak Balance: $195.00 (Max Drawdown: 0.00%)
 2026-01-13 13:17:21 - Fear & Greed Index: 26 (Fear)
 2026-01-13 13:17:21 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.2% | Trail Sell < $2968.03
+2026-01-13 13:22:18 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:22:18 - Starting Balances: USDT=127.48931598, ETH=0.0
+2026-01-13 13:22:19 - __init__: Initial Volatility Calculated: 0.027659618879448025
+2026-01-13 13:22:19 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:22:19 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:22:19 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:22:19 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2968.24
+2026-01-13 13:22:42 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:22:42 - Starting Balances: USDT=127.48931598, ETH=0.0
+2026-01-13 13:22:42 - __init__: Initial Volatility Calculated: 0.027659618879448025
+2026-01-13 13:22:42 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:22:42 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:22:43 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:22:43 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2968.24
+2026-01-13 13:26:22 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:26:22 - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-13 13:26:22 - __init__: Initial Volatility Calculated: 0.027661424747360577
+2026-01-13 13:26:22 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:26:22 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:26:23 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:26:23 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.1% | Trail Sell < $2968.23
+2026-01-13 13:28:04 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:28:04 - Starting Balances: USDT=127.48931598, ETH=0.0
+2026-01-13 13:28:04 - __init__: Initial Volatility Calculated: 0.02767364204511372
+2026-01-13 13:28:04 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:28:04 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:28:05 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:28:05 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.2% | Trail Sell < $2968.17
+2026-01-13 13:30:56 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:30:56 - Starting Balances: USDT=127.48931598, ETH=0.0
+2026-01-13 13:30:56 - __init__: Initial Volatility Calculated: 0.02767364204511372
+2026-01-13 13:30:56 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:30:56 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:30:56 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:30:56 - 🔄 TUNING: Vol 2.77% -> RSI Buy < 37 (+2 Fear) | SL 5.5% | Trail 4.2% | Trail Sell < $2968.17
+2026-01-13 13:33:37 - Trading Pair Configured: ETHUSDT
+2026-01-13 13:33:37 - Starting Balances: USDT=127.48931598, ETH=0.0
+2026-01-13 13:33:38 - __init__: Initial Volatility Calculated: 0.027766743394639925
+2026-01-13 13:33:38 - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 13:33:38 - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 13:33:38 - Fear & Greed Index: 26 (Fear)
+2026-01-13 13:33:38 - 🔄 TUNING: Vol 2.78% -> RSI Buy < 37 (+2 Fear) | SL 5.6% | Trail 4.2% | Trail Sell < $2967.74
