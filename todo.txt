@@ -1,5 +1,11 @@
-
-
+add button to manually adjust grid bot if market trend changes.
+add sell now button on spot bot needs to be verified. maybe loggs if nothing is there to sell.
+fix add bot to work with alocation slider.
+fix loggs to much gear and greed index an ssanpshots
+seporate activy ans strategy clear button
+clear activy and strategy clears errors also need to change that.
+check trailing stop as it has never changed should update.
+center the bot running icons on front page.
 
 update docker files when this thing is working fully not now
 backup to github when I am ready dont ask

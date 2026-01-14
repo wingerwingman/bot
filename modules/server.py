@@ -193,7 +193,8 @@ def get_status():
                 "bought_price": bot.bought_price,  # Entry price for current position
                 "trail_price": getattr(bot, 'current_trail_price', None),
                 "stop_loss_price": getattr(bot, 'current_hard_stop', None),
-                "lock_profit_price": getattr(bot, 'lock_profit_price', None)
+                "lock_profit_price": getattr(bot, 'lock_profit_price', None),
+                "current_price": current_price
             },
             # Also include the full list for the generic updater? 
             # Ideally the frontend polls /status for the list and /status?symbol=X for details.
@@ -547,6 +548,53 @@ def delete_bot():
             return jsonify({"success": True})
     except Exception as e:
         logging.getLogger("BinanceTradingBot").error(f"Delete Bot Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/manual_sell', methods=['POST'])
+def manual_sell():
+    """Triggers an immediate sell for the Specified Bot."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
+    
+    global spot_bots
+    
+    try:
+        with bot_lock:
+            if not symbol:
+                if len(spot_bots) == 1:
+                    symbol = list(spot_bots.keys())[0]
+                else:
+                    return jsonify({"error": "Symbol required to sell"}), 400
+            
+            bot = spot_bots.get(symbol)
+            if not bot:
+                return jsonify({"error": f"No bot running for symbol {symbol}"}), 400
+            
+            if not bot.running:
+                return jsonify({"error": "Bot is not running"}), 400
+            
+            if not bot.bought_price:
+                return jsonify({"error": "Bot is not currently holding a position"}), 400
+
+            # Execute Sell
+            current_price = bot.last_price or 0
+            # Force a fresh check if possible, safely
+            try:
+                # Assuming check_price is safe to call
+                current_price = bot.check_price() 
+            except:
+                pass
+                
+            bot.sell_position(current_price, reason="🚨 MANUAL PANIC SELL")
+            
+            logger_setup.log_audit("MANUAL_SELL", f"Manual Sell triggered for {symbol} at ${current_price}", request.remote_addr)
+            return jsonify({"success": True, "message": f"Sell Order Placed at ${current_price}"})
+            
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Manual Sell Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/errors', methods=['GET'])

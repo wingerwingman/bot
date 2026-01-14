@@ -1,13 +1,1 @@
-2026-01-13 13:04:55,102 - ERROR - Failed to delete legacy file: name 'json' is not defined
-2026-01-13 13:12:47,621 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:17:20,180 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:22:18,765 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:22:42,573 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:26:22,593 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:28:04,219 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:30:56,001 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:33:37,975 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:39:58,876 - ERROR - Binance API Error: APIError(code=-1003): Too much request weight used; current limit is 1200 request weight per 1 MINUTE. Please use WebSocket Streams for live updates to avoid polling the API.
-2026-01-13 13:47:49,544 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:51:39,152 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
-2026-01-13 13:59:49,330 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-14 11:42:15,531 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)

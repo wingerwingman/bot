@@ -481,7 +481,7 @@ class BinanceTradingBot:
                 self.logger.debug(f"Fear & Greed Index: {value} ({classification})")
                 
                 # Also log to Strategy Tab
-                logger_setup.log_strategy(f"Fear & Greed Index: {value} ({classification})")
+                # logger_setup.log_strategy(f"Fear & Greed Index: {value} ({classification})")
                 return value
             return 50 # Neutral default
         except Exception as e:
@@ -872,7 +872,7 @@ class BinanceTradingBot:
                             hist_str = f"{snap_hist:+.4f}" if snap_hist else "N/A"
                             rsi_str = f"{snap_rsi:.1f}" if snap_rsi else "N/A"
                             
-                            logger_setup.log_strategy(f"📊 SNAPSHOT: Price=${snap_price:.2f} | RSI={rsi_str} | MACD_Hist={hist_str} | Trend={trend} | Vol={self.last_volatility*100:.2f}%")
+                            # logger_setup.log_strategy(f"📊 SNAPSHOT: Price=${snap_price:.2f} | RSI={rsi_str} | MACD_Hist={hist_str} | Trend={trend} | Vol={self.last_volatility*100:.2f}%")
                         
                         # FETCH SENTIMENT (Fear & Greed)
                         if self.dynamic_settings:
@@ -1067,7 +1067,7 @@ class BinanceTradingBot:
 
                          self.last_price = current_price
                     
-                    time.sleep(3)
+                    time.sleep(1) # React faster (Safe: Weight 1x60 = 60/1200)
             else:
                 self.test()
                 self.running = False

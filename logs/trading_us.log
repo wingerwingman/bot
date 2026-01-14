@@ -1068,3 +1068,361 @@
    • Range: $2955.72 - $3469.76
    • Levels: 5
    • Capital: $98.425562514
+2026-01-13 14:04:53,552 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:06:25,403 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-13 14:09:56,959 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:14:57,627 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:20:01,054 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:25:01,588 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:30:04,949 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:34:42,449 - INFO - AUDIT WARN: User Action [CLEAR_LOGS] via 127.0.0.1: Audit logs cleared by user
+2026-01-13 14:35:08,376 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:40:10,572 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:45:13,923 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:50:17,070 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:55:20,552 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 14:59:52,793 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3207.1 | PnL: 3.56% | Trail Stop: 3081.60 (Profit: -0.49%) | SL < 2924.95
+2026-01-13 15:00:23,773 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:05:26,976 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:10:30,422 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:10:30,424 - DEBUG - 🔄 TUNING: Vol 2.89% -> RSI Buy < 36 (+2 Fear) | SL 5.8% | Trail 4.3% | Trail Sell < $3159.86
+2026-01-13 15:15:33,675 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:20:37,010 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:25:40,218 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:30:43,417 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:30:43,419 - DEBUG - 🔄 TUNING: Vol 3.00% -> RSI Buy < 36 (+2 Fear) | SL 6.0% | Trail 4.5% | Trail Sell < $3209.83
+2026-01-13 15:35:46,675 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:40:49,970 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:45:53,236 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:47:15,295 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-13 15:47:15,295 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 15:47:15,535 - DEBUG - Fetching account balances...
+2026-01-13 15:47:15,865 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-13 15:47:15,866 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-13 15:47:15,866 - DEBUG - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-13 15:47:15,982 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-13 15:47:16,163 - DEBUG - __init__: Initial Volatility Calculated: 0.029854239158838655
+2026-01-13 15:47:16,164 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-13 15:47:16,164 - DEBUG - Restored position: bought_price=3096.72, base_balance=0.0216692
+2026-01-13 15:47:16,164 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-13 15:47:16,164 - DEBUG - __init__ completed
+2026-01-13 15:47:16,278 - DEBUG - Grid Bot active. Using free ETH: 0.0216692 (Grid funds locked)
+2026-01-13 15:47:16,334 - DEBUG - Starting run method...
+2026-01-13 15:47:16,335 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-13 15:47:16,335 - DEBUG - Initializing hotkeys...
+2026-01-13 15:47:16,336 - DEBUG - Hotkeys started.
+2026-01-13 15:47:16,336 - DEBUG - Entering main trading loop...
+2026-01-13 15:47:16,814 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:47:16,814 - DEBUG - 🔄 TUNING: Vol 2.99% -> RSI Buy < 36 (+2 Fear) | SL 6.0% | Trail 4.5% | Trail Sell < $2958.04
+2026-01-13 15:47:21,316 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 5
+2026-01-13 15:47:21,316 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-13 15:52:17,526 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 15:57:18,313 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:02:18,776 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:07:19,486 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:12:20,065 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:17:20,697 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:22:21,467 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:27:21,870 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:32:22,656 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:37:23,159 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:42:23,947 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:47:17,020 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3332.06 | PnL: 7.60% | Trail Stop: 3195.03 (Profit: 3.17%) | SL < 2911.76
+2026-01-13 16:47:24,828 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:52:25,293 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 16:57:26,780 - DEBUG - Fear & Greed Index: 26 (Fear)
+2026-01-13 17:02:27,395 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:07:28,050 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:12:29,428 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:17:30,254 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:22:31,720 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:27:32,327 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:32:33,410 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:37:34,226 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:42:35,179 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:47:17,298 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3321.47 | PnL: 7.26% | Trail Stop: 3196.17 (Profit: 3.21%) | SL < 2913.17
+2026-01-13 17:47:35,627 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:52:36,635 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 17:57:37,827 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:02:39,068 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:07:40,291 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:12:41,692 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:17:43,153 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:22:43,615 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:27:44,558 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:32:45,834 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:37:46,759 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:42:47,871 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:47:18,044 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3318.92 | PnL: 7.18% | Trail Stop: 3196.73 (Profit: 3.23%) | SL < 2912.13
+2026-01-13 18:47:48,357 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:52:49,459 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 18:57:49,965 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:02:50,844 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:07:51,305 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:12:52,344 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:17:53,732 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:22:55,072 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:27:56,274 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:32:57,507 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:37:58,528 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:42:59,498 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:47:18,626 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3333.19 | PnL: 7.64% | Trail Stop: 3206.86 (Profit: 3.56%) | SL < 2911.20
+2026-01-13 19:48:00,403 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:53:01,311 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 19:58:02,304 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:03:03,330 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:08:04,075 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:13:05,371 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:18:06,706 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:23:07,151 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:28:08,599 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:33:09,714 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:38:10,923 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:43:12,029 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:47:18,710 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3339.52 | PnL: 7.84% | Trail Stop: 3206.86 (Profit: 3.56%) | SL < 2911.20
+2026-01-13 20:48:13,281 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:53:13,808 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 20:58:15,215 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:03:16,619 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:08:17,481 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:13:18,562 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:18:20,030 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:23:20,543 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:28:21,050 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:33:22,269 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:38:23,663 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:43:24,715 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:47:18,821 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3344.65 | PnL: 8.01% | Trail Stop: 3210.41 (Profit: 3.67%) | SL < 2911.19
+2026-01-13 21:48:25,957 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:53:27,222 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 21:58:28,533 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:03:29,359 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:08:30,159 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:13:31,199 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:18:32,366 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:23:33,294 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:28:34,505 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:33:35,782 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:38:36,307 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:43:37,547 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:47:19,017 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3333.75 | PnL: 7.65% | Trail Stop: 3210.12 (Profit: 3.66%) | SL < 2910.92
+2026-01-13 22:48:38,682 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:53:39,565 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 22:58:40,816 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:03:41,965 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:08:42,607 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:13:43,141 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:18:44,477 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:23:45,418 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:28:45,989 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:33:46,674 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:38:47,253 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:43:48,106 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:47:19,151 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3332.71 | PnL: 7.62% | Trail Stop: 3209.55 (Profit: 3.64%) | SL < 2910.92
+2026-01-13 23:48:49,239 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:53:50,481 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-13 23:58:51,834 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:03:52,281 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:08:52,953 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:13:53,499 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:18:54,289 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:23:54,712 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:28:56,185 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:33:56,681 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:38:57,197 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:43:57,917 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:47:19,387 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3328.04 | PnL: 7.47% | Trail Stop: 3209.98 (Profit: 3.66%) | SL < 2910.92
+2026-01-14 00:48:58,818 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:53:59,893 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 00:59:00,973 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:04:01,499 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:09:02,249 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:14:03,317 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:19:04,461 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:24:04,994 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:29:06,020 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:34:07,251 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:39:07,829 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:44:08,371 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:47:19,962 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3338.5 | PnL: 7.81% | Trail Stop: 3210.26 (Profit: 3.67%) | SL < 2911.01
+2026-01-14 01:49:08,745 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:54:09,455 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 01:59:09,885 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:04:10,825 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:09:11,739 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:14:12,274 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:19:12,835 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:24:13,790 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:29:14,489 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:34:15,076 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:39:15,905 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:44:16,609 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:47:21,017 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3331.7 | PnL: 7.59% | Trail Stop: 3209.95 (Profit: 3.66%) | SL < 2910.92
+2026-01-14 02:49:17,404 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:54:18,413 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 02:59:19,497 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:04:20,963 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:09:22,055 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:14:23,117 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:19:23,742 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:24:24,654 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:29:25,310 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:34:26,160 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:39:26,714 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:44:27,153 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:47:21,400 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3309.81 | PnL: 6.88% | Trail Stop: 3208.32 (Profit: 3.60%) | SL < 2910.92
+2026-01-14 03:49:28,260 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:54:29,281 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 03:59:29,860 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:04:30,654 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:09:31,229 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:14:31,653 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:19:32,292 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:24:33,031 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:29:33,540 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:34:34,144 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:39:35,043 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:44:35,686 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:47:22,167 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3294.09 | PnL: 6.37% | Trail Stop: 3206.02 (Profit: 3.53%) | SL < 2910.92
+2026-01-14 04:49:36,481 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:49:36,483 - DEBUG - 🔄 TUNING: Vol 3.10% -> RSI Buy < 34 | SL 6.0% | Trail 4.7% | Trail Sell < $3205.06
+2026-01-14 04:54:36,939 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 04:59:37,730 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:04:38,359 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:09:38,938 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:14:40,301 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:19:40,960 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:24:41,611 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:29:42,134 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:34:42,556 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:39:43,297 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:44:44,058 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:47:22,225 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3290.58 | PnL: 6.26% | Trail Stop: 3205.07 (Profit: 3.50%) | SL < 2910.92
+2026-01-14 05:49:44,873 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:54:45,665 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 05:59:46,391 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:04:46,869 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:09:47,691 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:09:50,582 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-14 06:14:48,611 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:19:49,446 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:24:49,926 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:29:50,622 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:34:51,090 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:39:52,592 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:44:53,220 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:47:22,431 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3300.21 | PnL: 6.57% | Trail Stop: 3205.52 (Profit: 3.51%) | SL < 2910.92
+2026-01-14 06:49:54,053 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:54:54,780 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 06:59:55,944 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:02:41,503 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-14 07:03:02,404 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-14 07:03:13,459 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x77c22473b7c0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2026-01-14 07:03:29,542 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x77c2246ac4f0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2026-01-14 07:04:56,399 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:09:57,897 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:14:58,934 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:15:50,057 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-14 07:19:59,414 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:25:00,253 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:30:01,221 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:35:02,112 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:40:03,094 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:45:04,157 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:47:23,340 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3340.82 | PnL: 7.88% | Trail Stop: 3206.15 (Profit: 3.53%) | SL < 2910.92
+2026-01-14 07:50:05,398 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 07:55:06,299 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:00:07,183 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:05:08,240 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:10:09,600 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:15:10,688 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:19:53,144 - INFO - AUDIT WARN: User Action [CLEAR_ALL_LOGS] via 127.0.0.1: All logs cleared
+2026-01-14 08:20:11,842 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:25:12,595 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:30:13,203 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:35:13,958 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:35:43,967 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-14 08:35:43,967 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-14 08:35:44,176 - DEBUG - Fetching account balances...
+2026-01-14 08:35:44,407 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-14 08:35:44,408 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-14 08:35:44,408 - DEBUG - Starting Balances: USDT=29.39296098, ETH=0.0
+2026-01-14 08:35:44,511 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-14 08:35:44,670 - DEBUG - __init__: Initial Volatility Calculated: 0.030385426768063425
+2026-01-14 08:35:44,670 - DEBUG - Strategy Config: RSI=40, SL=2.0%, Trailing=3.0%
+2026-01-14 08:35:44,671 - DEBUG - Restored position: bought_price=3096.72, base_balance=0.0216692
+2026-01-14 08:35:44,671 - DEBUG - ♻️ SESSION RESTORED from 2026-01-10T08:49:17.141975
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 3096.72
+   • Metrics: Net Profit $0.00 (0 trades)
+   • Peak Balance: $195.00 (Max Drawdown: 0.00%)
+2026-01-14 08:35:44,671 - DEBUG - __init__ completed
+2026-01-14 08:35:44,778 - DEBUG - Grid Bot active. Using free ETH: 0.0216692 (Grid funds locked)
+2026-01-14 08:35:44,830 - DEBUG - Starting run method...
+2026-01-14 08:35:44,830 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-14 08:35:44,831 - DEBUG - Initializing hotkeys...
+2026-01-14 08:35:44,831 - DEBUG - Hotkeys started.
+2026-01-14 08:35:44,832 - DEBUG - Entering main trading loop...
+2026-01-14 08:35:45,288 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:35:45,288 - DEBUG - 🔄 TUNING: Vol 3.04% -> RSI Buy < 34 | SL 6.0% | Trail 4.6% | Trail Sell < $2955.58
+2026-01-14 08:35:49,652 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2955.72-$3469.76, Levels: 10
+2026-01-14 08:35:49,653 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2955.72 - $3469.76
+   • Levels: 10
+   • Capital: $98.425562514
+2026-01-14 08:35:59,334 - INFO - AUDIT WARN: User Action [CLEAR_ALL_LOGS] via 127.0.0.1: All logs cleared
+2026-01-14 08:40:46,666 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:45:47,099 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:50:47,645 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 08:55:48,381 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:00:48,850 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:05:49,552 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:10:50,107 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:15:50,894 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:20:51,583 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:25:52,134 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:30:52,816 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:35:45,094 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3372.81 | PnL: 8.92% | Trail Stop: 3244.18 (Profit: 4.76%) | SL < 2910.92
+2026-01-14 09:35:53,965 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:40:55,335 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:45:56,226 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:50:57,705 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 09:55:59,033 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:00:59,794 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:06:00,378 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:11:01,618 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:16:02,720 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:21:04,139 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:26:05,186 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:31:05,907 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:35:45,938 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3363.79 | PnL: 8.62% | Trail Stop: 3241.79 (Profit: 4.68%) | SL < 2910.92
+2026-01-14 10:36:06,374 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:41:08,041 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:46:09,170 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:51:10,198 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 10:56:11,522 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:01:12,831 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:06:14,098 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:11:15,191 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:16:15,914 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:16:15,917 - DEBUG - 🔄 TUNING: Vol 3.14% -> RSI Buy < 34 | SL 6.0% | Trail 4.7% | Trail Sell < $3239.69
+2026-01-14 11:21:17,160 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:26:18,440 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:31:19,371 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:35:46,077 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3322.98 | PnL: 7.31% | Trail Stop: 3240.10 (Profit: 4.63%) | SL < 2910.92
+2026-01-14 11:36:20,502 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:41:21,873 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:42:15,531 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-14 11:46:24,463 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:51:25,647 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 11:56:27,062 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 12:01:28,362 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 12:06:29,684 - DEBUG - Fear & Greed Index: 48 (Neutral)
+2026-01-14 12:11:30,260 - DEBUG - Fear & Greed Index: 48 (Neutral)
