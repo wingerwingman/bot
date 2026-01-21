@@ -1,0 +1,17 @@
+{
+  "symbol": "BTCUSDT",
+  "quote_asset": "USDT",
+  "base_asset": "BTC",
+  "bought_price": 96931.95000000001,
+  "base_balance_at_buy": 0.01586722,
+  "position_size_percent": 0.25,
+  "last_update": "2026-01-15T10:40:21.288255",
+  "total_trades": 0,
+  "winning_trades": 0,
+  "gross_profit": 0.0,
+  "gross_loss": 0.0,
+  "peak_balance": 1554.832383159,
+  "max_drawdown": 0.0,
+  "dca_count": 0,
+  "peak_price_since_buy": null
+}

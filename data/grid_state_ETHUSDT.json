@@ -1,36 +1,36 @@
 {
   "symbol": "ETHUSDT",
-  "lower_bound": 2955.72,
-  "upper_bound": 3469.76,
-  "grid_count": 10,
+  "lower_bound": 3045.43,
+  "upper_bound": 3575.07,
+  "grid_count": 5,
   "capital": 98.425562514,
-  "active_orders": [
+  "active_orders": [],
+  "filled_orders": [
     {
-      "order_id": 1348571341,
-      "price": 2955.72,
+      "order_id": 1348571345,
+      "price": 3161.33,
       "side": "BUY",
-      "qty": 0.0111,
-      "status": "OPEN"
+      "qty": 0.0103,
+      "status": "FILLED"
     },
     {
       "order_id": 1348571342,
       "price": 3058.52,
       "side": "BUY",
       "qty": 0.0107,
-      "status": "OPEN"
+      "status": "FILLED"
     },
     {
-      "order_id": 1348571345,
-      "price": 3161.33,
+      "order_id": 1348571341,
+      "price": 2955.72,
       "side": "BUY",
-      "qty": 0.0103,
-      "status": "OPEN"
+      "qty": 0.0111,
+      "status": "FILLED"
     }
   ],
-  "filled_orders": [],
-  "total_profit": 0.0,
-  "total_fees": 0.0,
-  "buy_fills": 0,
+  "total_profit": 3.204096090000002,
+  "total_fees": 0.098096355,
+  "buy_fills": 3,
   "sell_fills": 0,
-  "running": false
+  "running": true
 }

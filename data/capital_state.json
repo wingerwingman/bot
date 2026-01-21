@@ -1,5 +1,5 @@
 {
-  "total_capital": 127.48931598,
+  "total_capital": 114.88816248,
   "allocations": {
     "signal": {
       "percent": 0.5,
@@ -43,5 +43,5 @@
     }
   },
   "auto_compound": true,
-  "last_updated": "2026-01-13T12:48:57.179961"
+  "last_updated": "2026-01-15T11:16:33.058628"
 }

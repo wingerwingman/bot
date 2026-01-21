@@ -1,1 +1,11 @@
-2026-01-14 11:42:15,531 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-16 05:52:07,278 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-16 05:52:10,630 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-16 05:52:55,399 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-16 05:53:17,659 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-16 05:53:25,815 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-16 06:00:33,304 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-18 20:37:51,811 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-19 07:43:32,206 - WARNING - Network Error (Retrying in 5s): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-19 18:11:56,018 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-21 05:58:59,363 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-21 05:58:59,799 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.

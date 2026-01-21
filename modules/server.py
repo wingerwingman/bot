@@ -19,7 +19,7 @@ logger_setup.setup_logger()
 
 app = Flask(__name__)
 # Security: Only allow requests from the React Frontend
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Global bot instances (Dictionaries for Multi-Bot)
 spot_bots = {} # Key: symbol (e.g., 'ETHUSDT') -> BinanceTradingBot
@@ -34,13 +34,13 @@ def run_flask():
     import logging
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)  # Only show warnings/errors, not every request
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False, threaded=True)
+    app.run(host='0.0.0.0', port=5050, debug=False, use_reloader=False, threaded=True)
 
 def start_server_standalone():
     """Start the Flask server in a standalone thread (no bot yet)."""
     server_thread = threading.Thread(target=run_flask, daemon=True)
     server_thread.start()
-    print("API Server running at http://localhost:5000")
+    print("API Server running at http://localhost:5050")
 
 # Admin Credentials
 # Admin Credentials (Loaded from Config/Env)
@@ -62,6 +62,7 @@ def login():
     if data.get('username') == ADMIN_USER and data.get('password') == ADMIN_PASS:
         logger_setup.log_audit("LOGIN", "Admin login successful", request.remote_addr)
         return jsonify({"success": True, "token": ADMIN_TOKEN})
+    
     logger_setup.log_audit("LOGIN_FAIL", f"Failed login attempt for user: {data.get('username')}", request.remote_addr)
     return jsonify({"error": "Invalid credentials"}), 401
 
@@ -281,6 +282,26 @@ def clear_audit_logs():
     
     logger_setup.clear_audit_logs()
     logger_setup.log_audit("CLEAR_LOGS", "Audit logs cleared by user", request.remote_addr)
+    return jsonify({"success": True})
+
+@app.route('/api/logs/activity/clear', methods=['POST'])
+def clear_activity_logs():
+    """Clears the activity logs."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    logger_setup.clear_activity_logs()
+    logger_setup.log_audit("CLEAR_LOGS", "Activity logs cleared by user", request.remote_addr)
+    return jsonify({"success": True})
+
+@app.route('/api/logs/strategy/clear', methods=['POST'])
+def clear_strategy_logs():
+    """Clears the strategy logs."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    logger_setup.clear_strategy_logs()
+    logger_setup.log_audit("CLEAR_LOGS", "Strategy logs cleared by user", request.remote_addr)
     return jsonify({"success": True})
 
 @app.route('/api/market-status', methods=['GET'])
@@ -595,6 +616,66 @@ def manual_sell():
             
     except Exception as e:
         logging.getLogger("BinanceTradingBot").error(f"Manual Sell Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/data/download', methods=['POST'])
+def download_data():
+    """Downloads historical data for backtesting."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    data = request.json or {}
+    symbol = data.get('symbol')
+    days = data.get('days', 90)
+    interval = data.get('interval', '15m')
+    
+    if not symbol:
+        return jsonify({"error": "Symbol required (e.g. ZECUSDT)"}), 400
+    
+    # Sanitize inputs
+    symbol = symbol.upper().replace('/', '')
+    if len(symbol) <= 5 and not symbol.endswith('USDT'):
+        symbol += 'USDT'
+        
+    try:
+        days = int(days)
+    except:
+        return jsonify({"error": "Days must be a number"}), 400
+        
+    print(f"Starting download for {symbol} ({days} days, {interval})...")
+        
+    try:
+        from . import data_downloader
+        # Use abs path for data dir
+        data_dir = os.path.join(os.getcwd(), 'data')
+        
+        try:
+            filename = data_downloader.download_historical_data(symbol, interval=interval, days=days, output_dir=data_dir)
+        except Exception as e:
+            # Fallback: If ZECUSD failed, try ZECUSDT
+            if symbol.endswith('USD') and not symbol.endswith('USDT'):
+                logging.getLogger("BinanceTradingBot").warning(f"Download failed for {symbol}, retrying with {symbol}T...")
+                symbol += 'T'
+                filename = data_downloader.download_historical_data(symbol, interval=interval, days=days, output_dir=data_dir)
+            else:
+                raise e
+                
+        return jsonify({"success": True, "filename": filename, "message": f"Downloaded {days} days of {symbol} data ({interval}) to {filename}"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/datafiles', methods=['GET'])
+def get_data_files():
+    """Returns list of available CSV data files."""
+    try:
+        data_dir = os.path.join(os.getcwd(), 'data')
+        if not os.path.exists(data_dir):
+             return jsonify([])
+        files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
+        return jsonify(files)
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/errors', methods=['GET'])

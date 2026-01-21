@@ -480,8 +480,42 @@ class GridBot:
                     if b['asset'] == 'USDT':
                         usdt_balance = float(b['free']) + float(b['locked'])
                     elif b['asset'] == base_asset:
-                        base_balance = float(b['free']) + float(b['locked'])
-        
+                        total_balance = float(b['free']) + float(b['locked'])
+                        
+                        # Subtract Spot Bot held funds if any
+                        spot_state_file = f"data/state_live_{self.symbol}.json"
+                        if os.path.exists(spot_state_file):
+                            try:
+                                with open(spot_state_file, 'r') as f:
+                                    s = json.load(f)
+                                    # Check if spot bot bought anything
+                                    if s.get('bought_price'):
+                                        spot_holdings = float(s.get('base_balance_at_buy') or s.get('base_balance', 0.0))
+                                        total_balance = max(0.0, total_balance - spot_holdings)
+                            except:
+                                pass
+                        
+                        base_balance = total_balance
+            
+            # --- FIX: Show Allocated Balance instead of Total Wallet Balance ---
+            # If the bot is running and has active orders, calculate the actual funds locked in the grid.
+            if self.running and len(self.active_orders) > 0:
+                allocated_usdt = 0.0
+                allocated_base = 0.0
+                for o in self.active_orders:
+                    if o['side'] == 'BUY':
+                        allocated_usdt += float(o['price']) * float(o['qty'])
+                    elif o['side'] == 'SELL':
+                        allocated_base += float(o['qty'])
+                
+                # Update the displayed balances to reflect only what is allocated to this bot
+                if allocated_usdt > 0:
+                    usdt_balance = allocated_usdt
+                    # Add a small buffer for potential unplaced orders or fees if needed, 
+                    # but strictly 'allocated' is safer to show.
+                
+                if allocated_base > 0:
+                    base_balance = allocated_base
         current_price = self.get_current_price() or 0
         
         return {

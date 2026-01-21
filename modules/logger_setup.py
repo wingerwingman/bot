@@ -120,17 +120,50 @@ def clear_audit_logs():
         with open(config.AUDIT_LOG_FILE, 'w') as f:
             f.truncate(0)
 
+
+def clear_activity_logs():
+    """Clears the system activity logs (Trades + Main Debug)."""
+    # 1. Clear Trade Log (Displayed in UI System Activity)
+    if os.path.exists(config.TRADE_LOG_FILE):
+        with open(config.TRADE_LOG_FILE, 'w') as f:
+            f.truncate(0)
+    
+    # 2. Clear Main Debug Log (optional, but good for full clear)
+    if os.path.exists(config.TRADING_LOG_FILE):
+        with open(config.TRADING_LOG_FILE, 'w') as f:
+            f.truncate(0)
+
+def clear_strategy_logs():
+    """Clears only the strategy tuning logs."""
+    strategy_logs.clear()
+    
+    # Clear persistence file
+    if os.path.exists(config.STRATEGY_HISTORY_FILE):
+        with open(config.STRATEGY_HISTORY_FILE, 'w') as f:
+            f.truncate(0)
+            
+    # Also clear detailed tuning CSV? Maybe keep it for analysis?
+    # User asked for "strategy" clear, usually implies the UI list.
+    # We can clear the CSV too to be safe/clean.
+    if os.path.exists(config.TUNING_LOG_FILE):
+        with open(config.TUNING_LOG_FILE, 'w') as f:
+             f.truncate(0)
+             # Write header again
+             logging.getLogger("tuning_logger").info("Timestamp,Symbol,Action,Price,Qty,Profit,Volatility,RangeLow,RangeHigh,Step,StepPct")
+
+
 def clear_all_logs():
     """Clears both system and strategy logs from memory AND disk."""
     recent_errors.clear()
-    strategy_logs.clear()
     
-    # Clear persistence files
-    files_to_clear = [config.STRATEGY_HISTORY_FILE, config.TUNING_LOG_FILE, config.AUDIT_LOG_FILE, config.ERROR_LOG_FILE]
-    for file_path in files_to_clear:
-        if os.path.exists(file_path):
-            with open(file_path, 'w') as f:
-                f.truncate(0)
+    clear_activity_logs()
+    clear_strategy_logs()
+    clear_audit_logs()
+    
+    # Clear errors file
+    if os.path.exists(config.ERROR_LOG_FILE):
+        with open(config.ERROR_LOG_FILE, 'w') as f:
+            f.truncate(0)
 
 def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
     """Sets up the main logger and the trade-specific logger."""
@@ -219,6 +252,9 @@ def log_trade(main_logger, trade_logger, action, price, quantity=None, total_val
             
         main_logger.info(f"DEBUG: Attempting to log trade: {msg}") 
         trade_logger.info(msg)
+        
+        # Add visible console print since we muted debug logs
+        print(f"💰 {action.upper()}: Price {price} | Qty {quantity} | Val {total_value} | PnL {profit if profit else '0'}%")
         
         # Force flush
         for handler in trade_logger.handlers:

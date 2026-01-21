@@ -260,11 +260,18 @@ class BinanceTradingBot:
             last_trade_line = lines[-1].strip()
             parts = last_trade_line.split(',')
 
-            if len(parts) >= 4:
-                # Format: Time, Action, Qty, Price,...
-                action = parts[1]
-                quantity_str = parts[2]
-                price_str = parts[3]
+            # Format: "2026-01-15 10:38:50,286,Buy,0.00013,96931.95,1554.83"
+            # The timestamp has a comma for milliseconds, so:
+            # parts[0]: date time (without ms)
+            # parts[1]: milliseconds
+            # parts[2]: Action (Buy/Sell)
+            # parts[3]: Quantity
+            # parts[4]: Price
+            # parts[5]: Balance (optional)
+            if len(parts) >= 5:
+                action = parts[2]
+                quantity_str = parts[3]
+                price_str = parts[4]
                 
                 try:
                     price = float(price_str)
@@ -314,36 +321,37 @@ class BinanceTradingBot:
             'gross_loss': self.gross_loss,
             'peak_balance': self.peak_balance,
             'max_drawdown': self.max_drawdown,
-            'dca_count': self.dca_count
+            'dca_count': self.dca_count,
+            'peak_price_since_buy': self.strategy.peak_price_since_buy
         }
         
         try:
             os.makedirs('data', exist_ok=True)
             with open(self.get_state_file_path(), 'w') as f:
                 json.dump(state, f, indent=2)
-            self.logger.info(f"State saved: bought_price={self.bought_price}")
+            # self.logger.debug(f"State saved: bought_price={self.bought_price}")
         except Exception as e:
             self.logger.error(f"Error saving state: {e}")
-    
+
     def load_state(self):
         """Loads bot state from JSON on startup."""
         if not self.is_live_trading:
             return  # Don't load state for backtests
-        
+
         state_file = self.get_state_file_path()
         if not os.path.exists(state_file):
             self.logger.debug("No previous state file found. Starting fresh.")
             return
-        
+
         try:
             with open(state_file, 'r') as f:
                 state = json.load(f)
-            
+
             # Verify it's for the same trading pair
             if state.get('symbol') != self.symbol:
                 self.logger.warning(f"State file is for {state.get('symbol')}, not {self.symbol}. Ignoring.")
                 return
-            
+
             # Restore position info
             saved_bought_price = state.get('bought_price')
             if saved_bought_price:
@@ -357,7 +365,13 @@ class BinanceTradingBot:
                 else:
                     self.logger.debug(f"Restored position: bought_price={self.bought_price}")
                     print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}")
-            
+
+            # Restore Peak Price Logic
+            peak_val = state.get('peak_price_since_buy')
+            if peak_val:
+                self.strategy.peak_price_since_buy = float(peak_val)
+                self.logger.debug(f"Restored Peak Price: ${self.strategy.peak_price_since_buy}")
+
             # Restore metrics
             self.total_trades = state.get('total_trades', 0)
             self.winning_trades = state.get('winning_trades', 0)
@@ -366,9 +380,9 @@ class BinanceTradingBot:
             self.peak_balance = state.get('peak_balance', 0)
             self.max_drawdown = state.get('max_drawdown', 0)
             self.dca_count = state.get('dca_count', 0)
-            
+
             last_update = state.get('last_update', 'unknown')
-            
+
             # Request: "add loging of what price and other data is loaded when restarting"
             log_msg = (
                 f"♻️ SESSION RESTORED from {last_update}\n"
@@ -379,21 +393,21 @@ class BinanceTradingBot:
             )
             self.logger.debug(log_msg)
             print(log_msg)
-            
+
             # Log to Strategy Tab as well (FULL DETAIL per user request)
             logger_setup.log_strategy(log_msg)
-            
+
             # Force immediate strategy re-check to populate "Strategy Tuning" tab
             self.last_volatility_check_time = None
-            
+
         except Exception as e:
             self.logger.error(f"Error loading state: {e}")
-    
+
     def clear_state(self):
         """Clears the saved state (called after successful position close)."""
         if not self.is_live_trading:
             return
-        
+
         state_file = self.get_state_file_path()
         if os.path.exists(state_file):
             # Don't delete, just update with no position
@@ -418,7 +432,7 @@ class BinanceTradingBot:
                 self.logger.warning(f"Connection unstable (Retrying in 5s): {e}")
                 time.sleep(5)
                 return None
-            
+
             self.logger.error(f"An unexpected error occurred: {e}")
             return None
 
@@ -459,7 +473,7 @@ class BinanceTradingBot:
             # Need to fetch data first
             klines = self.client.get_historical_klines(self.symbol, Client.KLINE_INTERVAL_1DAY, f"{self.strategy.volatility_period} day ago UTC")
             atr = indicators.calculate_volatility_from_klines(klines, self.strategy.volatility_period)
-            
+
             # Normalize to percentage using current price
             current_price = self.check_price()
             if current_price and current_price > 0:
@@ -478,8 +492,8 @@ class BinanceTradingBot:
             if data['data']:
                 value = int(data['data'][0]['value'])
                 classification = data['data'][0]['value_classification']
-                self.logger.debug(f"Fear & Greed Index: {value} ({classification})")
-                
+                # self.logger.debug(f"Fear & Greed Index: {value} ({classification})")
+
                 # Also log to Strategy Tab
                 # logger_setup.log_strategy(f"Fear & Greed Index: {value} ({classification})")
                 return value
@@ -689,7 +703,7 @@ class BinanceTradingBot:
                     total_val = self.quote_balance + (self.base_balance * self.bought_price)
                     
                     self.logger.info(f"Order Filled: Bought {executed_qty} {self.base_asset} @ {self.bought_price:.2f} (Total {cummulative_quote_qty} {self.quote_asset})")
-                    notifier.send_telegram_message(f"🟢 <b>BUY EXECUTION</b>\nSymbol: {self.symbol}\nPrice: {self.bought_price:.2f}\nQty: {executed_qty}\nTotal: {cummulative_quote_qty:.2f} {self.quote_asset}")
+                    notifier.send_telegram_message(f"🟢 <b>BUY EXECUTION</b>\nSymbol: {self.symbol}\nPrice: ${self.bought_price:.2f}\nQty: {executed_qty}\nTotal: ${cummulative_quote_qty:.2f}")
                     self.log_trade_wrapper("Buy", self.bought_price, executed_qty, total_val)
                     
                     # Track Fees (Estimate: Quote Qty * Fee Rate)
@@ -745,7 +759,8 @@ class BinanceTradingBot:
                      self.base_balance = self.get_balance(self.base_asset)
                      
                      self.logger.info(f"Order Filled: Sold {executed_qty} {self.base_asset} @ {avg_price:.2f} (Total {revenue:.2f} {self.quote_asset}, PnL {real_profit_percent:.2f}%)")
-                     notifier.send_telegram_message(f"🔴 <b>SELL EXECUTION</b>\nSymbol: {self.symbol}\nPrice: {avg_price:.2f}\nPnL: {real_profit_percent:.2f}%")
+                     pnl_emoji = "🟢" if profit_amount >= 0 else "🔴"
+                     notifier.send_telegram_message(f"{pnl_emoji} <b>SELL EXECUTION</b>\nSymbol: {self.symbol}\nPrice: ${avg_price:.2f}\nTotal: ${revenue:.2f}\nPnL: ${profit_amount:.2f} ({real_profit_percent:.2f}%)")
                      self.log_trade_wrapper(reason, avg_price, executed_qty, self.quote_balance, real_profit_percent)
                      
                      # Track Fees (Approx Revenue * Fee Rate)
@@ -849,7 +864,12 @@ class BinanceTradingBot:
                     if self.last_volatility_check_time is None or (datetime.datetime.now() - self.last_volatility_check_time).total_seconds() >= volatility_check_interval:
                         old_volatility = self.last_volatility
                         self.last_volatility = self.calculate_volatility()
+
                         self.strategy.set_volatility(self.last_volatility)
+                        
+                        # Save State Periodically (every 5 mins) to persist Trail Data
+                        if self.bought_price:
+                            self.save_state()
                         
                         # --- VOLATILITY CHANGE ALERT (>20% shift) ---
                         if old_volatility is not None and self.last_volatility is not None:
@@ -988,10 +1008,11 @@ class BinanceTradingBot:
                                       dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
                                       drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100
                                       
-                                      self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
-                                      logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
+                                      # Log moved to execution block to prevent spam
+                                      # self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
+                                      # logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
                                       
-                                      notifier.send_telegram_message(f"🛡️ <b>DCA SNIPER ACTIVATED</b>\nSymbol: {self.symbol}\nReason: RSI Oversold ({dca_rsi:.1f}) & Price Drop (-{drop_pct:.2f}%)")
+                                      # notifier.send_telegram_message(f"🛡️ <b>DCA SNIPER ACTIVATED</b>\nSymbol: {self.symbol}\nReason: RSI Oversold ({dca_rsi:.1f}) & Price Drop (-{drop_pct:.2f}%)")
                                       
                                       # Calculate Buy Size (Use standard logic * Scale Factor)
                                       # Logic: Try to buy 1x Standard Position Size
@@ -1002,6 +1023,8 @@ class BinanceTradingBot:
                                       
                                       # Check Funds
                                       if self.quote_balance >= invest_amount * 0.99:
+                                           self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
+                                           logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
                                            self.buy(current_price, invest_amount, is_dca=True)
                                            dca_triggered = True
                                       else:
@@ -1103,6 +1126,7 @@ class BinanceTradingBot:
             elif 'sol' in fname: self.base_asset = 'SOL'; self.symbol = 'SOLUSDT'
             elif 'bnb' in fname: self.base_asset = 'BNB'; self.symbol = 'BNBUSDT'
             elif 'xrp' in fname: self.base_asset = 'XRP'; self.symbol = 'XRPUSDT'
+            elif 'zec' in fname: self.base_asset = 'ZEC'; self.symbol = 'ZECUSDT'
             else: self.base_asset = 'ETH'; self.symbol = 'ETHUSDT'
             
             self.last_price = None
@@ -1137,7 +1161,7 @@ class BinanceTradingBot:
             last_tuning_index = 0
             
             for index, row in historical_data.iterrows():
-                current_price = row['Price']
+                current_price = row['Close']
                 # current_time = row['Timestamp'] # Unused currently
                 
                 # --- DYNAMIC TUNING (Simulated Periodically) ---
@@ -1220,6 +1244,11 @@ class BinanceTradingBot:
                                # Backtest Fee
                                self.total_fees += (quantity * execution_price * self.trading_fee_percentage)
                 else:
+                     # UPDATE BACKTEST UI STATUS
+                     u_peak = self.strategy.peak_price_since_buy or current_price
+                     self.current_trail_price = u_peak * (1 - self.strategy.sell_percent)
+                     self.current_hard_stop = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
+
                      action = self.strategy.check_sell_signal(current_price, self.bought_price)
                      if action in ['SELL', 'STOP_LOSS']:
                           # APPLY SLIPPAGE (Sell Lower)

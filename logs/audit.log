@@ -1,1 +1,11 @@
-{"timestamp": "2026-01-14 08:35:59", "ip": "127.0.0.1", "action": "CLEAR_ALL_LOGS", "details": "All logs cleared"}
+{"timestamp": "2026-01-15 11:13:58", "ip": "127.0.0.1", "action": "CLEAR_ALL_LOGS", "details": "All logs cleared"}
+{"timestamp": "2026-01-15 11:22:12", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-15 11:22:22", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $3034.94-$3562.76, Levels: 5"}
+{"timestamp": "2026-01-15 11:22:27", "ip": "127.0.0.1", "action": "CLEAR_LOGS", "details": "Activity logs cleared by user"}
+{"timestamp": "2026-01-15 11:22:28", "ip": "127.0.0.1", "action": "CLEAR_LOGS", "details": "Activity logs cleared by user"}
+{"timestamp": "2026-01-15 11:22:38", "ip": "127.0.0.1", "action": "CLEAR_LOGS", "details": "Strategy logs cleared by user"}
+{"timestamp": "2026-01-15 11:22:48", "ip": "127.0.0.1", "action": "CLEAR_ERRORS", "details": "Error log cleared"}
+{"timestamp": "2026-01-16 06:00:33", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-16 06:00:47", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $3045.43-$3575.07, Levels: 5"}
+{"timestamp": "2026-01-21 05:58:59", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-21 05:59:03", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $3045.43-$3575.07, Levels: 5"}
