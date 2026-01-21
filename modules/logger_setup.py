@@ -287,3 +287,199 @@ def log_tuning(symbol, action, price, qty, profit, volatility, range_low, range_
 def get_audit_logs():
     """Retrieve user audit logs."""
     return list(audit_logs)
+
+
+# ============================================
+# TRADE JOURNAL - Structured Trade Logging
+# ============================================
+TRADE_JOURNAL_FILE = 'logs/trade_journal.json'
+trade_journal = []  # In-memory cache
+
+def log_trade_journal(entry):
+    """
+    Log a structured trade entry to the journal.
+    Entry should be a dict with:
+    - timestamp, symbol, action (BUY/SELL)
+    - price, qty, total_value
+    - entry_reason (for buys) or exit_reason (for sells)
+    - indicators: {rsi, macd_hist, volatility, fear_greed, trend_ma}
+    - pnl_percent, pnl_amount (for sells)
+    - hold_duration_minutes (for sells)
+    """
+    import json
+    import datetime
+    
+    # Add timestamp if not present
+    if 'timestamp' not in entry:
+        entry['timestamp'] = datetime.datetime.now().isoformat()
+    
+    # Add to in-memory cache
+    trade_journal.insert(0, entry)  # Newest first
+    if len(trade_journal) > 500:
+        trade_journal.pop()  # Keep last 500
+
+    # Persist to file
+    try:
+        # Read existing
+        existing = []
+        if os.path.exists(TRADE_JOURNAL_FILE):
+            with open(TRADE_JOURNAL_FILE, 'r', encoding='utf-8') as f:
+                try:
+                    existing = json.load(f)
+                except:
+                    existing = []
+        
+        # Prepend new entry
+        existing.insert(0, entry)
+        
+        # Keep last 500
+        existing = existing[:500]
+        
+        # Write back
+        with open(TRADE_JOURNAL_FILE, 'w', encoding='utf-8') as f:
+            json.dump(existing, f, indent=2)
+    except Exception as e:
+        print(f"Error saving trade journal: {e}")
+
+def get_trade_journal(limit=50):
+    """Retrieve trade journal entries."""
+    import json
+    
+    # If in-memory is empty, load from file
+    if not trade_journal:
+        try:
+            if os.path.exists(TRADE_JOURNAL_FILE):
+                with open(TRADE_JOURNAL_FILE, 'r', encoding='utf-8') as f:
+                    loaded = json.load(f)
+                    trade_journal.extend(loaded[:500])
+        except:
+            pass
+    
+    return trade_journal[:limit]
+
+
+# ============================================
+# PERFORMANCE METRICS - Sharpe Ratio & More
+# ============================================
+EQUITY_HISTORY_FILE = 'logs/equity_history.json'
+equity_history = []  # List of {timestamp, balance, pnl_percent}
+
+def log_equity_snapshot(balance, trade_pnl_percent=None):
+    """
+    Log a balance snapshot for equity curve and Sharpe calculation.
+    Call after each trade or periodically.
+    """
+    import json
+    import datetime
+    
+    entry = {
+        'timestamp': datetime.datetime.now().isoformat(),
+        'balance': balance,
+        'pnl_percent': trade_pnl_percent
+    }
+    
+    equity_history.append(entry)
+    
+    # Keep last 1000 snapshots
+    if len(equity_history) > 1000:
+        equity_history.pop(0)
+    
+    # Persist to file
+    try:
+        with open(EQUITY_HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(equity_history[-1000:], f, indent=2)
+    except Exception as e:
+        print(f"Error saving equity history: {e}")
+
+def load_equity_history():
+    """Load equity history from file on startup."""
+    import json
+    global equity_history
+    
+    try:
+        if os.path.exists(EQUITY_HISTORY_FILE):
+            with open(EQUITY_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                equity_history = json.load(f)
+    except:
+        equity_history = []
+
+def get_equity_history(limit=100):
+    """Get recent equity snapshots for charting."""
+    if not equity_history:
+        load_equity_history()
+    return equity_history[-limit:]
+
+def calculate_sharpe_ratio(risk_free_rate=0.02):
+    """
+    Calculate Sharpe Ratio from equity history.
+    risk_free_rate is annual (e.g., 0.02 = 2%)
+    Returns: sharpe_ratio (annualized), or None if insufficient data
+    """
+    import math
+    
+    if not equity_history:
+        load_equity_history()
+    
+    # Need at least 2 data points
+    if len(equity_history) < 2:
+        return None
+    
+    # Extract returns (pnl_percent from trades)
+    returns = [e['pnl_percent'] for e in equity_history if e.get('pnl_percent') is not None]
+    
+    if len(returns) < 2:
+        return None
+    
+    # Calculate mean and std of returns
+    mean_return = sum(returns) / len(returns)
+    variance = sum((r - mean_return) ** 2 for r in returns) / len(returns)
+    std_return = math.sqrt(variance)
+    
+    if std_return == 0:
+        return None
+    
+    # Annualize (assume ~250 trading days, but for crypto ~365)
+    # For per-trade Sharpe, we just use raw figures
+    # Convert annual risk-free to per-trade (rough approximation)
+    per_trade_rf = risk_free_rate / 365  # ~0.005% per day
+    
+    sharpe = (mean_return - per_trade_rf) / std_return
+    
+    return round(sharpe, 2)
+
+def get_performance_summary():
+    """
+    Get comprehensive performance summary.
+    Returns dict with: sharpe_ratio, total_trades, win_rate, avg_return, max_drawdown
+    """
+    if not equity_history:
+        load_equity_history()
+    
+    summary = {
+        'sharpe_ratio': calculate_sharpe_ratio(),
+        'total_snapshots': len(equity_history),
+        'avg_return': None,
+        'max_drawdown': None
+    }
+    
+    returns = [e['pnl_percent'] for e in equity_history if e.get('pnl_percent') is not None]
+    
+    if returns:
+        summary['avg_return'] = round(sum(returns) / len(returns), 2)
+    
+    # Calculate max drawdown from balance history
+    if equity_history:
+        balances = [e['balance'] for e in equity_history if e.get('balance')]
+        if balances:
+            peak = balances[0]
+            max_dd = 0
+            for bal in balances:
+                if bal > peak:
+                    peak = bal
+                dd = ((peak - bal) / peak) * 100 if peak > 0 else 0
+                if dd > max_dd:
+                    max_dd = dd
+            summary['max_drawdown'] = round(max_dd, 2)
+    
+    return summary
+

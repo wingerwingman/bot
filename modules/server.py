@@ -725,6 +725,64 @@ def clear_all_logs():
     logger_setup.log_audit("CLEAR_ALL_LOGS", "All logs cleared", request.remote_addr)
     return jsonify({"success": True})
 
+
+# ==================== TRADE JOURNAL & PERFORMANCE ====================
+
+@app.route('/api/journal', methods=['GET'])
+def get_trade_journal():
+    """Returns trade journal entries with context."""
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        from .logger_setup import get_trade_journal
+        return jsonify({"trades": get_trade_journal(limit)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/equity', methods=['GET'])
+def get_equity_history():
+    """Returns equity history for charting."""
+    try:
+        limit = request.args.get('limit', 100, type=int)
+        from .logger_setup import get_equity_history
+        return jsonify({"history": get_equity_history(limit)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/performance', methods=['GET'])
+def get_performance():
+    """Returns performance summary including Sharpe Ratio."""
+    try:
+        from .logger_setup import get_performance_summary, calculate_sharpe_ratio
+        summary = get_performance_summary()
+        
+        # Also get trade journal stats
+        from .logger_setup import get_trade_journal
+        trades = get_trade_journal(500)
+        
+        if trades:
+            wins = sum(1 for t in trades if t.get('action') == 'SELL' and t.get('pnl_amount', 0) >= 0)
+            losses = sum(1 for t in trades if t.get('action') == 'SELL' and t.get('pnl_amount', 0) < 0)
+            total_sells = wins + losses
+            
+            summary['total_trades'] = len([t for t in trades if t.get('action') == 'SELL'])
+            summary['winning_trades'] = wins
+            summary['losing_trades'] = losses
+            summary['win_rate'] = round((wins / total_sells * 100), 1) if total_sells > 0 else 0
+        
+        return jsonify(summary)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/sharpe', methods=['GET'])
+def get_sharpe():
+    """Returns just the Sharpe Ratio."""
+    try:
+        from .logger_setup import calculate_sharpe_ratio
+        sharpe = calculate_sharpe_ratio()
+        return jsonify({"sharpe_ratio": sharpe})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/test-error', methods=['POST'])
 def trigger_test_error():
     """Generates a test error log."""

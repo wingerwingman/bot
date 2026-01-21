@@ -445,7 +445,7 @@ class BinanceTradingBot:
                         free = float(balance['free'])
                         # Grid Bot Awareness: If Grid Bot is running, its funds are LOCKED. 
                         # This FREE balance is safe to use.
-                        if asset == self.base_asset and os.path.exists(f"data/grid_state_{self.symbol}.json"):
+                        if hasattr(self, 'symbol') and self.symbol and asset == self.base_asset and os.path.exists(f"data/grid_state_{self.symbol}.json"):
                              self.logger.debug(f"Grid Bot active. Using free {asset}: {free} (Grid funds locked)")
                         return free
                 self.logger.warning(f"{asset} balance not found. Returning 0.0.")
@@ -559,7 +559,7 @@ class BinanceTradingBot:
             
             final_units = min(position_units, max_units)
             
-            self.logger.info(f"Dynamic Sizing: Risk ${risk_amount:.2f} (2%), Dist ${distance_per_unit:.2f}, Calc Units {position_units:.4f}, Cap {max_units:.4f}")
+            self.logger.debug(f"Dynamic Sizing: Risk ${risk_amount:.2f} (2%), Dist ${distance_per_unit:.2f}, Calc Units {position_units:.4f}, Cap {max_units:.4f}")
             return final_units
             
         except Exception as e:
@@ -647,6 +647,7 @@ class BinanceTradingBot:
     def start(self):
         if not self.running:
             self.running = True
+            self.start_time = time.time() # Track startup time for warmup
             # Set initial peak balance for metrics
             self.peak_balance = self.get_balance(self.quote_asset) + (self.get_balance(self.base_asset) * (self.check_price() or 0))
             self.thread = threading.Thread(target=self.run)
@@ -656,8 +657,66 @@ class BinanceTradingBot:
 
     def stop(self):
         self.running = False
+        
+        # Send shutdown notification with final stats (only if bot was fully initialized)
+        if self.is_live_trading and hasattr(self, 'symbol') and self.symbol:
+            try:
+                net_pnl = self.gross_profit - self.gross_loss
+                win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
+                
+                stop_msg = (
+                    f"🛑 <b>SPOT BOT STOPPED</b>\n"
+                    f"Symbol: {self.symbol}\n"
+                    f"\n📊 <b>Final Session Stats:</b>\n"
+                    f"Trades: {self.total_trades} (Win: {self.winning_trades})\n"
+                    f"Win Rate: {win_rate:.1f}%\n"
+                    f"Net P&L: ${net_pnl:.2f}\n"
+                    f"Total Fees: ${self.total_fees:.2f}\n"
+                    f"Max Drawdown: {self.max_drawdown:.2f}%\n"
+                    f"Final Balance: ${self.quote_balance:.2f}"
+                )
+                notifier.send_telegram_message(stop_msg)
+            except Exception as e:
+                self.logger.error(f"Error sending stop notification: {e}")
+
+    def _fetch_real_fee(self, order_id):
+        """Fetch actual commission paid for an order and convert to USDT."""
+        if not self.is_live_trading:
+            return None
+        
+        try:
+            trades = self.client.get_my_trades(symbol=self.symbol, orderId=order_id)
+            total_fee_usdt = 0.0
+            
+            for t in trades:
+                fee = float(t['commission'])
+                asset = t['commissionAsset']
+                
+                if asset in ['USDT', 'USD']:
+                    total_fee_usdt += fee
+                elif asset == 'BNB':
+                    try:
+                        ticker = self.client.get_symbol_ticker(symbol="BNBUSDT")
+                        price = float(ticker['price'])
+                        total_fee_usdt += fee * price
+                    except:
+                        self.logger.warning("Could not fetch BNB price for fee calc. Using $600 fallback.")
+                        total_fee_usdt += fee * 600.0 
+                elif asset == self.base_asset or asset == self.symbol.replace('USDT',''):
+                    trade_price = float(t['price'])
+                    total_fee_usdt += fee * trade_price
+            
+            if len(trades) > 0:
+                self.logger.info(f"🧾 Actual Fee Fetched: ${total_fee_usdt:.4f} (from {len(trades)} fills)")
+                return total_fee_usdt
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Failed to fetch real fee: {e}")
+            return None
 
     def buy(self, current_price, invest_amount, is_dca=False):
+        if is_dca: self.last_dca_attempt = time.time()
         # Use quote_balance check
         quote_bal = self.get_balance(self.quote_asset)
         
@@ -703,16 +762,60 @@ class BinanceTradingBot:
                     total_val = self.quote_balance + (self.base_balance * self.bought_price)
                     
                     self.logger.info(f"Order Filled: Bought {executed_qty} {self.base_asset} @ {self.bought_price:.2f} (Total {cummulative_quote_qty} {self.quote_asset})")
-                    notifier.send_telegram_message(f"🟢 <b>BUY EXECUTION</b>\nSymbol: {self.symbol}\nPrice: ${self.bought_price:.2f}\nQty: {executed_qty}\nTotal: ${cummulative_quote_qty:.2f}")
+                    
+                    # Enhanced Telegram with context
+                    buy_msg = (
+                        f"🟢 <b>BUY EXECUTION</b>\n"
+                        f"Symbol: {self.symbol}\n"
+                        f"Price: ${self.bought_price:.2f}\n"
+                        f"Qty: {executed_qty:.6f}\n"
+                        f"Total: ${cummulative_quote_qty:.2f}\n"
+                        f"\n📊 <b>Position Status:</b>\n"
+                        f"Remaining {self.quote_asset}: ${self.quote_balance:.2f}\n"
+                        f"Holdings: {self.base_balance:.6f} {self.base_asset}"
+                    )
+                    if self.dca_count > 0:
+                        buy_msg += f"\n⚡ DCA Level: {self.dca_count}"
+                    notifier.send_telegram_message(buy_msg)
+                    
                     self.log_trade_wrapper("Buy", self.bought_price, executed_qty, total_val)
                     
                     # Track Fees (Estimate: Quote Qty * Fee Rate)
                     # Note: If BNB is used, value is same.
-                    est_fee = cummulative_quote_qty * self.trading_fee_percentage
-                    self.total_fees += est_fee
+                    real_fee = self._fetch_real_fee(order['orderId'])
+                    if real_fee is not None:
+                        self.total_fees += real_fee
+                    else:
+                        est_fee = cummulative_quote_qty * self.trading_fee_percentage
+                        self.total_fees += est_fee
                     
                     # Save state after buy for crash recovery
                     self.save_state()
+                    
+                    # === TRADE JOURNAL ENTRY ===
+                    try:
+                        rsi_val = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else None
+                        macd, hist, sig = indicators.calculate_macd(self.strategy.price_history)
+                        
+                        journal_entry = {
+                            'action': 'BUY',
+                            'symbol': self.symbol,
+                            'price': self.bought_price,
+                            'qty': executed_qty,
+                            'total_value': cummulative_quote_qty,
+                            'entry_reason': 'DCA Defense' if is_dca else 'Signal Buy',
+                            'dca_level': self.dca_count,
+                            'indicators': {
+                                'rsi': round(rsi_val, 2) if rsi_val else None,
+                                'macd_hist': round(hist, 4) if hist else None,
+                                'volatility': round(self.last_volatility * 100, 2) if self.last_volatility else None,
+                                'fear_greed': self.fear_greed_index
+                            },
+                            'balance_after': self.quote_balance
+                        }
+                        logger_setup.log_trade_journal(journal_entry)
+                    except Exception as e:
+                        self.logger.debug(f"Error logging to trade journal: {e}")
                 else:
                     quantity = round(invest_amount / current_price * (1 - self.trading_fee_percentage), 8)
                     cost_with_fee = quantity * current_price * (1 + self.trading_fee_percentage)
@@ -759,18 +862,94 @@ class BinanceTradingBot:
                      self.base_balance = self.get_balance(self.base_asset)
                      
                      self.logger.info(f"Order Filled: Sold {executed_qty} {self.base_asset} @ {avg_price:.2f} (Total {revenue:.2f} {self.quote_asset}, PnL {real_profit_percent:.2f}%)")
+                     
+                     # Calculate session stats for enhanced notification
+                     self.total_trades += 1
+                     if profit_amount >= 0:
+                         self.winning_trades += 1
+                         self.gross_profit += profit_amount
+                     else:
+                         self.gross_loss += abs(profit_amount)
+                     
+                     net_pnl = self.gross_profit - self.gross_loss
+                     win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
+                     
                      pnl_emoji = "🟢" if profit_amount >= 0 else "🔴"
-                     notifier.send_telegram_message(f"{pnl_emoji} <b>SELL EXECUTION</b>\nSymbol: {self.symbol}\nPrice: ${avg_price:.2f}\nTotal: ${revenue:.2f}\nPnL: ${profit_amount:.2f} ({real_profit_percent:.2f}%)")
+                     
+                     # Enhanced Telegram with performance summary
+                     sell_msg = (
+                         f"{pnl_emoji} <b>SELL EXECUTION</b>\n"
+                         f"Symbol: {self.symbol}\n"
+                         f"Price: ${avg_price:.2f}\n"
+                         f"Qty: {executed_qty:.6f}\n"
+                         f"Revenue: ${revenue:.2f}\n"
+                         f"Trade PnL: ${profit_amount:.2f} ({real_profit_percent:.2f}%)\n"
+                         f"\n📈 <b>Session Performance:</b>\n"
+                         f"Trades: {self.total_trades} (Win: {self.winning_trades})\n"
+                         f"Win Rate: {win_rate:.1f}%\n"
+                         f"Net P&L: ${net_pnl:.2f}\n"
+                         f"Total Fees: ${self.total_fees:.2f}\n"
+                         f"Max Drawdown: {self.max_drawdown:.2f}%\n"
+                         f"\n💰 Balance: ${self.quote_balance:.2f}"
+                     )
+                     notifier.send_telegram_message(sell_msg)
+                     
                      self.log_trade_wrapper(reason, avg_price, executed_qty, self.quote_balance, real_profit_percent)
                      
                      # Track Fees (Approx Revenue * Fee Rate)
-                     est_fee = revenue * self.trading_fee_percentage
-                     self.total_fees += est_fee
+                     # Track Fees
+                     real_fee = self._fetch_real_fee(order['orderId'])
+                     if real_fee is not None:
+                         self.total_fees += real_fee
+                     else:
+                         est_fee = revenue * self.trading_fee_percentage
+                         self.total_fees += est_fee
                      
-                     # Update Metrics Live
+                     # Update drawdown tracking
                      current_equity = self.quote_balance 
-                     self.update_metrics(profit_amount, current_equity)
+                     if current_equity > self.peak_balance:
+                         self.peak_balance = current_equity
+                     if self.peak_balance > 0:
+                         dd = ((self.peak_balance - current_equity) / self.peak_balance) * 100
+                         if dd > self.max_drawdown:
+                             self.max_drawdown = dd
+                     
                      self.print_performance_report()
+                     
+                     # === TRADE JOURNAL & EQUITY LOGGING ===
+                     try:
+                         rsi_val = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else None
+                         macd, hist, sig = indicators.calculate_macd(self.strategy.price_history)
+                         
+                         journal_entry = {
+                             'action': 'SELL',
+                             'symbol': self.symbol,
+                             'price': avg_price,
+                             'qty': executed_qty,
+                             'total_value': revenue,
+                             'exit_reason': reason,
+                             'pnl_percent': round(real_profit_percent, 2),
+                             'pnl_amount': round(profit_amount, 2),
+                             'entry_price': self.bought_price if hasattr(self, '_last_entry_price') else None,
+                             'indicators': {
+                                 'rsi': round(rsi_val, 2) if rsi_val else None,
+                                 'macd_hist': round(hist, 4) if hist else None,
+                                 'volatility': round(self.last_volatility * 100, 2) if self.last_volatility else None,
+                                 'fear_greed': self.fear_greed_index
+                             },
+                             'session_stats': {
+                                 'total_trades': self.total_trades,
+                                 'win_rate': round(win_rate, 1),
+                                 'net_pnl': round(net_pnl, 2)
+                             },
+                             'balance_after': self.quote_balance
+                         }
+                         logger_setup.log_trade_journal(journal_entry)
+                         
+                         # Log equity snapshot for Sharpe Ratio
+                         logger_setup.log_equity_snapshot(self.quote_balance, real_profit_percent)
+                     except Exception as e:
+                         self.logger.debug(f"Error logging to trade journal: {e}")
 
                 else:
                     revenue = self.base_balance * current_price * (1 - self.trading_fee_percentage)
@@ -818,6 +997,18 @@ class BinanceTradingBot:
 
             self.logger.debug("Entering main trading loop...")
             if self.is_live_trading:
+                # Send startup notification
+                start_msg = (
+                    f"🚀 <b>SPOT BOT STARTED</b>\n"
+                    f"Symbol: {self.symbol}\n"
+                    f"Mode: {'🟢 LIVE' if self.is_live_trading else '🧪 TEST'}\n"
+                    f"Balance: ${self.quote_balance:.2f} {self.quote_asset}\n"
+                    f"Holdings: {self.base_balance:.6f} {self.base_asset}\n"
+                    f"Dynamic Tuning: {'ON' if self.dynamic_settings else 'OFF'}\n"
+                    f"DCA Defense: {'ON' if self.dca_enabled else 'OFF'}"
+                )
+                notifier.send_telegram_message(start_msg)
+                self.peak_balance = max(self.peak_balance, self.quote_balance)
                 while self.running:
                     # Heartbeat (every hour)
                     if time.time() - last_heartbeat_time > 3600:
@@ -984,6 +1175,12 @@ class BinanceTradingBot:
                          # 1. Update Data
                          self.strategy.update_data(current_price)
                          
+                         # Warmup Check (5 mins) to stabilize RSI
+                         if (time.time() - getattr(self, 'start_time', 0)) < 300:
+                             # Optionally log debug but don't spam
+                             time.sleep(1)
+                             continue
+                         
                          # 2. Check Signals
                          if self.bought_price is None:
                               # Buy Check
@@ -1003,7 +1200,11 @@ class BinanceTradingBot:
                               # DCA Check (Sniper Mode)
                               dca_triggered = False
                               if self.dca_count < config.DCA_MAX_RETRIES:
-                                  if self.strategy.check_dca_signal(current_price, self.bought_price):
+                                  # Cooldown Check (Prevent Spam Loops)
+                                  last_attempt = getattr(self, 'last_dca_attempt', 0)
+                                  if (time.time() - last_attempt) < 60:
+                                      pass # Wait for cooldown
+                                  elif self.strategy.check_dca_signal(current_price, self.bought_price):
                                       # Calc trigger details for log
                                       dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
                                       drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100

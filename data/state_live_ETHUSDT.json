@@ -3,15 +3,15 @@
   "quote_asset": "USDT",
   "base_asset": "ETH",
   "bought_price": 2951.78,
-  "base_balance_at_buy": 0.0418128,
+  "base_balance_at_buy": 0.02,
   "position_size_percent": 0.25,
-  "last_update": "2026-01-21T07:24:15.197056",
-  "total_trades": 3,
+  "last_update": "2026-01-21T10:41:16.616689",
+  "total_trades": 4,
   "winning_trades": 1,
   "gross_profit": 3.368304000000009,
-  "gross_loss": 5.354231000000002,
-  "peak_balance": 176.93683324399998,
-  "max_drawdown": 0.032230644479852896,
+  "gross_loss": 8.903535000000009,
+  "peak_balance": 138.4963405,
+  "max_drawdown": 12.806070822644125,
   "dca_count": 0,
-  "peak_price_since_buy": 3001.03
+  "peak_price_since_buy": 2951.78
 }

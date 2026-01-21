@@ -9,6 +9,7 @@ import threading
 import logging
 import json
 import os
+import datetime
 from binance import Client
 from . import config
 from . import logger_setup
@@ -382,14 +383,38 @@ class GridBot:
                 grid_step = (self.upper_bound - self.lower_bound) / self.grid_count
                 gross_profit = order['qty'] * grid_step
                 
-                # Simulate fees (0.1% per trade, both buy and sell)
+                # Calculate Fees (Real vs Estimate)
                 trade_value = order['qty'] * order['price']
-                fee = trade_value * self.fee_rate
+                real_fee = self._fetch_real_fee(order['order_id'])
+                if real_fee is not None:
+                     fee = real_fee
+                else:
+                     fee = trade_value * self.fee_rate
+                     
                 self.total_fees += fee
                 
                 # Net profit = gross - fee (we only count half since we need buy+sell for full profit)
                 net_profit = gross_profit - (fee * 2)  # Account for both sides
                 self.total_profit += net_profit
+                
+                # --- LOG TO JOURNAL ---
+                try:
+                    j_entry = {
+                        'action': order['side'],
+                        'symbol': self.symbol,
+                        'price': float(order['price']),
+                        'qty': float(order['qty']),
+                        'total_value': float(order['price']) * float(order['qty']),
+                        'entry_reason': "Grid Level",
+                        'timestamp': datetime.datetime.now().isoformat(),
+                        'pnl_amount': float(net_profit) if order['side'] == 'SELL' else 0.0,
+                        'pnl_percent': float((grid_step/order['price'])*100) if order['side'] == 'SELL' else 0.0,
+                        'balance_after': 0.0
+                    }
+                    logger_setup.log_trade_journal(j_entry)
+                except Exception as ex:
+                    self.logger.error(f"Journal Log Error: {ex}")
+                # ----------------------
                 
                 self.logger.info(f"  → Gross: ${gross_profit:.2f}, Fee: ${fee:.2f}, Net: ${net_profit:.2f}")
                 
@@ -417,24 +442,37 @@ class GridBot:
                 except Exception as e:
                     self.logger.error(f"Failed to log tuning metrics: {e}")
                 
-                # TELEGRAM NOTIFICATION
+                # TELEGRAM NOTIFICATION - Enhanced with performance
                 try:
+                    mode_indicator = "🟢" if self.is_live else "🧪"
+                    
                     if order['side'] == 'SELL':
                          notifier.send_telegram_message(
-                            f"🤖 <b>GRID PROFIT</b>\n"
+                            f"{mode_indicator} <b>GRID SELL</b>\n"
                             f"Symbol: {self.symbol}\n"
-                            f"Price: {order['price']:.2f}\n"
-                            f"Profit: ${net_profit:.2f} (Net)"
+                            f"Price: ${order['price']:.2f}\n"
+                            f"Profit: ${net_profit:.2f}\n"
+                            f"\n📈 <b>Grid Performance:</b>\n"
+                            f"Buys: {self.buy_fills} | Sells: {self.sell_fills}\n"
+                            f"Net Profit: ${self.total_profit:.2f}\n"
+                            f"Total Fees: ${self.total_fees:.2f}"
                          )
                     else:
                          notifier.send_telegram_message(
-                            f"🤖 <b>GRID BUY</b>\n"
+                            f"{mode_indicator} <b>GRID BUY</b>\n"
                             f"Symbol: {self.symbol}\n"
-                            f"Price: {order['price']:.2f}\n"
-                            f"Qty: {order['qty']}"
+                            f"Price: ${order['price']:.2f}\n"
+                            f"Qty: {order['qty']:.6f}\n"
+                            f"Buy #{self.buy_fills} | Active Orders: {len(self.active_orders)}"
                          )
                 except Exception as e:
                     self.logger.error(f"Failed to send Telegram alert: {e}")
+                
+                except Exception as e:
+                    self.logger.error(f"Failed to send Telegram alert: {e}")
+                
+                # REPLENISH GRID (Cycle the order)
+                self._place_counter_order(order)
                 
                 # Save state after each fill
                 self._save_state()
@@ -535,9 +573,89 @@ class GridBot:
             'usdt_balance': usdt_balance,
             'base_balance': base_balance,
             'base_asset': base_asset,
-            'base_usd_value': base_balance * current_price
+            'base_usd_value': base_balance * current_price,
+            'orders': self.active_orders
         }
     
+    def _fetch_real_fee(self, order_id):
+        """Fetch actual commission paid for an order and convert to USDT."""
+        if not self.is_live:
+            return None
+        
+        try:
+            trades = self.client.get_my_trades(symbol=self.symbol, orderId=order_id)
+            total_fee_usdt = 0.0
+            
+            for t in trades:
+                fee = float(t['commission'])
+                asset = t['commissionAsset']
+                
+                if asset in ['USDT', 'USD']:
+                    total_fee_usdt += fee
+                elif asset == 'BNB':
+                    try:
+                        ticker = self.client.get_symbol_ticker(symbol="BNBUSDT")
+                        price = float(ticker['price'])
+                        total_fee_usdt += fee * price
+                    except:
+                        self.logger.warning("Could not fetch BNB price for fee calc. Using $600 fallback.")
+                        total_fee_usdt += fee * 600.0 
+                elif asset == self.symbol.replace('USDT',''):
+                    trade_price = float(t['price'])
+                    total_fee_usdt += fee * trade_price
+            
+            if len(trades) > 0:
+                self.logger.info(f"🧾 Actual Fee Fetched: ${total_fee_usdt:.4f}")
+                return total_fee_usdt
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Failed to fetch real fee: {e}")
+            return None
+
+    def _place_counter_order(self, filled_order):
+        step = (self.upper_bound - self.lower_bound) / self.grid_count
+        new_side = 'SELL' if filled_order['side'] == 'BUY' else 'BUY'
+        new_price = filled_order['price'] + step if new_side == 'SELL' else filled_order['price'] - step
+        new_price = self.round_price(new_price)
+        
+        # Check bounds
+        if new_price > self.upper_bound * 1.01 or new_price < self.lower_bound * 0.99:
+           return
+
+        qty = filled_order['qty']
+        
+        if self.is_live:
+            try:
+                order = self.client.create_order(
+                    symbol=self.symbol,
+                    side=new_side,
+                    type=Client.ORDER_TYPE_LIMIT,
+                    timeInForce=Client.TIME_IN_FORCE_GTC,
+                    quantity=qty,
+                    price=str(new_price)
+                )
+                self.active_orders.append({
+                    'order_id': order['orderId'],
+                    'price': new_price,
+                    'side': new_side,
+                    'qty': qty,
+                    'status': 'OPEN'
+                })
+                self.logger.info(f"♻️ REPLENISH: Placed {new_side} @ {new_price:.2f}")
+            except Exception as e:
+                self.logger.error(f"Failed to replenish grid: {e}")
+        else:
+             # Sim
+             self.active_orders.append({
+                'order_id': f"SIM_{new_side}_{new_price}",
+                'price': new_price,
+                'side': new_side,
+                'qty': qty,
+                'status': 'OPEN'
+             })
+             self.logger.info(f"♻️ [SIM] REPLENISH: Placed {new_side} @ {new_price:.2f}")
+
     def run(self):
         """Main grid bot loop."""
         self.logger.info(f"Grid Bot started: {self.symbol} ${self.lower_bound}-${self.upper_bound} x{self.grid_count}")
@@ -548,6 +666,19 @@ class GridBot:
         else:
             self.place_grid_orders()
             self._save_state()  # Save after placing orders
+        
+        # Send startup notification
+        mode_indicator = "🟢" if self.is_live else "🧪"
+        start_msg = (
+            f"🤖 <b>GRID BOT STARTED</b>\n"
+            f"Symbol: {self.symbol}\n"
+            f"Mode: {mode_indicator} {'LIVE' if self.is_live else 'SIMULATION'}\n"
+            f"Range: ${self.lower_bound:.2f} - ${self.upper_bound:.2f}\n"
+            f"Levels: {self.grid_count}\n"
+            f"Capital: ${self.capital:.2f}\n"
+            f"Active Orders: {len(self.active_orders)}"
+        )
+        notifier.send_telegram_message(start_msg)
         
         while self.running:
             try:
@@ -582,6 +713,19 @@ class GridBot:
         """Stop the grid bot."""
         self.running = False
         self.logger.info("Grid Bot stopping...")
+        
+        # Send shutdown notification with final stats
+        mode_indicator = "🟢" if self.is_live else "🧪"
+        stop_msg = (
+            f"🛑 <b>GRID BOT STOPPED</b>\n"
+            f"Symbol: {self.symbol}\n"
+            f"Mode: {mode_indicator} {'LIVE' if self.is_live else 'SIMULATION'}\n"
+            f"\n📊 <b>Final Session Stats:</b>\n"
+            f"Buys: {self.buy_fills} | Sells: {self.sell_fills}\n"
+            f"Net Profit: ${self.total_profit:.2f}\n"
+            f"Total Fees: ${self.total_fees:.2f}"
+        )
+        notifier.send_telegram_message(stop_msg)
 
 
 def calculate_auto_range(symbol='ETHUSDT', use_volatility=True, capital=100.0):

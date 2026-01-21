@@ -28350,3 +28350,678 @@
    • Levels: 5
    • Capital: $98.425562514
 2026-01-21 06:58:59,892 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2931.77 | PnL: -0.68% | Trail Stop: 2850.98 (Profit: -3.41%) | SL < 2774.67
+2026-01-21 07:39:50,503 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-21 07:51:38,380 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 07:51:38,381 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:51:38,611 - DEBUG - Fetching account balances...
+2026-01-21 07:51:38,840 - ERROR - Error getting ETH balance: 'BinanceTradingBot' object has no attribute 'symbol'
+2026-01-21 07:51:38,840 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 07:51:38,840 - DEBUG - Starting Balances: USDT=54.30281774, ETH=0.0
+2026-01-21 07:51:38,947 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 07:51:39,113 - DEBUG - __init__: Initial Volatility Calculated: 0.035396163525605054
+2026-01-21 07:51:39,113 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:51:39,114 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 07:51:39,114 - DEBUG - Restored Peak Price: $3001.03
+2026-01-21 07:51:39,114 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T07:49:21.082434
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $176.94 (Max Drawdown: 3.22%)
+2026-01-21 07:51:39,114 - DEBUG - __init__ completed
+2026-01-21 07:51:39,218 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 07:51:39,275 - DEBUG - Starting run method...
+2026-01-21 07:51:39,275 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 07:51:39,276 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 07:51:39,277 - DEBUG - Initializing hotkeys...
+2026-01-21 07:51:39,279 - DEBUG - Hotkeys started.
+2026-01-21 07:51:39,283 - DEBUG - Entering main trading loop...
+2026-01-21 07:51:39,893 - DEBUG - Telegram message sent successfully.
+2026-01-21 07:51:40,272 - DEBUG - 🔄 TUNING: Vol 3.55% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2850.98
+2026-01-21 07:51:55,744 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2734.25-$3209.77, Levels: 5
+2026-01-21 07:51:55,745 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2734.25 - $3209.77
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 07:51:56,613 - DEBUG - Telegram message sent successfully.
+2026-01-21 07:56:20,028 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 07:56:20,029 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:56:20,236 - DEBUG - Fetching account balances...
+2026-01-21 07:56:20,455 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 07:56:20,455 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 07:56:20,556 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 07:56:20,713 - DEBUG - __init__: Initial Volatility Calculated: 0.035366574231365785
+2026-01-21 07:56:20,713 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:56:20,713 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 07:56:20,713 - DEBUG - Restored Peak Price: $3001.03
+2026-01-21 07:56:20,713 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T07:51:40.050858
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $178.74 (Max Drawdown: 3.22%)
+2026-01-21 07:56:20,713 - DEBUG - __init__ completed
+2026-01-21 07:56:20,818 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 07:56:20,869 - DEBUG - Starting run method...
+2026-01-21 07:56:20,870 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 07:56:20,870 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 07:56:20,872 - DEBUG - Initializing hotkeys...
+2026-01-21 07:56:20,873 - DEBUG - Hotkeys started.
+2026-01-21 07:56:20,873 - DEBUG - Entering main trading loop...
+2026-01-21 07:56:21,590 - DEBUG - Telegram message sent successfully.
+2026-01-21 07:56:22,004 - DEBUG - 🔄 TUNING: Vol 3.54% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2850.98
+2026-01-21 07:56:28,556 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2734.25-$3209.77, Levels: 5
+2026-01-21 07:56:28,556 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2734.25 - $3209.77
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 07:56:29,132 - DEBUG - Telegram message sent successfully.
+2026-01-21 08:30:24,562 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 08:30:24,563 - DEBUG - Strategy Config: RSI=45, SL=7.200000000000001%, Trailing=10.0%
+2026-01-21 08:30:24,771 - DEBUG - Fetching account balances...
+2026-01-21 08:30:25,010 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 08:30:25,010 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 08:30:25,108 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 08:30:25,269 - DEBUG - __init__: Initial Volatility Calculated: 0.035787303496263204
+2026-01-21 08:30:25,269 - DEBUG - Strategy Config: RSI=45, SL=7.200000000000001%, Trailing=10.0%
+2026-01-21 08:30:25,270 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 08:30:25,270 - DEBUG - Restored Peak Price: $3025.96
+2026-01-21 08:30:25,270 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T08:26:28.239413
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.14 (Max Drawdown: 3.22%)
+2026-01-21 08:30:25,270 - DEBUG - __init__ completed
+2026-01-21 08:30:25,373 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 08:30:25,423 - DEBUG - Starting run method...
+2026-01-21 08:30:25,423 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 08:30:25,423 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 08:30:25,424 - DEBUG - Initializing hotkeys...
+2026-01-21 08:30:25,425 - DEBUG - Hotkeys started.
+2026-01-21 08:30:25,426 - DEBUG - Entering main trading loop...
+2026-01-21 08:30:26,016 - DEBUG - Telegram message sent successfully.
+2026-01-21 08:30:26,391 - DEBUG - 🔄 TUNING: Vol 3.58% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 08:30:33,200 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2753.93-$3232.87, Levels: 5
+2026-01-21 08:30:33,200 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2753.93 - $3232.87
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 08:30:33,799 - DEBUG - Telegram message sent successfully.
+2026-01-21 08:52:33,516 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 08:52:33,517 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 08:52:33,705 - DEBUG - Fetching account balances...
+2026-01-21 08:52:33,937 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 08:52:33,937 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 08:52:34,039 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 08:52:34,199 - DEBUG - __init__: Initial Volatility Calculated: 0.03574371941933376
+2026-01-21 08:52:34,200 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 08:52:34,200 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 08:52:34,200 - DEBUG - Restored Peak Price: $3025.96
+2026-01-21 08:52:34,200 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T08:50:30.580126
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.76 (Max Drawdown: 3.22%)
+2026-01-21 08:52:34,200 - DEBUG - __init__ completed
+2026-01-21 08:52:34,325 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 08:52:34,378 - DEBUG - Starting run method...
+2026-01-21 08:52:34,378 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 08:52:34,380 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 08:52:34,380 - DEBUG - Initializing hotkeys...
+2026-01-21 08:52:34,381 - DEBUG - Hotkeys started.
+2026-01-21 08:52:34,381 - DEBUG - Entering main trading loop...
+2026-01-21 08:52:34,957 - DEBUG - Telegram message sent successfully.
+2026-01-21 08:52:35,375 - DEBUG - 🔄 TUNING: Vol 3.57% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 08:52:42,214 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2757.29-$3236.81, Levels: 5
+2026-01-21 08:52:42,214 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2757.29 - $3236.81
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 08:52:42,766 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:05:00,060 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 09:05:00,060 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 09:05:00,252 - DEBUG - Fetching account balances...
+2026-01-21 09:05:00,411 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 09:05:00,411 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 09:05:00,580 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 09:05:00,747 - DEBUG - __init__: Initial Volatility Calculated: 0.03578144630755114
+2026-01-21 09:05:00,747 - DEBUG - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 09:05:00,747 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 09:05:00,748 - DEBUG - Restored Peak Price: $3025.96
+2026-01-21 09:05:00,748 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T09:02:37.103608
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.91 (Max Drawdown: 3.22%)
+2026-01-21 09:05:00,748 - DEBUG - __init__ completed
+2026-01-21 09:05:00,859 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 09:05:00,917 - DEBUG - Starting run method...
+2026-01-21 09:05:00,917 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 09:05:00,918 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 09:05:00,918 - DEBUG - Initializing hotkeys...
+2026-01-21 09:05:00,919 - DEBUG - Hotkeys started.
+2026-01-21 09:05:00,919 - DEBUG - Entering main trading loop...
+2026-01-21 09:05:01,466 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:05:01,981 - DEBUG - 🔄 TUNING: Vol 3.58% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 09:05:10,630 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2754.38-$3233.4, Levels: 5
+2026-01-21 09:05:10,631 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2754.38 - $3233.4
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 09:05:11,219 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:23:55,348 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 09:23:55,348 - DEBUG - Strategy Config: RSI=45, SL=7.3%, Trailing=10.0%
+2026-01-21 09:23:55,561 - DEBUG - Fetching account balances...
+2026-01-21 09:23:55,793 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 09:23:55,793 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 09:23:55,901 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 09:23:56,080 - DEBUG - __init__: Initial Volatility Calculated: 0.03627678683299896
+2026-01-21 09:23:56,081 - DEBUG - Strategy Config: RSI=45, SL=7.3%, Trailing=10.0%
+2026-01-21 09:23:56,081 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 09:23:56,081 - DEBUG - Restored Peak Price: $3025.96
+2026-01-21 09:23:56,081 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T09:20:04.695840
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.78 (Max Drawdown: 3.22%)
+2026-01-21 09:23:56,081 - DEBUG - __init__ completed
+2026-01-21 09:23:56,190 - DEBUG - Grid Bot active. Using free ETH: 0.0418128 (Grid funds locked)
+2026-01-21 09:23:56,243 - DEBUG - Starting run method...
+2026-01-21 09:23:56,243 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 09:23:56,244 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 09:23:56,244 - DEBUG - Initializing hotkeys...
+2026-01-21 09:23:56,245 - DEBUG - Hotkeys started.
+2026-01-21 09:23:56,245 - DEBUG - Entering main trading loop...
+2026-01-21 09:23:56,822 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:23:57,271 - DEBUG - 🔄 TUNING: Vol 3.63% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 09:24:03,312 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 09:24:03,312 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 09:24:03,902 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:38:45,046 - DEBUG - Telegram message sent successfully.
+2026-01-21 09:44:06,605 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.63, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:06,606 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:07,726 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.63, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:07,730 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:08,864 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.56, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:08,865 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:09,992 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.56, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:09,996 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:11,117 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:11,118 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:12,233 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:12,233 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:13,360 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:13,360 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:14,484 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:14,485 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:15,610 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:15,610 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:16,743 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:16,744 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:17,889 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:17,889 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:19,052 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:19,053 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:20,181 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:20,181 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:21,306 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:21,307 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:22,430 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:22,430 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:23,556 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:23,556 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:24,687 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:24,691 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:25,813 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:25,813 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:26,923 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:26,924 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:28,048 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:28,049 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:29,168 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:29,168 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:30,291 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.55, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:30,291 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:31,411 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.57, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:31,411 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:32,532 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:32,533 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:33,655 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:33,656 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:34,771 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:34,772 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:35,885 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:35,886 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:37,007 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:37,007 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:38,145 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:38,147 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:39,269 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:39,270 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:40,404 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:40,407 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:41,533 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:41,534 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:42,656 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:42,657 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:43,783 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:43,783 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:44,913 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:44,917 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:46,043 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:46,044 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:47,158 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:47,159 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:48,291 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:48,292 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:49,427 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:49,427 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:50,560 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:50,560 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:51,701 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:51,703 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:52,856 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:52,857 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:44:54,012 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.52, Calc Units 0.0168, Cap 0.0002
+2026-01-21 09:44:54,013 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 09:59:02,562 - DEBUG - 🔄 TUNING: Vol 3.73% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 10:14:04,984 - INFO - Dynamic Sizing: Risk $2.43 (2%), Dist $144.50, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:04,985 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:06,090 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $144.11, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:06,090 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:07,202 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $144.08, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:07,202 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:08,317 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $144.10, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:08,317 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:09,428 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.98, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:09,428 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:10,541 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.94, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:10,541 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:11,672 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.94, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:11,673 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:12,796 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.94, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:12,797 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:13,917 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.95, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:13,917 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:15,036 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.95, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:15,036 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:16,158 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.95, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:16,158 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:17,267 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.95, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:17,268 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:18,375 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.94, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:18,375 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:19,483 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.80, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:19,483 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:20,600 - INFO - Dynamic Sizing: Risk $2.42 (2%), Dist $143.71, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:20,600 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:21,717 - INFO - Dynamic Sizing: Risk $2.41 (2%), Dist $143.61, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:21,717 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:22,832 - INFO - Dynamic Sizing: Risk $2.41 (2%), Dist $143.61, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:22,832 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:23,939 - INFO - Dynamic Sizing: Risk $2.41 (2%), Dist $143.61, Calc Units 0.0168, Cap 0.0002
+2026-01-21 10:14:23,939 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:14:31,403 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:14:31,404 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 10:14:31,578 - DEBUG - Fetching account balances...
+2026-01-21 10:14:31,823 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:14:31,823 - DEBUG - Starting Balances: USDT=0.59271774, ETH=0.0479128
+2026-01-21 10:14:31,953 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:14:32,125 - DEBUG - __init__: Initial Volatility Calculated: 0.0381132719683931
+2026-01-21 10:14:32,125 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 10:14:32,125 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0418128
+2026-01-21 10:14:32,125 - DEBUG - Restored Peak Price: $3025.96
+2026-01-21 10:14:32,125 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:14:04.651083
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $124.07 (Max Drawdown: 3.22%)
+2026-01-21 10:14:32,125 - DEBUG - __init__ completed
+2026-01-21 10:14:32,237 - DEBUG - Grid Bot active. Using free ETH: 0.0479128 (Grid funds locked)
+2026-01-21 10:14:32,286 - DEBUG - Starting run method...
+2026-01-21 10:14:32,286 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:14:32,288 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:14:32,288 - DEBUG - Initializing hotkeys...
+2026-01-21 10:14:32,289 - DEBUG - Hotkeys started.
+2026-01-21 10:14:32,290 - DEBUG - Entering main trading loop...
+2026-01-21 10:14:32,846 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:14:33,361 - DEBUG - 🔄 TUNING: Vol 3.81% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 10:14:33,484 - INFO - EXIT SNAPSHOT [Sell]: PnL -2.76% (Max 0.00%) | Indicators: RSI=0.00, MACD_Hist=0.0000
+2026-01-21 10:14:33,651 - DEBUG - Grid Bot active. Using free ETH: 0.0061128 (Grid funds locked)
+2026-01-21 10:14:33,651 - INFO - Order Filled: Sold 0.0418 ETH @ 2866.87 (Total 119.84 USDT, PnL -2.88%)
+2026-01-21 10:14:34,196 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:14:34,197 - INFO - DEBUG: Attempting to log trade: Sell,0.0418,2866.8684210526317,120.42781774,-2.88%
+2026-01-21 10:14:34,370 - INFO - 🧾 Actual Fee Fetched: $0.6830 (from 2 fills)
+2026-01-21 10:14:36,792 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:14:36,792 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:14:37,363 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:16:04,248 - INFO - *** BUY SIGNAL! RSI=4.06, MACD_Hist=0.0806, FastMA=2867.29, SlowMA=2867.29, TrendMA=N/A ***
+2026-01-21 10:16:04,249 - INFO - Dynamic Sizing: Risk $2.76 (2%), Dist $172.04, Calc Units 0.0160, Cap 0.0416
+2026-01-21 10:16:04,469 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:16:04,469 - INFO - Order Filled: Bought 0.0159 ETH @ 2875.69 (Total 45.723471 USDT)
+2026-01-21 10:16:05,051 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:16:05,051 - INFO - DEBUG: Attempting to log trade: Buy,0.0159,2875.69,138.006335572
+2026-01-21 10:16:05,181 - INFO - 🧾 Actual Fee Fetched: $0.2599 (from 1 fills)
+2026-01-21 10:17:45,233 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:17:45,233 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:17:45,449 - DEBUG - Fetching account balances...
+2026-01-21 10:17:45,686 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:17:45,686 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:17:45,785 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:17:45,947 - DEBUG - __init__: Initial Volatility Calculated: 0.037974561415227225
+2026-01-21 10:17:45,947 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:17:45,948 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:17:45,948 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:17:45,948 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:16:00.000000
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.11 (Max Drawdown: 1280.61%)
+2026-01-21 10:17:45,948 - DEBUG - __init__ completed
+2026-01-21 10:17:46,060 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:17:46,116 - DEBUG - Starting run method...
+2026-01-21 10:17:46,116 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:17:46,117 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:17:46,117 - DEBUG - Initializing hotkeys...
+2026-01-21 10:17:46,118 - DEBUG - Hotkeys started.
+2026-01-21 10:17:46,118 - DEBUG - Entering main trading loop...
+2026-01-21 10:17:46,666 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:17:47,307 - DEBUG - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:18:00,909 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:18:00,909 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:18:01,486 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:18:02,111 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:02,112 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:03,216 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:03,216 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:04,323 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:04,323 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:05,435 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:05,436 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:06,548 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:06,548 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:07,661 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:07,661 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:08,771 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:08,771 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:09,885 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:09,885 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:10,994 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:10,994 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:12,101 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:12,101 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:13,222 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:13,222 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:14,333 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:14,333 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:15,447 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:15,448 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:16,562 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:16,562 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:17,675 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:17,675 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:18,794 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.24, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:18,794 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:19,916 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:19,916 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:21,041 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:21,041 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:22,159 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:22,160 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:23,272 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:23,272 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:24,381 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:24,382 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:25,492 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:25,492 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:26,598 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:26,598 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:27,711 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:27,711 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:28,822 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:28,822 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:29,935 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:29,935 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:31,044 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:31,044 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:32,152 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:32,152 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:33,261 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:33,261 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:34,369 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:34,369 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:35,491 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:35,491 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:36,605 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:36,605 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:37,723 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:37,723 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:38,845 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:38,845 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:39,949 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:39,949 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:41,060 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:41,060 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:42,169 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:42,170 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:43,277 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:43,277 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:44,385 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:44,385 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:45,501 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:45,501 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:46,614 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:46,614 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:47,725 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:47,725 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:48,841 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:48,841 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:49,970 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:49,970 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:51,087 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:51,088 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:52,209 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:52,209 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:53,333 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:53,333 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:54,443 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:54,444 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:55,557 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:55,558 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:56,673 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:56,673 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:57,786 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:57,787 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:18:58,910 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:18:58,910 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:00,027 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:00,027 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:01,151 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:01,151 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:02,267 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:02,267 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:03,377 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:03,377 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:04,483 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:04,483 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:05,595 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:05,596 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:06,709 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:06,709 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:07,824 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:07,824 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:08,933 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:08,933 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:10,049 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:10,049 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:11,158 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:11,158 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:12,266 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:12,266 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:13,381 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:13,382 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:14,486 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:14,486 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:15,597 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:15,598 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:16,708 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:16,708 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:17,835 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:17,835 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:18,953 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:18,953 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:20,070 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:20,070 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:21,192 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:21,192 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:22,323 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:22,323 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:23,439 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:23,439 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:19:24,550 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.17, Calc Units 0.0184, Cap 0.0256
+2026-01-21 10:19:24,550 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:20:29,798 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:20:29,798 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:20:30,003 - DEBUG - Fetching account balances...
+2026-01-21 10:20:30,242 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:20:30,242 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:20:30,366 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:20:30,537 - DEBUG - __init__: Initial Volatility Calculated: 0.03785342165576445
+2026-01-21 10:20:30,537 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:20:30,538 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:20:30,538 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:20:30,538 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:17:47.011375
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.26 (Max Drawdown: 1280.61%)
+2026-01-21 10:20:30,538 - DEBUG - __init__ completed
+2026-01-21 10:20:30,638 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:20:30,692 - DEBUG - Starting run method...
+2026-01-21 10:20:30,692 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:20:30,693 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:20:30,694 - DEBUG - Initializing hotkeys...
+2026-01-21 10:20:30,695 - DEBUG - Hotkeys started.
+2026-01-21 10:20:30,695 - DEBUG - Entering main trading loop...
+2026-01-21 10:20:31,277 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:20:31,707 - DEBUG - 🔄 TUNING: Vol 3.79% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:20:41,590 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:20:41,590 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:20:42,192 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:21:58,317 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.52, Calc Units 0.0183, Cap 0.0256
+2026-01-21 10:21:58,318 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:22:58,488 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.52, Calc Units 0.0183, Cap 0.0256
+2026-01-21 10:22:58,488 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:23:58,649 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.52, Calc Units 0.0183, Cap 0.0256
+2026-01-21 10:23:58,650 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:24:58,826 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.52, Calc Units 0.0183, Cap 0.0256
+2026-01-21 10:24:58,827 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:26:21,701 - INFO - Dynamic Sizing: Risk $2.65 (2%), Dist $144.40, Calc Units 0.0183, Cap 0.0256
+2026-01-21 10:26:21,702 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:26:57,951 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:26:57,951 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:26:58,139 - DEBUG - Fetching account balances...
+2026-01-21 10:26:58,385 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:26:58,385 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:26:58,511 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:26:58,668 - DEBUG - __init__: Initial Volatility Calculated: 0.037964831192394605
+2026-01-21 10:26:58,668 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:26:58,669 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:26:58,669 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:26:58,669 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:25:32.867520
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.47 (Max Drawdown: 1280.61%)
+2026-01-21 10:26:58,669 - DEBUG - __init__ completed
+2026-01-21 10:26:58,776 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:26:58,837 - DEBUG - Starting run method...
+2026-01-21 10:26:58,837 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:26:58,838 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:26:58,839 - DEBUG - Initializing hotkeys...
+2026-01-21 10:26:58,840 - DEBUG - Hotkeys started.
+2026-01-21 10:26:58,840 - DEBUG - Entering main trading loop...
+2026-01-21 10:26:59,438 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:26:59,970 - DEBUG - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:27:07,930 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:27:07,930 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:27:08,485 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:34:05,908 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.16, Calc Units 0.0184, Cap 0.0257
+2026-01-21 10:34:05,908 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:35:06,160 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.07, Calc Units 0.0184, Cap 0.0257
+2026-01-21 10:35:06,160 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 10:37:09,865 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:37:09,865 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:37:10,092 - DEBUG - Fetching account balances...
+2026-01-21 10:37:10,259 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:37:10,259 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:37:10,365 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:37:10,534 - DEBUG - __init__: Initial Volatility Calculated: 0.03803581835698228
+2026-01-21 10:37:10,534 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:37:10,534 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:37:10,534 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:37:10,534 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:37:01.547693
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.28 (Max Drawdown: 1280.61%)
+2026-01-21 10:37:10,535 - DEBUG - __init__ completed
+2026-01-21 10:37:10,641 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:37:10,707 - DEBUG - Starting run method...
+2026-01-21 10:37:10,708 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:37:10,708 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:37:10,709 - DEBUG - Initializing hotkeys...
+2026-01-21 10:37:10,710 - DEBUG - Hotkeys started.
+2026-01-21 10:37:10,710 - DEBUG - Entering main trading loop...
+2026-01-21 10:37:11,299 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:37:11,685 - DEBUG - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:37:15,344 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:37:15,344 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:37:15,895 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:41:15,137 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:41:15,137 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:41:15,249 - DEBUG - Fetching account balances...
+2026-01-21 10:41:15,409 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:41:15,410 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:41:15,519 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:41:15,680 - DEBUG - __init__: Initial Volatility Calculated: 0.03783487342037351
+2026-01-21 10:41:15,680 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:41:15,680 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:41:15,680 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:41:15,680 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:37:11.459890
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.16 (Max Drawdown: 1280.61%)
+2026-01-21 10:41:15,681 - DEBUG - __init__ completed
+2026-01-21 10:41:15,794 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:41:15,845 - DEBUG - Starting run method...
+2026-01-21 10:41:15,845 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:41:15,845 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:41:15,846 - DEBUG - Initializing hotkeys...
+2026-01-21 10:41:15,847 - DEBUG - Hotkeys started.
+2026-01-21 10:41:15,847 - DEBUG - Entering main trading loop...
+2026-01-21 10:41:16,453 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:41:16,833 - DEBUG - 🔄 TUNING: Vol 3.78% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:41:19,968 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:41:19,969 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:41:20,565 - DEBUG - Telegram message sent successfully.

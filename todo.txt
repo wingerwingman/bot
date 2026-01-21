@@ -1,5 +1,4 @@
 need a pause button on spot and grid. 
-verify frount end and refactor if needed as state is not working properly when using second bot.
 
 low priority
 add button to manually adjust grid bot if market trend changes.

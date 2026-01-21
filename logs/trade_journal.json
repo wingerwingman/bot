@@ -1,0 +1,133 @@
+[
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 2875.69,
+    "qty": 0.0159,
+    "total_value": 45.723471,
+    "entry_reason": "Signal Buy",
+    "dca_level": 0,
+    "indicators": {
+      "rsi": 4.06,
+      "macd_hist": 0.0806,
+      "volatility": 3.81,
+      "fear_greed": 24
+    },
+    "balance_after": 74.70434674,
+    "timestamp": "2026-01-21T10:16:05.185988"
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 2866.8684210526317,
+    "qty": 0.0418,
+    "total_value": 119.8351,
+    "exit_reason": "Sell",
+    "pnl_percent": -2.88,
+    "pnl_amount": -3.55,
+    "entry_price": null,
+    "indicators": {
+      "rsi": null,
+      "macd_hist": null,
+      "volatility": 3.81,
+      "fear_greed": 24
+    },
+    "session_stats": {
+      "total_trades": 4,
+      "win_rate": 25.0,
+      "net_pnl": -5.54
+    },
+    "balance_after": 120.42781774,
+    "timestamp": "2026-01-21T10:14:34.371094"
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 2924.45,
+    "qty": 0.0061,
+    "total_value": 17.839145,
+    "entry_reason": "Grid Level",
+    "timestamp": "2026-01-21T09:38:44.467890",
+    "pnl_amount": 0.0,
+    "pnl_percent": 0.0,
+    "balance_after": 0.0
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 2951.78,
+    "qty": 0.02,
+    "total_value": 177.72,
+    "entry_reason": "Imported History",
+    "timestamp": "2026-01-20T15:35:33.173",
+    "indicators": {},
+    "pnl_amount": 0.0,
+    "balance_after": 0.0
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 2927.67,
+    "qty": 0.0229,
+    "total_value": 113.34,
+    "exit_reason": "Imported History",
+    "timestamp": "2026-01-20T15:34:05.796",
+    "indicators": {},
+    "pnl_amount": -7.18,
+    "pnl_percent": -5.96,
+    "session_stats": {},
+    "balance_after": 0.0
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 3113.1,
+    "qty": 0.0126,
+    "total_value": 117.62,
+    "entry_reason": "Imported History",
+    "timestamp": "2026-01-19T23:54:38.066",
+    "indicators": {},
+    "pnl_amount": 0.0,
+    "balance_after": 0.0
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 3116.41,
+    "qty": 0.0094,
+    "total_value": 85.52,
+    "exit_reason": "Imported History",
+    "timestamp": "2026-01-19T23:50:06.174",
+    "indicators": {},
+    "pnl_amount": -3.23,
+    "pnl_percent": -3.64,
+    "session_stats": {},
+    "balance_after": 0.0
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 3234.27,
+    "qty": 0.0094,
+    "total_value": 86.67,
+    "entry_reason": "Imported History",
+    "timestamp": "2026-01-18T17:03:11.020",
+    "indicators": {},
+    "pnl_amount": 0.0,
+    "balance_after": 0.0
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 3252.66,
+    "qty": 0.0216,
+    "total_value": 86.63,
+    "exit_reason": "Imported History",
+    "timestamp": "2026-01-18T17:01:51.997",
+    "indicators": {},
+    "pnl_amount": 4.15,
+    "pnl_percent": 5.04,
+    "session_stats": {},
+    "balance_after": 0.0
+  }
+]

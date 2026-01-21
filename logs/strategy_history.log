@@ -9408,3 +9408,269 @@
    • Metrics: Net Profit $-1.99 (3 trades)
    • Peak Balance: $113.34 (Max Drawdown: 3.22%)
 2026-01-21 05:59:00 - 🔄 TUNING: Vol 3.59% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2850.98
+2026-01-21 07:51:38 - Trading Pair Configured: ETHUSDT
+2026-01-21 07:51:38 - Starting Balances: USDT=54.30281774, ETH=0.0
+2026-01-21 07:51:39 - __init__: Initial Volatility Calculated: 0.035396163525605054
+2026-01-21 07:51:39 - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:51:39 - ♻️ SESSION RESTORED from 2026-01-21T07:49:21.082434
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $176.94 (Max Drawdown: 3.22%)
+2026-01-21 07:51:40 - 🔄 TUNING: Vol 3.55% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2850.98
+2026-01-21 07:56:20 - Trading Pair Configured: ETHUSDT
+2026-01-21 07:56:20 - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 07:56:20 - __init__: Initial Volatility Calculated: 0.035366574231365785
+2026-01-21 07:56:20 - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 07:56:20 - ♻️ SESSION RESTORED from 2026-01-21T07:51:40.050858
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $178.74 (Max Drawdown: 3.22%)
+2026-01-21 07:56:22 - 🔄 TUNING: Vol 3.54% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2850.98
+2026-01-21 08:30:25 - Trading Pair Configured: ETHUSDT
+2026-01-21 08:30:25 - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 08:30:25 - __init__: Initial Volatility Calculated: 0.035787303496263204
+2026-01-21 08:30:25 - Strategy Config: RSI=45, SL=7.200000000000001%, Trailing=10.0%
+2026-01-21 08:30:25 - ♻️ SESSION RESTORED from 2026-01-21T08:26:28.239413
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.14 (Max Drawdown: 3.22%)
+2026-01-21 08:30:26 - 🔄 TUNING: Vol 3.58% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 08:52:33 - Trading Pair Configured: ETHUSDT
+2026-01-21 08:52:33 - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 08:52:34 - __init__: Initial Volatility Calculated: 0.03574371941933376
+2026-01-21 08:52:34 - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 08:52:34 - ♻️ SESSION RESTORED from 2026-01-21T08:50:30.580126
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.76 (Max Drawdown: 3.22%)
+2026-01-21 08:52:35 - 🔄 TUNING: Vol 3.57% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 09:05:00 - Trading Pair Configured: ETHUSDT
+2026-01-21 09:05:00 - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 09:05:00 - __init__: Initial Volatility Calculated: 0.03578144630755114
+2026-01-21 09:05:00 - Strategy Config: RSI=45, SL=7.1%, Trailing=10.0%
+2026-01-21 09:05:00 - ♻️ SESSION RESTORED from 2026-01-21T09:02:37.103608
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.91 (Max Drawdown: 3.22%)
+2026-01-21 09:05:01 - 🔄 TUNING: Vol 3.58% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 09:23:55 - Trading Pair Configured: ETHUSDT
+2026-01-21 09:23:55 - Starting Balances: USDT=0.59271774, ETH=0.0418128
+2026-01-21 09:23:56 - __init__: Initial Volatility Calculated: 0.03627678683299896
+2026-01-21 09:23:56 - Strategy Config: RSI=45, SL=7.3%, Trailing=10.0%
+2026-01-21 09:23:56 - ♻️ SESSION RESTORED from 2026-01-21T09:20:04.695840
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $125.78 (Max Drawdown: 3.22%)
+2026-01-21 09:23:57 - 🔄 TUNING: Vol 3.63% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 09:44:06 - 🛡️ DEFENSE TRIGGER: Price -2.00% | RSI 0.0 < 30
+2026-01-21 09:44:07 - 🛡️ DEFENSE TRIGGER: Price -2.00% | RSI 0.0 < 30
+2026-01-21 09:44:08 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 0.0 < 30
+2026-01-21 09:44:09 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 0.0 < 30
+2026-01-21 09:44:11 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:12 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:13 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:14 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:15 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:16 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:17 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:19 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:20 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:21 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.0 < 30
+2026-01-21 09:44:22 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:23 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:24 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:25 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:26 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:28 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:29 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:30 - 🛡️ DEFENSE TRIGGER: Price -2.06% | RSI 8.9 < 30
+2026-01-21 09:44:31 - 🛡️ DEFENSE TRIGGER: Price -2.05% | RSI 21.7 < 30
+2026-01-21 09:44:32 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:33 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:34 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:35 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:37 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:38 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:39 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:40 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:41 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:42 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:43 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:44 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:46 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:47 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:48 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:49 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:50 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:51 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:52 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:44:54 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 16.0 < 30
+2026-01-21 09:59:02 - 🔄 TUNING: Vol 3.73% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 10:14:04 - 🛡️ DEFENSE TRIGGER: Price -2.09% | RSI 0.1 < 30
+2026-01-21 10:14:06 - 🛡️ DEFENSE TRIGGER: Price -2.36% | RSI 0.0 < 30
+2026-01-21 10:14:07 - 🛡️ DEFENSE TRIGGER: Price -2.38% | RSI 0.0 < 30
+2026-01-21 10:14:08 - 🛡️ DEFENSE TRIGGER: Price -2.36% | RSI 2.7 < 30
+2026-01-21 10:14:09 - 🛡️ DEFENSE TRIGGER: Price -2.44% | RSI 2.4 < 30
+2026-01-21 10:14:10 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.3 < 30
+2026-01-21 10:14:11 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.3 < 30
+2026-01-21 10:14:12 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.3 < 30
+2026-01-21 10:14:13 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.9 < 30
+2026-01-21 10:14:15 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.9 < 30
+2026-01-21 10:14:16 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.9 < 30
+2026-01-21 10:14:17 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.9 < 30
+2026-01-21 10:14:18 - 🛡️ DEFENSE TRIGGER: Price -2.47% | RSI 2.9 < 30
+2026-01-21 10:14:19 - 🛡️ DEFENSE TRIGGER: Price -2.57% | RSI 2.2 < 30
+2026-01-21 10:14:20 - 🛡️ DEFENSE TRIGGER: Price -2.63% | RSI 1.9 < 30
+2026-01-21 10:14:21 - 🛡️ DEFENSE TRIGGER: Price -2.69% | RSI 1.6 < 30
+2026-01-21 10:14:22 - 🛡️ DEFENSE TRIGGER: Price -2.69% | RSI 1.6 < 30
+2026-01-21 10:14:23 - 🛡️ DEFENSE TRIGGER: Price -2.69% | RSI 1.6 < 30
+2026-01-21 10:14:31 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:14:31 - Starting Balances: USDT=0.59271774, ETH=0.0479128
+2026-01-21 10:14:32 - __init__: Initial Volatility Calculated: 0.0381132719683931
+2026-01-21 10:14:32 - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 10:14:32 - ♻️ SESSION RESTORED from 2026-01-21T10:14:04.651083
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-1.99 (3 trades)
+   • Peak Balance: $124.07 (Max Drawdown: 3.22%)
+2026-01-21 10:14:33 - 🔄 TUNING: Vol 3.81% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2874.66
+2026-01-21 10:14:33 - ✅ TRAILING STOP triggered at $2870.26 (Peak: $3025.96, Profit: -2.8%)
+2026-01-21 10:14:33 - EXIT SNAPSHOT [Sell]: PnL -2.76% (Max 0.00%) | Indicators: RSI=0.00, MACD_Hist=0.0000
+2026-01-21 10:17:45 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:17:45 - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:17:45 - __init__: Initial Volatility Calculated: 0.037974561415227225
+2026-01-21 10:17:45 - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:17:45 - ♻️ SESSION RESTORED from 2026-01-21T10:16:00.000000
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.11 (Max Drawdown: 1280.61%)
+2026-01-21 10:17:47 - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:18:02 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:03 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:04 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:05 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:06 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:07 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:08 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:09 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:10 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:12 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:13 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:14 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:15 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:16 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:17 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:18 - 🛡️ DEFENSE TRIGGER: Price -2.27% | RSI 29.4 < 30
+2026-01-21 10:18:19 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:21 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:22 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:23 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:24 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:25 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:26 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:27 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:28 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:29 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:31 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:32 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:33 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:34 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:35 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:36 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:37 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:38 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:39 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:41 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:42 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:43 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:44 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:45 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:46 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:47 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:48 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:49 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:51 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:52 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:53 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:54 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:55 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:56 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:57 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:18:58 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:00 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:01 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:02 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:03 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:04 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:05 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:06 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:07 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:08 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:10 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:11 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:12 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:13 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:14 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:15 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:16 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:17 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:18 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:20 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:21 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:22 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:23 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:19:24 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 11.9 < 30
+2026-01-21 10:20:30 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:20:30 - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:20:30 - __init__: Initial Volatility Calculated: 0.03785342165576445
+2026-01-21 10:20:30 - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:20:30 - ♻️ SESSION RESTORED from 2026-01-21T10:17:47.011375
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.26 (Max Drawdown: 1280.61%)
+2026-01-21 10:20:31 - 🔄 TUNING: Vol 3.79% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:21:58 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.4 < 30
+2026-01-21 10:22:58 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.4 < 30
+2026-01-21 10:23:58 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.4 < 30
+2026-01-21 10:24:58 - 🛡️ DEFENSE TRIGGER: Price -2.08% | RSI 0.4 < 30
+2026-01-21 10:26:21 - 🛡️ DEFENSE TRIGGER: Price -2.16% | RSI 0.3 < 30
+2026-01-21 10:26:58 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:26:58 - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:26:58 - __init__: Initial Volatility Calculated: 0.037964831192394605
+2026-01-21 10:26:58 - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:26:58 - ♻️ SESSION RESTORED from 2026-01-21T10:25:32.867520
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.47 (Max Drawdown: 1280.61%)
+2026-01-21 10:26:59 - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:34:05 - 🛡️ DEFENSE TRIGGER: Price -2.32% | RSI 0.0 < 30
+2026-01-21 10:35:06 - 🛡️ DEFENSE TRIGGER: Price -2.39% | RSI 0.0 < 30
+2026-01-21 10:37:10 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:37:10 - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:37:10 - __init__: Initial Volatility Calculated: 0.03803581835698228
+2026-01-21 10:37:10 - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:37:10 - ♻️ SESSION RESTORED from 2026-01-21T10:37:01.547693
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.28 (Max Drawdown: 1280.61%)
+2026-01-21 10:37:11 - 🔄 TUNING: Vol 3.80% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:41:15 - Trading Pair Configured: ETHUSDT
+2026-01-21 10:41:15 - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:41:15 - __init__: Initial Volatility Calculated: 0.03783487342037351
+2026-01-21 10:41:15 - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:41:15 - ♻️ SESSION RESTORED from 2026-01-21T10:37:11.459890
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.16 (Max Drawdown: 1280.61%)
+2026-01-21 10:41:16 - 🔄 TUNING: Vol 3.78% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
