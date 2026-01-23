@@ -39,3 +39,17 @@ Gemini 2.0 Flash Thinking
     - **Logic**: The bot now monitors price every cycle. If price exits the configured bounds (by >0.5%), it automatically resets the grid, re-centering the range around the *new* price while maintaining the same spread percentage.
     - **Persistence**: Added `auto_rebalance_enabled` and `rebalance_count` to state saving/loading.
     - **UI**: Added a "⚖️ Dynamic Rebalancing" toggle switch to the Grid Bot Panel. This can be toggled on/off live via the "Apply Changes" button.
+
+Antigravity
+### Feature Implementation
+- [x] **Consecutive Streak Tracking (#5)**: Implemented win/loss streak counters in `trading_bot.py`. Logic updates on every sell to track momentum. Added `max_win_streak` and `max_loss_streak` to performance reports.
+- [x] **Daily Telegram Summary (#24)**: Created a scheduled task in `server.py` that runs at 8:00 AM daily. It aggregates trade performance from `trade_journal.json` and sends a detailed HTML report via Telegram.
+- [x] **Volatility-Based Grid Spacing (#4)**: Enhanced Grid Bot to optionally use market volatility (ATR) to determine grid width and levels during rebalancing.
+    - **Logic**: Added `volatility_spacing_enabled` flag. When rebalancing is triggered, it calls `calculate_auto_range` to dynamically resize the grid instead of just shifting it.
+    - **UI**: Added "🌊 Volatility-Based Spacing" toggle to `GridBotPanel.js` which is fully adjustable while the bot is running.
+    - **API**: Updated `start` and `config/update` endpoints to support the new volatility and rebalancing flags dynamically.
+- [x] **Paper Trading Mode Fix (#30)**: Resolved critical crash in `trading_bot.py` where paper trading (live data, simulated orders) would fail due to missing CSV filename. Bot now correctly switches between backtest loop (CSV) and live loop (Ticker) based on mode.
+- [x] **Unified Metrics Tracking**: Centralized trade statistics (PnL, Drawdown, Streaks) into `update_metrics` helper. This ensures consistency between backtest, paper, and live trading reports.
+- [x] **Adjustable Advanced Strategy Filters**: Fixed a bug in `ControlPanel.js` that was preventing M-TF trend, Volume Confirmation, and SL Cooldown from being adjusted while the bot was running. These are now fully hot-swappable in real-time.
+- [x] **Dashboard Visibility for Win Tracking**: Added "🔥 Max Win Streak" and "🧊 Max Loss Streak" stats to the `LiveDashboard.js` and `ControlPanel.js` performance cards. Users can now see their consecutive performance at a glance.
+- [x] **Volatility Spacing Bug Fix**: Resolved a critical UI bug where "Volatility-Based Spacing" would revert while running. Fixed key mismatches in the status poll and reinforced backend persistence.

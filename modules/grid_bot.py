@@ -36,7 +36,9 @@ class GridBot:
                  grid_count=10,
                  capital=1000,
                  is_live=False,
-                 resume_state=True):
+                 resume_state=True,
+                 auto_rebalance_enabled=True,
+                 volatility_spacing_enabled=False):
         
         self.symbol = symbol
         self.lower_bound = float(lower_bound)
@@ -56,7 +58,8 @@ class GridBot:
         self.buy_fills = 0
         self.sell_fills = 0
         self.paused = False  # NEW: Pause state
-        self.auto_rebalance_enabled = True # Default On (Item #20)
+        self.auto_rebalance_enabled = auto_rebalance_enabled # Use arg
+        self.volatility_spacing_enabled = volatility_spacing_enabled # Use arg
         self.rebalance_count = 0 
         
         # Logger
@@ -96,6 +99,7 @@ class GridBot:
                 'sell_fills': self.sell_fills,
                 'paused': self.paused,
                 'auto_rebalance_enabled': self.auto_rebalance_enabled,
+                'volatility_spacing_enabled': self.volatility_spacing_enabled,
                 'rebalance_count': self.rebalance_count,
                 'running': self.running
             }
@@ -121,6 +125,7 @@ class GridBot:
                     self.sell_fills = state.get('sell_fills', 0)
                     self.paused = state.get('paused', False)
                     self.auto_rebalance_enabled = state.get('auto_rebalance_enabled', True)
+                    self.volatility_spacing_enabled = state.get('volatility_spacing_enabled', False)
                     self.rebalance_count = state.get('rebalance_count', 0)
                     self.logger.info(f"♻️ Grid state restored: {self.buy_fills} buys, {self.sell_fills} sells, ${self.total_profit:.2f} net profit (fees: ${self.total_fees:.2f})")
         except Exception as e:
@@ -378,7 +383,23 @@ class GridBot:
             if is_below or is_above:
                 self.logger.info(f"Dynamic Rebalance Triggered: Price {current_price:.2f} out of bounds ({self.lower_bound}-{self.upper_bound})")
                 
-                # Calculate new bounds (keep same spread width, just center it)
+                # Check for Volatility-Based Spacing
+                if self.volatility_spacing_enabled:
+                    # Recalculate range width and levels based on current volatility
+                    res = calculate_auto_range(self.symbol, use_volatility=True, capital=self.capital)
+                    if res:
+                        new_lower = res['lower_bound']
+                        new_upper = res['upper_bound']
+                        new_levels = res['recommended_levels']
+                        vol_pct = res.get('volatility_percent', 0)
+                        
+                        self.logger.info(f"Volatility Rebalance ({vol_pct:.1f}% Vol): Adjusting range to ±{res['range_percent']}% and {new_levels} levels. New range: {new_lower:.2f} - {new_upper:.2f}")
+                        
+                        self.update_config(lower_bound=new_lower, upper_bound=new_upper, grid_count=new_levels)
+                        self.rebalance_count += 1
+                        return
+
+                # Standard Rebalance: Keep same spread width, just center it
                 curr_spread_pct = (self.upper_bound - self.lower_bound) / self.lower_bound
                 half_spread = curr_spread_pct / 2
                 
@@ -614,6 +635,7 @@ class GridBot:
             'is_live': self.is_live,
             'paused': self.paused,
             'auto_rebalance_enabled': self.auto_rebalance_enabled,
+            'volatility_spacing_enabled': self.volatility_spacing_enabled,
             'symbol': self.symbol,
             'lower_bound': self.lower_bound,
             'upper_bound': self.upper_bound,
@@ -781,9 +803,15 @@ class GridBot:
             if self.is_live:
                 notifier.send_telegram_message(f"▶️ <b>GRID BOT RESUMED</b>\nSymbol: {self.symbol}")
 
-    def update_config(self, lower_bound=None, upper_bound=None, grid_count=None, capital=None):
+    def update_config(self, lower_bound=None, upper_bound=None, grid_count=None, capital=None, auto_rebalance_enabled=None, volatility_spacing_enabled=None):
         """Update bot configuration on the fly."""
         needs_reset = False
+        
+        if auto_rebalance_enabled is not None:
+            self.auto_rebalance_enabled = bool(auto_rebalance_enabled)
+            
+        if volatility_spacing_enabled is not None:
+            self.volatility_spacing_enabled = bool(volatility_spacing_enabled)
         
         if lower_bound is not None and float(lower_bound) != self.lower_bound:
             self.lower_bound = float(lower_bound)
@@ -805,8 +833,8 @@ class GridBot:
             self.logger.info("Grid Config changed. Resetting grid orders to apply new bounds/levels...")
             self.cancel_all_orders()
             self.place_grid_orders()
-            self._save_state()
             
+        self._save_state() # ALWAYS save to ensure toggles like volatility_spacing/auto_rebalance persist
         return True
     
     def start(self):

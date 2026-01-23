@@ -95,6 +95,10 @@ The "Auto-Set Range" button now dynamically adjusts based on market volatility:
 | 🟡 Medium Volatility (2-4%) | ±5% | 10 | Balanced settings |
 | 🔴 High Volatility (>4%) | ±8% | 8 | Wider range, fewer larger trades |
 
+**🌊 Dynamic Rebalancing:**
+- **Auto-Center**: If price exits the grid range by >0.5%, the bot automatically resets and re-centers around the new price.
+- **Volatility-Aware**: If "Volatility-Based Spacing" is enabled, it *also* recalculates the optimal range width and level count during this reset.
+
 **⚠️ Capital-Aware Levels:**
 The bot automatically caps the number of grid levels to ensure each order is at least **$11** (Binance minimum + buffer).
 - *Example*: With $100 capital, max levels = 9 ($100 / $11). Even if Low Volatility recommends 15, it will set 9.
@@ -127,9 +131,10 @@ Total: $500
 ## 📲 Telegram Notifications
 
 Get real-time alerts for:
-- ✅ **Sniper Trades**: Buy/Sell execution details
+- ✅ **Sniper Trades**: Buy/Sell execution details with **Streak Tracking** (Wins/Losses).
 - 🤖 **Grid Trades**: Grid Buy/Profit alerts (Net Profit $)
 - 🌊 **Volatility Shifts**: Alerts when market volatility changes >20%
+- 📊 **Daily Summary**: Automated 8:00 AM report with P&L, Win Rate, and Trade count.
 - ❌ **Errors**: API issues, "Bot Crashed" critical alerts
 
 **Setup**: Set `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` in `.env`

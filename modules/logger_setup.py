@@ -488,6 +488,26 @@ def get_performance_summary():
                 if dd > max_dd:
                     max_dd = dd
             summary['max_drawdown'] = round(max_dd, 2)
+            summary['max_drawdown'] = round(max_dd, 2)
+
+    # Calculate Streaks
+    win_streak = 0
+    loss_streak = 0
+    max_win_streak = 0
+    max_loss_streak = 0
+    
+    for r in returns:
+        if r > 0:
+            win_streak += 1
+            loss_streak = 0
+            max_win_streak = max(max_win_streak, win_streak)
+        else:
+            loss_streak += 1
+            win_streak = 0
+            max_loss_streak = max(max_loss_streak, loss_streak)
+            
+    summary['max_win_streak'] = max_win_streak
+    summary['max_loss_streak'] = max_loss_streak
     
     return summary
 

@@ -191,6 +191,8 @@ class BinanceTradingBot:
         self.running = False
         self.bought_price = None
         self.consecutive_stop_losses = 0
+        self.consecutive_wins = 0
+        self.consecutive_losses = 0
         self.finished_data = False
         self.paused = False  # NEW: Pause state - bot tracks but doesn't trade
         self.dca_count = 0 # Track number of DCA buys
@@ -217,6 +219,10 @@ class BinanceTradingBot:
         # --- NEW: SLIPPAGE TRACKING ---
         self.total_slippage = 0.0  # Cumulative slippage in quote currency
         self.slippage_events = []  # List of {expected, actual, difference}
+
+        # --- NEW: STREAK TRACKING ---
+        self.max_win_streak = 0
+        self.max_loss_streak = 0
 
         
         if self.is_live_trading:
@@ -742,26 +748,23 @@ class BinanceTradingBot:
         print("\n" + "="*40)
         print(f"       SESSION PERFORMANCE REPORT       ")
         print("="*40)
+        print(f"Trades: {self.total_trades} (Win: {self.winning_trades})")
+        print(f"Win Rate: {win_rate:.1f}%")
+        print(f"Profit Factor: {profit_factor:.2f}")
+        print(f"Max Win Streak:  {self.max_win_streak}")
+        print(f"Max Loss Streak: {self.max_loss_streak}")
+        print(f"Max Drawdown:    {self.max_drawdown*100:.2f}%")
+        print(f"Avg Duration:    {avg_duration:.1f} min")
+        
+        if self.total_slippage > 0:
+            avg_slippage = self.total_slippage / len(self.slippage_events) if self.slippage_events else 0
+            print(f"Total Slippage:  ${self.total_slippage:.2f} (Avg: ${avg_slippage:.2f}/trade)")
+        
         if self.is_live_trading:
              print(f"Current Quote Bal: {self.quote_balance:.4f} {self.quote_asset}")
              print(f"Current Base Bal:  {self.base_balance:.4f} {self.base_asset}")
         else:
-             print(f"Balance:           ${self.quote_balance:.2f}")
-             print(f"Max Drawdown:      {self.max_drawdown*100:.2f}%")
-
-        print("-" * 40)
-        print(f"Total Trades:      {self.total_trades}")
-        print(f"Win Rate:          {win_rate:.1f}% ({self.winning_trades}W / {self.total_trades-self.winning_trades}L)")
-        print(f"Profit Factor:     {profit_factor:.2f}")
-        
-        # NEW: Trade duration metrics
-        if avg_duration > 0:
-            print(f"Avg Trade Duration: {avg_duration:.1f} min")
-        
-        # NEW: Slippage metrics  
-        if self.total_slippage > 0:
-            avg_slippage = self.total_slippage / len(self.slippage_events) if self.slippage_events else 0
-            print(f"Total Slippage:    ${self.total_slippage:.2f} (Avg: ${avg_slippage:.2f}/trade)")
+             print(f"Ending Balance:    ${self.quote_balance:.2f} {self.quote_asset}")
         
         print("="*40 + "\n")
 
@@ -771,16 +774,25 @@ class BinanceTradingBot:
         if profit_amount > 0:
             self.winning_trades += 1
             self.gross_profit += profit_amount
+            self.consecutive_wins += 1
+            self.consecutive_losses = 0
+            if self.consecutive_wins > self.max_win_streak:
+                self.max_win_streak = self.consecutive_wins
         else:
             self.gross_loss += abs(profit_amount)
+            self.consecutive_losses += 1
+            self.consecutive_wins = 0
+            if self.consecutive_losses > self.max_loss_streak:
+                self.max_loss_streak = self.consecutive_losses
             
         # Drawdown logic
         if current_equity > self.peak_balance:
             self.peak_balance = current_equity
         
-        drawdown = (self.peak_balance - current_equity) / self.peak_balance
-        if drawdown > self.max_drawdown:
-            self.max_drawdown = drawdown
+        if self.peak_balance > 0:
+            drawdown = (self.peak_balance - current_equity) / self.peak_balance
+            if drawdown > self.max_drawdown:
+                self.max_drawdown = drawdown
 
     def start(self):
         if not self.running:
@@ -1024,13 +1036,8 @@ class BinanceTradingBot:
                      
                      self.logger.info(f"Order Filled: Sold {executed_qty} {self.base_asset} @ {avg_price:.2f} (Total {revenue:.2f} {self.quote_asset}, PnL {real_profit_percent:.2f}%)")
                      
-                     # Calculate session stats for enhanced notification
-                     self.total_trades += 1
-                     if profit_amount >= 0:
-                         self.winning_trades += 1
-                         self.gross_profit += profit_amount
-                     else:
-                         self.gross_loss += abs(profit_amount)
+                     # Metrics Update via Helper
+                     self.update_metrics(profit_amount, self.quote_balance)
                      
                      net_pnl = self.gross_profit - self.gross_loss
                      win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
@@ -1128,13 +1135,15 @@ class BinanceTradingBot:
                     revenue = self.base_balance * current_price * (1 - self.trading_fee_percentage)
                     profit_amount = revenue - (self.base_balance * self.bought_price)
                     
+                    qty_sold = self.base_balance
                     self.quote_balance += revenue
-                    self.log_trade_wrapper(reason, current_price, self.base_balance, self.quote_balance, profit)
+                    self.log_trade_wrapper(reason, current_price, qty_sold, self.quote_balance, profit)
                     self.base_balance = 0
                     
-                    # Update Metrics Test (handled inside test() loop normally, but if called from here)
-                    # For consistency, test() loop handles its own logic, but we can unify later.
-                    pass
+                    # Metrics Update via Helper
+                    self.update_metrics(profit_amount, self.quote_balance)
+                    
+                    self.logger.info(f"Test Sale: {qty_sold} {self.base_asset} @ {current_price:.2f} | PnL: ${profit_amount:.2f}")
                 
                 self.bought_price = None
                 self.dca_count = 0 # Reset DCA count
@@ -1169,19 +1178,30 @@ class BinanceTradingBot:
         try:
 
             self.logger.debug("Entering main trading loop...")
-            if self.is_live_trading:
+            # PAPER TRADING INITIALIZATION
+            if not self.is_live_trading and self.filename is None:
+                self.logger.info("Initializing PAPER TRADING (Live Market / Simulated Orders)")
+                self.quote_balance = 1000.0 # Default starting balance
+                if self.allocated_capital > 0:
+                    self.quote_balance = self.allocated_capital
+                self.peak_balance = self.quote_balance
+
+            if self.is_live_trading or self.filename is None:
                 # Send startup notification
                 start_msg = (
                     f"🚀 <b>SPOT BOT STARTED</b>\n"
                     f"Symbol: {self.symbol}\n"
-                    f"Mode: {'🟢 LIVE' if self.is_live_trading else '🧪 TEST'}\n"
+                    f"Mode: {'🟢 LIVE' if self.is_live_trading else '🧪 PAPER (SIM)'}\n"
                     f"Balance: ${self.quote_balance:.2f} {self.quote_asset}\n"
                     f"Holdings: {self.base_balance:.6f} {self.base_asset}\n"
                     f"Dynamic Tuning: {'ON' if self.dynamic_settings else 'OFF'}\n"
                     f"DCA Defense: {'ON' if self.dca_enabled else 'OFF'}"
                 )
                 notifier.send_telegram_message(start_msg)
-                self.peak_balance = max(self.peak_balance, self.quote_balance)
+                
+                if self.is_live_trading:
+                    self.peak_balance = max(self.peak_balance, self.quote_balance)
+                
                 while self.running:
                     # Heartbeat (every hour)
                     if time.time() - last_heartbeat_time > 3600:

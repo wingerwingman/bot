@@ -1,6 +1,8 @@
 # CryptoBot TODO List
 Updated: 2026-01-23
-🔬 Advanced Strategy Filters are still not adjustable while running.
+✅ All Advanced Filters and Volatility Spacing are now adjustable while running.
+resume session still cant be toggled when bot is running.
+
 ## ✅ COMPLETED
 
 ### High Priority
@@ -8,6 +10,11 @@ Updated: 2026-01-23
     - Backend: Updated `server.py` to allow simulated trading without a backtest file.
     - Frontend: Added "Paper Trading" vs "Backtest" toggle in Control Panel (Test Mode).
     - Status: Returns `is_paper` flag to distinguish modes.
+
+- [x] **Adjustable Advanced Strategy & Volatility Filters (Item #20 & #4)**
+    - *Status: Fix implementation completed for both Spot and Grid bots. Awaiting user verification.*
+- [x] **Streak Tracking Visible on Dashboard (Main Page)**
+    - Frontend: Added "🔥 Max Win Streak" and "🧊 Max Loss Streak" to `LiveDashboard.js` and `ControlPanel.js`.
 
 - [x] Fix state on spot bot (Dashboard Isolation)
     - Ensure Test bots don't appear on Live Dashboard.

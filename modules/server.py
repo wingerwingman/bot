@@ -40,7 +40,77 @@ def start_server_standalone():
     """Start the Flask server in a standalone thread (no bot yet)."""
     server_thread = threading.Thread(target=run_flask, daemon=True)
     server_thread.start()
+    
+    # NEW: Start Daily Summary Scheduler
+    scheduler_thread = threading.Thread(target=run_daily_summary_scheduler, daemon=True)
+    scheduler_thread.start()
+    
     print("API Server running at http://localhost:5050")
+
+def run_daily_summary_scheduler():
+    """Background loop to send summary at 08:00 AM everyday."""
+    import time
+    from datetime import datetime
+    
+    while True:
+        now = datetime.now()
+        # Wait until 8 AM
+        target_hour = 8
+        
+        # If past 8 AM, wait until next day check
+        # Simple loop: check every minute
+        if now.hour == target_hour and now.minute == 0:
+            try:
+                # Aggregate stats from all running bots
+                total_stats = {
+                    'total_trades': 0,
+                    'win_rate': 0,
+                    'net_pnl': 0.0,
+                    'top_winner': 0.0,
+                    'total_fees': 0.0,
+                    'max_drawdown': 0.0
+                }
+                
+                # ... Calculation logic ...
+                # (Simpler implementation: just send what we have in logger history)
+                # Better: Use logger_setup.get_performance_summary() assuming it captures global state,
+                # BUT logger history is per session or shared? 
+                # 'get_performance_summary' reads from 'equity_history.json' which is shared app-wide.
+                # So it's perfect.
+                
+                summary = logger_setup.get_performance_summary()
+                
+                # Map keys
+                # summary = {'sharpe', 'total_snapshots', 'avg_return', 'max_drawdown'} - Missing absolute PnL
+                # We need absolute info.
+                # Let's pull from trade journal for today.
+                
+                journal = logger_setup.get_trade_journal(limit=1000)
+                today_str = now.strftime('%Y-%m-%d')
+                days_trades = [t for t in journal if t.get('timestamp', '').startswith(today_str)]
+                
+                if days_trades:
+                    wins = [t for t in days_trades if t.get('pnl_amount', 0) > 0]
+                    losses = [t for t in days_trades if t.get('pnl_amount', 0) <= 0]
+                    total_pnl = sum(t.get('pnl_amount', 0) for t in days_trades)
+                    total_fees = sum(t.get('fee', 0) for t in days_trades)
+                    top_win = max([t.get('pnl_amount', 0) for t in wins]) if wins else 0
+                    
+                    stats = {
+                        'total_trades': len(days_trades),
+                        'win_rate': round(len(wins) / len(days_trades) * 100, 1),
+                        'net_pnl': total_pnl,
+                        'total_fees': total_fees,
+                        'top_winner': top_win,
+                        'max_drawdown': summary.get('max_drawdown', 0)
+                    }
+                    
+                    notifier.send_daily_summary(stats)
+                    time.sleep(65) # Sleep > 1 min to avoid double send
+            except Exception as e:
+                print(f"Error in daily scheduler: {e}")
+                
+        time.sleep(50) # Check every 50s
 
 # Admin Credentials
 # Admin Credentials (Loaded from Config/Env)
@@ -983,6 +1053,27 @@ def get_performance():
             summary['losing_trades'] = losses
             summary['win_rate'] = round((wins / total_sells * 100), 1) if total_sells > 0 else 0
             summary['profit_factor'] = profit_factor
+            
+            # Calculate Streaks
+            max_win_streak = 0
+            max_loss_streak = 0
+            curr_win_streak = 0
+            curr_loss_streak = 0
+            
+            for t in sells:
+                if t.get('pnl_amount', 0) > 0:
+                    curr_win_streak += 1
+                    curr_loss_streak = 0
+                    if curr_win_streak > max_win_streak:
+                        max_win_streak = curr_win_streak
+                else:
+                    curr_loss_streak += 1
+                    curr_win_streak = 0
+                    if curr_loss_streak > max_loss_streak:
+                        max_loss_streak = curr_loss_streak
+            
+            summary['max_win_streak'] = max_win_streak
+            summary['max_loss_streak'] = max_loss_streak
         
         return jsonify(summary)
     except Exception as e:
@@ -1187,11 +1278,20 @@ def update_grid_config_endpoint():
             upper = data.get('upper_bound')
             count = data.get('grid_count')
             cap = data.get('capital')
+            auto_rebalance = data.get('auto_rebalance_enabled')
+            vol_spacing = data.get('volatility_spacing_enabled')
             
             # Using the new update_config method (to be added to GridBot class)
             if hasattr(bot, 'update_config'):
-                bot.update_config(lower_bound=lower, upper_bound=upper, grid_count=count, capital=cap)
-                logger_setup.log_audit("GRID_CONFIG_CHANGE", f"[{symbol}] Bounds: {lower}-{upper}, Levels: {count}", request.remote_addr)
+                bot.update_config(
+                    lower_bound=lower, 
+                    upper_bound=upper, 
+                    grid_count=count, 
+                    capital=cap,
+                    auto_rebalance_enabled=auto_rebalance,
+                    volatility_spacing_enabled=vol_spacing
+                )
+                logger_setup.log_audit("GRID_CONFIG_CHANGE", f"[{symbol}] Bounds: {lower}-{upper}, Levels: {count}, Rebal: {auto_rebalance}, VolSpace: {vol_spacing}", request.remote_addr)
                 return jsonify({"success": True})
             else:
                 return jsonify({"error": "GridBot class does not support dynamic updates yet"}), 500
@@ -1226,6 +1326,8 @@ def start_grid():
         capital = data.get('capital', 1000)
         is_live = data.get('is_live', False)
         resume_state = data.get('resume_state', True)
+        auto_rebalance_enabled = data.get('auto_rebalance_enabled', True)
+        volatility_spacing_enabled = data.get('volatility_spacing_enabled', False)
         
         if lower_bound >= upper_bound:
             return jsonify({"error": "Lower bound must be less than upper bound"}), 400
@@ -1248,7 +1350,9 @@ def start_grid():
                 grid_count=grid_count,
                 capital=capital,
                 is_live=is_live,
-                resume_state=resume_state
+                resume_state=resume_state,
+                auto_rebalance_enabled=auto_rebalance_enabled,
+                volatility_spacing_enabled=volatility_spacing_enabled
             )
             bot.start()
             grid_bots[symbol] = bot

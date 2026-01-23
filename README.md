@@ -1,4 +1,4 @@
-# 🤖 CryptoBot - Binance.US Trading System
+# 🤖 CryptoBot - Binance.US Trading System (BinanceTradingBot)
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![React 18](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
@@ -18,6 +18,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Bot Lifecycle** - Create, start, stop, pause, and delete bot instances
 - **Logs & Audit Trail** - Strategy decisions, errors, and user actions
 - **Backtest Mode** - Test strategies on historical data before going live
+- **Paper Trading Mode** - Simulate live trading execution without real funds (zero risk)
 
 ### 🎯 Spot Trading Strategy
 | Feature | Description |
@@ -38,6 +39,8 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 | **Range Trading** | Profits from sideways markets with buy-low/sell-high orders |
 | **Auto-Range** | Sets bounds based on volatility (ATR) |
 | **Capital-Aware** | Respects minimum order size ($11) and allocated capital |
+| **Dynamic Rebalancing** | Auto-centers grid if price exits range |
+| **Vol-Based Spacing** | Dynamically adjusting grid width based on market volatility |
 | **State Persistence** | Crash-proof design with automatic recovery |
 
 ### 💰 Capital Manager
@@ -49,6 +52,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 ### 📱 Notifications
 - **Telegram Alerts** - Trade executions, errors, hourly heartbeats
 - **Volatility Shifts** - Alerts when ATR changes >20%
+- **Daily Summary** - 8:00 AM report with P&L and Streak stats
 - **Critical Errors** - Immediate notification if bot crashes
 
 ---
@@ -128,6 +132,9 @@ python main.py --cli
 ```
 For terminal-based operation without the web UI.
 
+- **Test Mode ('t')**: Run backtest simulation or Paper Trading.
+- **Live Trading ('l')**: Run live trading on Binance.US. **Use with caution.**
+
 ---
 
 ## 📂 Project Structure
@@ -149,6 +156,9 @@ CryptoBot/
 │   └── src/components/     # UI components
 ├── data/                   # State persistence & CSV data
 ├── logs/                   # Application logs
+│   ├── trading_us.log      # Detailed operational logs (debug, price, indicators)
+│   ├── trades_us.log       # Concise CSV trade history (Buy/Sell, Price, Qty)
+│   └── strategy.log        # Strategy decision logs
 ├── tests/                  # Unit tests
 └── docs/                   # Documentation
 ```
@@ -206,4 +216,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-23* (v1.2 - Dynamic Grid & Paper Trading Update)
