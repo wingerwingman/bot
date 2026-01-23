@@ -87,3 +87,7 @@
 {"timestamp": "2026-01-22 11:28:31", "ip": "127.0.0.1", "action": "STOP_BOT", "details": "Bot live_ETHUSDT stopped by user"}
 {"timestamp": "2026-01-22 11:28:50", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
 {"timestamp": "2026-01-23 06:04:01", "ip": "127.0.0.1", "action": "CLEAR_ERRORS", "details": "Error log cleared"}
+{"timestamp": "2026-01-23 08:40:47", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-23 08:40:53", "ip": "127.0.0.1", "action": "STOP_BOT", "details": "Bot live_ETHUSDT stopped by user"}
+{"timestamp": "2026-01-23 08:41:07", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-23 08:41:23", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2701.43-$3171.25, Levels: 4"}

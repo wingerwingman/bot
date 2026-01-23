@@ -53,6 +53,41 @@ def check_auth():
     token = request.headers.get('X-Auth-Token')
     return token == ADMIN_TOKEN
 
+def find_spot_bot(identifier):
+    """
+    Find a spot bot by identifier (key or symbol).
+    Handles mode prefixes (live_, test_) and falls back to symbol match.
+    
+    Args:
+        identifier: Bot key (like 'live_ETHUSDT') or symbol (like 'ETHUSDT')
+    
+    Returns:
+        Tuple of (bot, key) or (None, None) if not found
+    """
+    if not identifier:
+        # If only one bot, return it
+        if len(spot_bots) == 1:
+            key = list(spot_bots.keys())[0]
+            return spot_bots[key], key
+        return None, None
+    
+    # Direct key lookup
+    if identifier in spot_bots:
+        return spot_bots[identifier], identifier
+    
+    # Try mode prefixes
+    for prefix in ['live_', 'test_']:
+        key = f"{prefix}{identifier}"
+        if key in spot_bots:
+            return spot_bots[key], key
+    
+    # Search by symbol value
+    for key, bot in spot_bots.items():
+        if bot.symbol == identifier:
+            return bot, key
+    
+    return None, None
+
 # ===================== API ENDPOINTS =====================
 
 @app.route('/api/login', methods=['POST'])
@@ -197,6 +232,7 @@ def get_status():
             "final_balance": getattr(bot, 'final_balance', None),
             "total_return": getattr(bot, 'total_return', None),
             "finished": getattr(bot, 'finished_data', False),
+            "paused": getattr(bot, 'paused', False),
             "balances": {
                 "quote": bot.quote_balance,
                 "base": bot.base_balance,
@@ -226,6 +262,7 @@ def get_status():
 def get_metrics():
     symbol = request.args.get('symbol')
     bot_key = request.args.get('key')
+    bot = None  # FIX: Initialize to prevent NameError
     
     # If specific running bot requested by unique key
     if bot_key:
@@ -506,6 +543,10 @@ def start_bot():
         config.VOLUME_MULTIPLIER_THRESHOLD = volume_multiplier
         config.STOP_LOSS_COOLDOWN_MINUTES = cooldown_minutes
         
+        allocated_capital = 0.0
+        if is_live:
+            allocated_capital = capital_manager.get_available('signal')
+        
         try:
             bot = BinanceTradingBot(
                 is_live_trading=is_live, 
@@ -519,7 +560,8 @@ def start_bot():
                 dynamic_settings=dynamic_settings,
                 resume_state=resume_session,
                 dca_enabled=dca_enabled,
-                dca_rsi_threshold=dca_rsi_threshold
+                dca_rsi_threshold=dca_rsi_threshold,
+                allocated_capital=allocated_capital
             )
             bot.start()
             spot_bots[bot_key] = bot
@@ -616,6 +658,82 @@ def delete_bot():
         logging.getLogger("BinanceTradingBot").error(f"Delete Bot Error: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/pause', methods=['POST'])
+def pause_bot():
+    """Pause or resume a running bot."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
+    action = data.get('action', 'toggle')  # 'pause', 'resume', or 'toggle'
+    bot_type = data.get('type', 'spot')
+    
+    try:
+        if bot_type == 'spot':
+            with bot_lock:
+                bot = None
+                # Find bot (same lookup logic as other endpoints)
+                if symbol:
+                    bot = spot_bots.get(symbol)
+                    if not bot:
+                        if f"live_{symbol}" in spot_bots:
+                            bot = spot_bots[f"live_{symbol}"]
+                        elif f"test_{symbol}" in spot_bots:
+                            bot = spot_bots[f"test_{symbol}"]
+                        else:
+                            for key, b in spot_bots.items():
+                                if b.symbol == symbol:
+                                    bot = b
+                                    break
+                elif len(spot_bots) == 1:
+                    bot = list(spot_bots.values())[0]
+                
+                if not bot:
+                    return jsonify({"error": "No bot found"}), 400
+                if not bot.running:
+                    return jsonify({"error": "Bot is not running"}), 400
+                
+                # Perform action
+                if action == 'pause':
+                    bot.pause()
+                elif action == 'resume':
+                    bot.resume()
+                else:  # toggle
+                    if bot.paused:
+                        bot.resume()
+                    else:
+                        bot.pause()
+                
+                logger_setup.log_audit("PAUSE_BOT", f"Bot {bot.symbol} {'paused' if bot.paused else 'resumed'}", request.remote_addr)
+                return jsonify({"success": True, "paused": bot.paused})
+        
+        elif bot_type == 'grid':
+            with grid_lock:
+                bot = grid_bots.get(symbol)
+                if not bot:
+                    return jsonify({"error": "No grid bot found"}), 400
+                
+                # Grid bot pause logic (add paused attribute if not exists)
+                if not hasattr(bot, 'paused'):
+                    bot.paused = False
+                
+                if action == 'pause':
+                    bot.paused = True
+                elif action == 'resume':
+                    bot.paused = False
+                else:
+                    bot.paused = not bot.paused
+                
+                logger_setup.log_audit("PAUSE_GRID", f"Grid {symbol} {'paused' if bot.paused else 'resumed'}", request.remote_addr)
+                return jsonify({"success": True, "paused": bot.paused})
+        
+        return jsonify({"error": "Unknown bot type"}), 400
+        
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Pause Bot Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/manual_sell', methods=['POST'])
 def manual_sell():
     """Triggers an immediate sell for the Specified Bot."""
@@ -636,6 +754,19 @@ def manual_sell():
                     return jsonify({"error": "Symbol required to sell"}), 400
             
             bot = spot_bots.get(symbol)
+            if not bot:
+                # Fallback: Try with mode prefixes
+                if f"live_{symbol}" in spot_bots:
+                    bot = spot_bots[f"live_{symbol}"]
+                elif f"test_{symbol}" in spot_bots:
+                    bot = spot_bots[f"test_{symbol}"]
+                else:
+                    # Search by symbol value
+                    for key, b in spot_bots.items():
+                        if b.symbol == symbol:
+                            bot = b
+                            break
+            
             if not bot:
                 return jsonify({"error": f"No bot running for symbol {symbol}"}), 400
             
@@ -758,6 +889,33 @@ def clear_errors_log():
     
     logger_setup.clear_errors()
     logger_setup.log_audit("CLEAR_ERRORS", "Error log cleared", request.remote_addr)
+    return jsonify({"success": True})
+
+@app.route('/api/logs/activity/clear', methods=['POST'])
+def clear_activity_logs_endpoint():
+    """Clears activity logs only."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    logger_setup.clear_activity_logs()
+    logger_setup.log_audit("CLEAR_ACTIVITY", "Activity logs cleared", request.remote_addr)
+    return jsonify({"success": True})
+
+@app.route('/api/logs/strategy/clear', methods=['POST'])
+def clear_strategy_logs_endpoint():
+    """Clears strategy logs only."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    logger_setup.clear_strategy_logs()
+    logger_setup.log_audit("CLEAR_STRATEGY", "Strategy logs cleared", request.remote_addr)
+    return jsonify({"success": True})
+
+@app.route('/api/logs/audit/clear', methods=['POST'])
+def clear_audit_logs_endpoint():
+    """Clears audit logs only."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    logger_setup.clear_audit_logs()
+    logger_setup.log_audit("CLEAR_AUDIT", "Audit logs cleared", request.remote_addr)
     return jsonify({"success": True})
 
 @app.route('/api/logs/all/clear', methods=['POST'])

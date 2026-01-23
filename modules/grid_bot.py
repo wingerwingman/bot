@@ -55,6 +55,7 @@ class GridBot:
         self.fee_rate = 0.001  # 0.1% per trade (0.2% round-trip)
         self.buy_fills = 0
         self.sell_fills = 0
+        self.paused = False  # NEW: Pause state
         
         # Logger
         self.logger = logging.getLogger("GridBot")
@@ -696,6 +697,11 @@ class GridBot:
         
         while self.running:
             try:
+                # Skip order checks while paused (still running, just not trading)
+                if self.paused:
+                    time.sleep(5)
+                    continue
+                    
                 fills_before = self.buy_fills + self.sell_fills
                 self.check_order_fills()
                 
@@ -714,6 +720,22 @@ class GridBot:
         self._save_state()
         # self.cancel_all_orders() # Commented out to enable Pause/Resume behavior
         self.logger.info("Grid Bot paused/stopped. Orders remain active.")
+    
+    def pause(self):
+        """Pause the grid bot - keeps running but stops checking orders."""
+        if not self.paused:
+            self.paused = True
+            self.logger.info("Grid Bot PAUSED")
+            if self.is_live:
+                notifier.send_telegram_message(f"⏸️ <b>GRID BOT PAUSED</b>\nSymbol: {self.symbol}\nOrders remain active.")
+    
+    def resume(self):
+        """Resume the grid bot after pause."""
+        if self.paused:
+            self.paused = False
+            self.logger.info("Grid Bot RESUMED")
+            if self.is_live:
+                notifier.send_telegram_message(f"▶️ <b>GRID BOT RESUMED</b>\nSymbol: {self.symbol}")
     
     def start(self):
         """Start the grid bot in a thread."""

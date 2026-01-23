@@ -1,5 +1,6 @@
 from collections import deque
 import logging
+import time
 from . import config
 from . import indicators
 from . import logger_setup
@@ -92,13 +93,11 @@ class Strategy:
     
     def set_higher_timeframe_trend(self, trend_data):
         """Updates the cached higher timeframe trend."""
-        import time
         self.higher_tf_trend = trend_data
         self.higher_tf_last_update = time.time()
     
     def record_stoploss(self):
         """Records the time of a stop-loss event for cooldown tracking."""
-        import time
         self.last_stoploss_time = time.time()
         
     def is_in_cooldown(self):
@@ -106,7 +105,6 @@ class Strategy:
         Checks if we're still in cooldown period after a stop-loss.
         Returns True if we should NOT trade yet.
         """
-        import time
         if self.last_stoploss_time is None:
             return False
         
@@ -115,7 +113,6 @@ class Strategy:
     
     def get_cooldown_remaining(self):
         """Returns remaining cooldown time in minutes, or 0 if not in cooldown."""
-        import time
         if self.last_stoploss_time is None:
             return 0
         elapsed_minutes = (time.time() - self.last_stoploss_time) / 60

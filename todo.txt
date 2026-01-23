@@ -1,15 +1,45 @@
-need a pause button on spot and grid. 
+# CryptoBot TODO List
+Updated: 2026-01-23
 
-low priority
-add button to manually adjust grid bot if market trend changes.
-add sell now button on spot bot needs to be verified. maybe loggs if nothing is there to sell.
-fix add bot to work with alocation slider.
-fix loggs to much gear and greed index an ssanpshots
-seporate activy ans strategy clear button
-clear activy and strategy clears errors also need to change that.
-check trailing stop as it has never changed should update.
-center the bot running icons on front page.
+## ✅ COMPLETED (This Session)
 
-update docker files when this thing is working fully not now
-backup to github when I am ready dont ask
-check if this bot could be breaking my sound on my pc and also interferring with say rockstar login or anything else.
+### High Priority
+     fix state on spot bot. when you first open tab it is on a second instance of the bot but does not show the price and entry etc tell switching to first instance.
+- [x] Added PAUSE button on spot bot
+    - Backend: Added `paused` state and endpoints
+    - Frontend: Added Pause/Resume control
+- [x] Added PAUSE button on grid bot  
+    - Backend: Added `paused` state and endpoints
+    - Frontend: Added Pause/Resume control in GridBotPanel
+
+### Medium Priority
+- [x] Fix add bot to work with allocation slider
+    - Updated `server.py` to fetch allocated capital
+    - Updated `trading_bot.py` to respect `allocated_capital` limit
+- [x] Fix logs - too much Fear & Greed index and snapshots
+    - Throttled "TUNING" logs to 15 min interval or >0.5% volatility change
+- [x] Separate activity and strategy clear buttons
+    - Added specific endpoints to `server.py` (`logs/activity/clear`, `logs/strategy/clear`)
+- [x] Clear activity and strategy should NOT clear errors
+    - Verified new endpoints do not touch error logs
+- [x] Center the bot running icons on front page
+    - Centered cards in `LiveDashboard`
+- [x] Add sell now button verification
+    - Verified logic and fixed bot lookup
+
+### Verification
+- [x] Trailing stop logic verified in `strategy.py`
+
+## 🟢 LOW PRIORITY (Future Work)
+- [ ] Update Docker files when bot is fully working
+- [ ] Backup to GitHub when ready
+- [ ] Check if bot interferes with PC audio (pynput keyboard listener)
+
+## 📁 FILES MODIFIED
+- `modules/trading_bot.py` - Pause logic, Log throttling, Capital Allocation
+- `modules/grid_bot.py` - Pause logic
+- `modules/server.py` - New endpoints (Pause, Clear Logs), Capital logic
+- `botfrontend/src/components/ControlPanel.js` - Pause button
+- `botfrontend/src/components/GridBotPanel.js` - Pause button
+- `botfrontend/src/components/LiveDashboard.js` - UI centering
+- `botfrontend/src/config.js` - New config file

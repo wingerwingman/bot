@@ -72,6 +72,7 @@ def calculate_volatility_from_klines(klines, period=14):
             return 0.0
             
         atr = 0.0
+        num_bars = len(klines) - 1  # Number of True Range calculations
         for i in range(1, len(klines)):
             high = float(klines[i][2])
             low = float(klines[i][3])
@@ -83,7 +84,7 @@ def calculate_volatility_from_klines(klines, period=14):
                 abs(low - prev_close)        # Current Low - Previous Close
             )
             atr += tr
-        atr /= period
+        atr /= num_bars  # FIX: Divide by actual number of bars, not period
         return atr
     except Exception as e:
         raise e

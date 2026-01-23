@@ -46,7 +46,8 @@ class BinanceTradingBot:
                  dynamic_settings=False,
                  resume_state=True,
                  dca_enabled=True,
-                 dca_rsi_threshold=30):
+                 dca_rsi_threshold=30,
+                 allocated_capital=0.0):
         
         self.slippage = slippage
         self.position_size_percent = position_size_percent
@@ -54,6 +55,7 @@ class BinanceTradingBot:
         self.resume_state = resume_state
         self.dca_enabled = dca_enabled
         self.dca_rsi_threshold = dca_rsi_threshold
+        self.allocated_capital = float(allocated_capital)
         self.fear_greed_index = 50 # Default Neutral
 
         self.is_live_trading = is_live_trading
@@ -190,6 +192,7 @@ class BinanceTradingBot:
         self.bought_price = None
         self.consecutive_stop_losses = 0
         self.finished_data = False
+        self.paused = False  # NEW: Pause state - bot tracks but doesn't trade
         self.dca_count = 0 # Track number of DCA buys
         
         self.last_price = None
@@ -668,17 +671,25 @@ class BinanceTradingBot:
             position_units = risk_amount / distance_per_unit
             
             # Cap at max capital (Can't borrow)
-            max_units = (self.quote_balance / current_price) * 0.99 # 99% to cover fees
+            # Check allocated capital limit (Fix for Allocation Slider)
+            max_spendable = self.quote_balance
+            if self.allocated_capital > 0:
+                max_spendable = min(self.quote_balance, self.allocated_capital)
+
+            max_units = (max_spendable / current_price) * 0.99 # 99% to cover fees
             
             final_units = min(position_units, max_units)
             
-            self.logger.debug(f"Dynamic Sizing: Risk ${risk_amount:.2f} (2%), Dist ${distance_per_unit:.2f}, Calc Units {position_units:.4f}, Cap {max_units:.4f}")
+            self.logger.debug(f"Dynamic Sizing: Risk ${risk_amount:.2f} (2%), Dist ${distance_per_unit:.2f}, Calc Units {position_units:.4f}, Cap {max_units:.4f} (Alloc: {self.allocated_capital})")
             return final_units
             
         except Exception as e:
             self.logger.error(f"Error calculating position size: {e}")
             # Fallback to fixed %
-            invest_amount = self.get_balance(self.quote_asset) * self.position_size_percent
+            balance = self.get_balance(self.quote_asset)
+            if self.allocated_capital > 0:
+                balance = min(balance, self.allocated_capital)
+            invest_amount = balance * self.position_size_percent
             return invest_amount / current_price
 
 
@@ -802,6 +813,22 @@ class BinanceTradingBot:
                 notifier.send_telegram_message(stop_msg)
             except Exception as e:
                 self.logger.error(f"Error sending stop notification: {e}")
+
+    def pause(self):
+        """Pause trading - bot continues tracking but won't execute trades."""
+        if not self.paused:
+            self.paused = True
+            self.logger.info("Bot PAUSED - tracking continues, trading suspended")
+            if self.is_live_trading:
+                notifier.send_telegram_message(f"⏸️ <b>BOT PAUSED</b>\nSymbol: {self.symbol}\nTrading suspended, monitoring continues.")
+    
+    def resume(self):
+        """Resume trading after pause."""
+        if self.paused:
+            self.paused = False
+            self.logger.info("Bot RESUMED - trading active")
+            if self.is_live_trading:
+                notifier.send_telegram_message(f"▶️ <b>BOT RESUMED</b>\nSymbol: {self.symbol}\nTrading active.")
 
     def _fetch_real_fee(self, order_id):
         """Fetch actual commission paid for an order and convert to USDT."""
@@ -1297,17 +1324,24 @@ class BinanceTradingBot:
                             # Simplified Log Format
                             msg = f"🔄 TUNING: Vol {vol:.2%} -> RSI Buy < {new_rsi}{fg_msg} | SL {new_sl_percent:.1f}% | Trail {new_trail_percent:.1f}%{sell_context}"
                             
-                            # Only log if Volatility changed > 0.1% OR first run to reduce spam
-                            # Using last_vol_logged to track
-                            if not hasattr(self, 'last_vol_logged') or abs(self.last_vol_logged - vol) > 0.001:
+                            # Only log if Volatility changed significantly (>0.5%) OR significant time passed (15 mins)
+                            # to reduce spam as requested by user.
+                            current_time = time.time()
+                            last_log_time = getattr(self, 'last_tuning_log_time', 0)
+                            
+                            should_log = False
+                            vol_change = abs(getattr(self, 'last_vol_logged', 0) - vol)
+                            
+                            if current_time - last_log_time > 900: # 15 minutes
+                                should_log = True
+                            elif vol_change > 0.005: # > 0.5% change
+                                should_log = True
+                                
+                            if should_log:
                                 self.last_vol_logged = vol
+                                self.last_tuning_log_time = current_time
                                 self.logger.debug(msg) 
                                 logger_setup.log_strategy(msg)
-                            elif self.bought_price:
-                                # If holding, maybe log less frequently but still log to show trail updates?
-                                # Let's log but Keep it concise. 
-                                # Actually user complained about "Dynamic Update" spam.
-                                # Let's purely limit by change.
                                 pass
                         
                         self.last_volatility_check_time = datetime.datetime.now()
@@ -1335,7 +1369,13 @@ class BinanceTradingBot:
                              time.sleep(1)
                              continue
                          
-                         # 2. Check Signals
+                         # 2. Check Signals (SKIP IF PAUSED)
+                         if self.paused:
+                             # Still update data, just don't trade
+                             self.last_price = current_price
+                             time.sleep(1)
+                             continue
+                         
                          if self.bought_price is None:
                               # Buy Check (now with volume parameter)
                               if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
@@ -1490,15 +1530,8 @@ class BinanceTradingBot:
             elif 'zec' in fname: self.base_asset = 'ZEC'; self.symbol = 'ZECUSDT'
             else: self.base_asset = 'ETH'; self.symbol = 'ETHUSDT'
             
-            self.last_price = None
             
-            # --- METRICS TRACKING ---
-            self.total_trades = 0
-            self.winning_trades = 0
-            self.gross_profit = 0.0
-            self.gross_loss = 0.0
-            self.peak_balance = initial_balance
-            self.max_drawdown = 0.0
+            self.last_price = None
             
             # Initial Volatility
             if self.is_live_trading:

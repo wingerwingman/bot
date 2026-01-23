@@ -27,6 +27,10 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 | **Trailing Stop** | Locks in profits by following price upward |
 | **Dynamic Tuning** | Auto-adjusts SL/TP based on real-time volatility (ATR) |
 | **Fear & Greed Integration** | Modifies risk based on market sentiment |
+| **Multi-Timeframe Analysis** | Checks 4H trend before entry (blocks bearish) |
+| **Volume Confirmation** | Requires 1.2x average volume for entries |
+| **Stop-Loss Cooldown** | Waits 30 min after stop-loss before re-entry |
+| **Slippage Tracking** | Monitors expected vs actual fill prices |
 
 ### 🪜 Grid Trading Bot
 | Feature | Description |
@@ -202,4 +206,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
