@@ -224,6 +224,11 @@ class BinanceTradingBot:
         self.max_win_streak = 0
         self.max_loss_streak = 0
 
+        # --- NEW: PERFORMANCE TRACKING (InMemory for Test/Paper) ---
+        self.equity_history = []  # List of {timestamp, balance, pnl_percent}
+        self.trade_journal = deque(maxlen=200) # Keep last 200 trades in memory
+
+
         
         if self.is_live_trading:
             # Initial volatility calculation via Helper
@@ -771,6 +776,88 @@ class BinanceTradingBot:
             if drawdown > self.max_drawdown:
                 self.max_drawdown = drawdown
 
+        # Equity Snapshot for Sharpe Ratio
+        pnl_percent = 0.0
+        if self.bought_price and self.bought_price > 0:
+             # This assumes update_metrics is called AFTER sell/close, but we don't pass executed price here
+             # We can approximate pnl_percent from profit_amount / cost_basis if tracked, 
+             # or just pass it in. For now, let's use the equity change.
+             pass 
+
+        timestamp = datetime.datetime.now().isoformat()
+        self.equity_history.append({
+            'timestamp': timestamp,
+            'balance': current_equity,
+            'profit_amount': profit_amount
+        })
+
+    def get_sharpe_ratio(self, risk_free_rate=0.02):
+        """Calculates Sharpe Ratio from internal equity history."""
+        if len(self.equity_history) < 2:
+            return 0.0
+        
+        # Calculate PnL percentages from equity changes
+        returns = []
+        for i in range(1, len(self.equity_history)):
+            prev = self.equity_history[i-1]['balance']
+            curr = self.equity_history[i]['balance']
+            if prev > 0:
+                ret = (curr - prev) / prev
+                returns.append(ret)
+        
+        if not returns:
+            return 0.0
+
+        mean_return = sum(returns) / len(returns)
+        variance = sum((r - mean_return) ** 2 for r in returns) / len(returns)
+        std_return = math.sqrt(variance)
+        
+        if std_return == 0:
+            return 0.0
+            
+        # Annualize (Crypto ~365 days) assuming daily trades? 
+        # Actually this is per-trade Sharpe.
+        # Approximation: Annualized = PerTrade * sqrt(N_trades_per_year)
+        # Let's return raw per-trade Sharpe for now or standard simplification
+        # Standard: (Mean - Rf) / StdDev. Rf per trade is negligible usually.
+        
+        sharpe = mean_return / std_return
+        return round(sharpe, 2)
+
+    def get_performance_summary(self):
+        """Returns a comprehensive performance dictionary."""
+        win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0.0
+        profit_factor = (self.gross_profit / self.gross_loss) if self.gross_loss > 0 else 999.0
+        
+        # Avg Return (per trade)
+        avg_return = 0.0
+        if self.total_trades > 0:
+            net_pnl = self.gross_profit - self.gross_loss
+            # As percentage of starting balance? 
+            # Or average of individual trade percentages?
+            # Let's use average trade PnL % from history if available, else simple approx
+            avg_return = (self.total_return if hasattr(self, 'total_return') else 0.0) / self.total_trades
+            
+        return {
+            'total_trades': self.total_trades,
+            'winning_trades': self.winning_trades,
+            'losing_trades': self.total_trades - self.winning_trades,
+            'win_rate': round(win_rate, 1),
+            'profit_factor': round(profit_factor, 2),
+            'max_drawdown': round(self.max_drawdown * 100, 2),
+            'sharpe_ratio': self.get_sharpe_ratio(),
+            'max_win_streak': self.max_win_streak,
+            'max_loss_streak': self.max_loss_streak,
+            'net_profit': self.gross_profit - self.gross_loss,
+            'avg_duration': round(self.get_average_trade_duration(), 1)
+        }
+
+    def get_internal_journal(self):
+        """Returns the in-memory trade journal."""
+        # Convert deque to list and return reversed (newest first)
+        return list(self.trade_journal)
+
+
     def start(self):
         if not self.running:
             self.running = True
@@ -1078,6 +1165,7 @@ class BinanceTradingBot:
                          macd, hist, sig = indicators.calculate_macd(self.strategy.price_history)
                          
                          journal_entry = {
+                             'timestamp': datetime.datetime.now().isoformat(),
                              'action': 'SELL',
                              'symbol': self.symbol,
                              'price': avg_price,
@@ -1101,7 +1189,12 @@ class BinanceTradingBot:
                              },
                              'balance_after': self.quote_balance
                          }
+                         # Log to Global Journal (Live Only or Persistent)
                          logger_setup.log_trade_journal(journal_entry)
+                         
+                         # Log to Internal Journal (For Paper/Test Dashboard visibility)
+                         self.trade_journal.appendleft(journal_entry)
+
                          
                          # Log equity snapshot for Sharpe Ratio
                          logger_setup.log_equity_snapshot(self.quote_balance, real_profit_percent)
@@ -1535,6 +1628,9 @@ class BinanceTradingBot:
             self.gross_loss = 0.0
             self.peak_balance = initial_balance
             self.max_drawdown = 0.0
+            self.equity_history = []
+            self.trade_journal.clear()
+
             
             # Detect Asset from Filename
             fname = os.path.basename(self.filename).lower()
@@ -1688,7 +1784,23 @@ class BinanceTradingBot:
                           self.update_metrics(profit_amount, self.quote_balance)
                           
                           reason = "Sell" if action == 'SELL' else "Stop-loss Sell"
+                          
+                          # Add to internal journal for Backtest Dashboard
+                          j_entry = {
+                              'timestamp': row['Timestamp'].isoformat() if hasattr(row['Timestamp'], 'isoformat') else str(row['Timestamp']),
+                              'action': 'SELL',
+                              'symbol': self.symbol,
+                              'price': execution_price,
+                              'qty': qty_sold,
+                              'pnl_amount': round(profit_amount, 2),
+                              'pnl_percent': round(profit_percent, 2),
+                              'balance_after': self.quote_balance,
+                              'exit_reason': reason
+                          }
+                          self.trade_journal.appendleft(j_entry)
+                          
                           logger_setup.log_trade(self.logger, self.trade_logger, reason, execution_price, qty_sold, revenue, profit_percent, is_test=True)
+
                           
                           self.bought_price = None
 

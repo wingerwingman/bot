@@ -354,6 +354,20 @@ def get_metrics():
                      break
     
     if bot:
+        # Use rich performance summary if available (New Method)
+        if hasattr(bot, 'get_performance_summary'):
+            summary = bot.get_performance_summary()
+            
+            # Attach recent journal (last 20)
+            if hasattr(bot, 'get_internal_journal'):
+                 summary['trade_journal'] = bot.get_internal_journal()[:20]
+                 
+            summary['source'] = "bot_instance"
+            summary['symbol'] = symbol
+            return jsonify(summary)
+            
+        else:
+            # Fallback for old/grid bots
             win_rate = (bot.winning_trades / bot.total_trades * 100) if bot.total_trades > 0 else 0.0
             profit_factor = (bot.gross_profit / bot.gross_loss) if bot.gross_loss > 0 else 999.0
             return jsonify({
@@ -365,7 +379,7 @@ def get_metrics():
                 "peak_balance": bot.peak_balance,
                 "max_win_streak": getattr(bot, 'max_win_streak', 0),
                 "max_loss_streak": getattr(bot, 'max_loss_streak', 0),
-                "source": "live",
+                "source": "legacy",
                 "symbol": symbol
             })
     

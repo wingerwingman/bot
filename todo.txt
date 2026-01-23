@@ -1,6 +1,10 @@
 # CryptoBot TODO List
 Updated: 2026-01-23
-Max win and loss are not updating on the spot bot tab.
+- [x] **Max win/loss streak stats not updating**
+    - Logic for streak calculation refined in `trading_bot.py`.
+- [x] **Backtest Bot Name Fix**
+    - Correctly displays selected pair (e.g. SOLUSDT) instead of default ETHUSDT when starting backtest.
+
 ## 🟡 MEDIUM PRIORITY (Remaining)
 - [ ] Fix manual_sell on Grid Bot (currently only Spot)
 - [ ] Add "Sell Now" button to Grid Bot Panel
@@ -26,6 +30,8 @@ Max win and loss are not updating on the spot bot tab.
 
 - [x] **Adjustable Advanced Strategy & Volatility Filters (Item #20 & #4)**
     - *Status: Fix implementation completed for both Spot and Grid bots. Awaiting user verification.*
+- [x] **Backtest Analytics Upgrade**
+    - Added Sharpe Ratio, Profit Factor, and Full Trade Journal (In-Memory) for backtests/paper trading.
 - [x] **Streak Tracking Visible on Dashboard (Main Page)**
     - Frontend: Added "🔥 Max Win Streak" and "🧊 Max Loss Streak" to `LiveDashboard.js` and `ControlPanel.js`.
 

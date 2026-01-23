@@ -9,7 +9,11 @@ Updated: 2026-01-23
 - DCA (Defense Mode) for averaging down
 - Capital management with allocation splitting
 - Grid bot for sideways markets
+- Capital management with allocation splitting
+- Grid bot for sideways markets
 - Comprehensive Telegram notifications
+- **Advanced Analytics**: Sharpe Ratio, Profit Factor, and detailed Backtest Journals
+
 
 ---
 

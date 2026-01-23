@@ -18,7 +18,9 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Bot Lifecycle** - Create, start, stop, pause, and delete bot instances
 - **Logs & Audit Trail** - Strategy decisions, errors, and user actions
 - **Backtest Mode** - Test strategies on historical data before going live
+- **Advanced Analytics** - Sharpe Ratio, Profit Factor, and In-Memory Trade Journal
 - **Paper Trading Mode** - Simulate live trading execution without real funds (zero risk)
+
 
 ### 🎯 Spot Trading Strategy
 | Feature | Description |

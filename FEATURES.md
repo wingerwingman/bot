@@ -63,7 +63,10 @@ CryptoBot/
 | | CORS Lock | `server.py` | Restricted to `localhost:3000` only. |
 | **Logging** | Audit Trail | `logger_setup.py` | Logs all user actions (start/stop/config). |
 | | Trade Export | `server.py`, `LogsPage.js` | Download trade history as CSV. |
+| **Analytics** | Sharpe Ratio | `trading_bot.py` | Risk-adjusted return calculation. |
+| | In-Memory Journal | `trading_bot.py` | Full trade history for Test/Paper sessions. |
 | **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, P&L display. |
+
 | | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history. |
 | | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
 
