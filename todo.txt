@@ -1,45 +1,34 @@
 # CryptoBot TODO List
 Updated: 2026-01-23
-
-## ✅ COMPLETED (This Session)
+🔬 Advanced Strategy Filters are still not adjustable while running.
+## ✅ COMPLETED
 
 ### High Priority
-     fix state on spot bot. when you first open tab it is on a second instance of the bot but does not show the price and entry etc tell switching to first instance.
+- [x] **Add "Paper Trading Mode" (Item 30)**
+    - Backend: Updated `server.py` to allow simulated trading without a backtest file.
+    - Frontend: Added "Paper Trading" vs "Backtest" toggle in Control Panel (Test Mode).
+    - Status: Returns `is_paper` flag to distinguish modes.
+
+- [x] Fix state on spot bot (Dashboard Isolation)
+    - Ensure Test bots don't appear on Live Dashboard.
+    - Ensure Backtest Panel correctly identifies bots.
+    - (The "second instance" issue should be resolved by correct ID-based lookups implemented in previous session and verified here).
+
 - [x] Added PAUSE button on spot bot
-    - Backend: Added `paused` state and endpoints
-    - Frontend: Added Pause/Resume control
-- [x] Added PAUSE button on grid bot  
-    - Backend: Added `paused` state and endpoints
-    - Frontend: Added Pause/Resume control in GridBotPanel
-
-### Medium Priority
+- [x] Added PAUSE button on grid bot
 - [x] Fix add bot to work with allocation slider
-    - Updated `server.py` to fetch allocated capital
-    - Updated `trading_bot.py` to respect `allocated_capital` limit
-- [x] Fix logs - too much Fear & Greed index and snapshots
-    - Throttled "TUNING" logs to 15 min interval or >0.5% volatility change
+- [x] Fix logs - throttling
 - [x] Separate activity and strategy clear buttons
-    - Added specific endpoints to `server.py` (`logs/activity/clear`, `logs/strategy/clear`)
-- [x] Clear activity and strategy should NOT clear errors
-    - Verified new endpoints do not touch error logs
-- [x] Center the bot running icons on front page
-    - Centered cards in `LiveDashboard`
-- [x] Add sell now button verification
-    - Verified logic and fixed bot lookup
+- [x] Center bot icons
 
-### Verification
-- [x] Trailing stop logic verified in `strategy.py`
+## 🟡 MEDIUM PRIORITY (Remaining)
+- [ ] Fix manual_sell on Grid Bot (currently only Spot)
+- [ ] Add "Sell Now" button to Grid Bot Panel
+- [ ] Implement "Daily Loss Limit" (Risk Management)
+- [ ] Sentiment Analysis (Future)
 
-## 🟢 LOW PRIORITY (Future Work)
-- [ ] Update Docker files when bot is fully working
-- [ ] Backup to GitHub when ready
-- [ ] Check if bot interferes with PC audio (pynput keyboard listener)
-
-## 📁 FILES MODIFIED
-- `modules/trading_bot.py` - Pause logic, Log throttling, Capital Allocation
-- `modules/grid_bot.py` - Pause logic
-- `modules/server.py` - New endpoints (Pause, Clear Logs), Capital logic
-- `botfrontend/src/components/ControlPanel.js` - Pause button
-- `botfrontend/src/components/GridBotPanel.js` - Pause button
-- `botfrontend/src/components/LiveDashboard.js` - UI centering
-- `botfrontend/src/config.js` - New config file
+## 📁 FILES MODIFIED THIS SESSION
+- `modules/server.py` - Logic for Paper Trading mode
+- `botfrontend/src/components/ControlPanel.js` - UI for Paper Trading mode
+- `botfrontend/src/components/BacktestDashboard.js` - Updated for context
+- `todo.txt` - Updated status

@@ -56,6 +56,8 @@ class GridBot:
         self.buy_fills = 0
         self.sell_fills = 0
         self.paused = False  # NEW: Pause state
+        self.auto_rebalance_enabled = True # Default On (Item #20)
+        self.rebalance_count = 0 
         
         # Logger
         self.logger = logging.getLogger("GridBot")
@@ -92,6 +94,9 @@ class GridBot:
                 'total_fees': self.total_fees,
                 'buy_fills': self.buy_fills,
                 'sell_fills': self.sell_fills,
+                'paused': self.paused,
+                'auto_rebalance_enabled': self.auto_rebalance_enabled,
+                'rebalance_count': self.rebalance_count,
                 'running': self.running
             }
             with open(self.state_file, 'w') as f:
@@ -114,6 +119,9 @@ class GridBot:
                     self.total_fees = state.get('total_fees', 0.0)
                     self.buy_fills = state.get('buy_fills', 0)
                     self.sell_fills = state.get('sell_fills', 0)
+                    self.paused = state.get('paused', False)
+                    self.auto_rebalance_enabled = state.get('auto_rebalance_enabled', True)
+                    self.rebalance_count = state.get('rebalance_count', 0)
                     self.logger.info(f"♻️ Grid state restored: {self.buy_fills} buys, {self.sell_fills} sells, ${self.total_profit:.2f} net profit (fees: ${self.total_fees:.2f})")
         except Exception as e:
             self.logger.error(f"Error loading grid state: {e}")
@@ -359,6 +367,32 @@ class GridBot:
         if current_price is None:
             return
         
+        # --- DYNAMIC GRID REBALANCING ---
+        # If enabled, checking if price is outside bounds then re-center grid
+        if self.running and self.auto_rebalance_enabled:
+            # Check for breakout (buffer of 0.5% outside range)
+            buffer = 0.005
+            is_below = current_price < self.lower_bound * (1 - buffer)
+            is_above = current_price > self.upper_bound * (1 + buffer)
+            
+            if is_below or is_above:
+                self.logger.info(f"Dynamic Rebalance Triggered: Price {current_price:.2f} out of bounds ({self.lower_bound}-{self.upper_bound})")
+                
+                # Calculate new bounds (keep same spread width, just center it)
+                curr_spread_pct = (self.upper_bound - self.lower_bound) / self.lower_bound
+                half_spread = curr_spread_pct / 2
+                
+                new_lower = current_price * (1 - half_spread)
+                new_upper = current_price * (1 + half_spread)
+                
+                # Apply new configuration
+                self.logger.info(f"Re-centering grid to {new_lower:.2f} - {new_upper:.2f}")
+                self.update_config(lower_bound=new_lower, upper_bound=new_upper)
+                self.rebalance_count += 1
+                
+                # Return early to let next cycle handle new orders
+                return
+
         for order in self.active_orders[:]:  # Copy list to allow modification
             if order['status'] != 'OPEN':
                 continue
@@ -384,6 +418,8 @@ class GridBot:
             
             if filled:
                 order['status'] = 'FILLED'
+                if len(self.filled_orders) > 100:
+                    self.filled_orders.pop(0) # Remove oldest
                 self.filled_orders.append(order)
                 self.active_orders.remove(order)
                 
@@ -394,23 +430,24 @@ class GridBot:
                     self.sell_fills += 1
                     self.logger.info(f"SELL FILLED @ {order['price']:.2f}")
                 
-                # Calculate profit with fees
-                grid_step = (self.upper_bound - self.lower_bound) / self.grid_count
-                gross_profit = order['qty'] * grid_step
-                
                 # Calculate Fees (Real vs Estimate)
                 trade_value = order['qty'] * order['price']
                 real_fee = self._fetch_real_fee(order['order_id'])
-                if real_fee is not None:
-                     fee = real_fee
-                else:
-                     fee = trade_value * self.fee_rate
-                     
+                fee = real_fee if real_fee is not None else (trade_value * self.fee_rate)
                 self.total_fees += fee
                 
-                # Net profit = gross - fee (we only count half since we need buy+sell for full profit)
-                net_profit = gross_profit - (fee * 2)  # Account for both sides
-                self.total_profit += net_profit
+                # Realized Profit logic: Only realized when a SELL fills (assuming we bought lower)
+                # For simplicity in grid: profit = distance between levels * qty
+                net_profit = 0.0
+                grid_step = (self.upper_bound - self.lower_bound) / self.grid_count
+                
+                if order['side'] == 'SELL':
+                    # Realized Gross = Spread * Qty
+                    # Realized Net = (Spread * Qty) - (Buy Fee + Sell Fee)
+                    # We estimate Buy Fee to be same as Sell Fee for simplicity if not tracked per-cycle
+                    cycle_fees = fee * 2 
+                    net_profit = (order['qty'] * grid_step) - cycle_fees
+                    self.total_profit += net_profit
                 
                 # --- LOG TO JOURNAL ---
                 try:
@@ -423,7 +460,7 @@ class GridBot:
                         'entry_reason': "Grid Level",
                         'timestamp': datetime.datetime.now().isoformat(),
                         'fee': float(fee),
-                        'pnl_amount': float(net_profit) if order['side'] == 'SELL' else 0.0,
+                        'pnl_amount': float(net_profit), # Only non-zero on SELL
                         'pnl_percent': float((grid_step/order['price'])*100) if order['side'] == 'SELL' else 0.0,
                         'balance_after': 0.0
                     }
@@ -432,7 +469,8 @@ class GridBot:
                     self.logger.error(f"Journal Log Error: {ex}")
                 # ----------------------
                 
-                self.logger.info(f"  → Gross: ${gross_profit:.2f}, Fee: ${fee:.2f}, Net: ${net_profit:.2f}")
+                if order['side'] == 'SELL':
+                    self.logger.info(f"  → Cycle Net Profit: ${net_profit:.2f} (includes est. buy fee)")
                 
                 # TUNING METRICS: Log context for analysis
                 current_vol = self.volatility if hasattr(self, 'volatility') else "N/A"
@@ -574,6 +612,8 @@ class GridBot:
         return {
             'running': self.running,
             'is_live': self.is_live,
+            'paused': self.paused,
+            'auto_rebalance_enabled': self.auto_rebalance_enabled,
             'symbol': self.symbol,
             'lower_bound': self.lower_bound,
             'upper_bound': self.upper_bound,
@@ -726,6 +766,8 @@ class GridBot:
         if not self.paused:
             self.paused = True
             self.logger.info("Grid Bot PAUSED")
+            # Persist state
+            self._save_state()
             if self.is_live:
                 notifier.send_telegram_message(f"⏸️ <b>GRID BOT PAUSED</b>\nSymbol: {self.symbol}\nOrders remain active.")
     
@@ -734,8 +776,38 @@ class GridBot:
         if self.paused:
             self.paused = False
             self.logger.info("Grid Bot RESUMED")
+            # Persist state
+            self._save_state()
             if self.is_live:
                 notifier.send_telegram_message(f"▶️ <b>GRID BOT RESUMED</b>\nSymbol: {self.symbol}")
+
+    def update_config(self, lower_bound=None, upper_bound=None, grid_count=None, capital=None):
+        """Update bot configuration on the fly."""
+        needs_reset = False
+        
+        if lower_bound is not None and float(lower_bound) != self.lower_bound:
+            self.lower_bound = float(lower_bound)
+            needs_reset = True
+        
+        if upper_bound is not None and float(upper_bound) != self.upper_bound:
+            self.upper_bound = float(upper_bound)
+            needs_reset = True
+            
+        if grid_count is not None and int(grid_count) != self.grid_count:
+            self.grid_count = int(grid_count)
+            needs_reset = True
+
+        if capital is not None and float(capital) != self.capital:
+            self.capital = float(capital)
+            needs_reset = True
+
+        if needs_reset and self.running:
+            self.logger.info("Grid Config changed. Resetting grid orders to apply new bounds/levels...")
+            self.cancel_all_orders()
+            self.place_grid_orders()
+            self._save_state()
+            
+        return True
     
     def start(self):
         """Start the grid bot in a thread."""

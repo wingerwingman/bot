@@ -167,11 +167,6 @@ Balance: $1,245.20
 **Suggestion:** Trade multiple pairs simultaneously with correlation awareness.
 **Benefit:** Diversification.
 
-### 30. Paper Trading Mode
-**Current:** Test mode uses historical data.
-**Suggestion:** Add live paper trading (real prices, fake money).
-**Benefit:** Test strategies in real-time without risk.
-
 ---
 
 ## 🔒 RISK MANAGEMENT

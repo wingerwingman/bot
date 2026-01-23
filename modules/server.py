@@ -64,29 +64,31 @@ def find_spot_bot(identifier):
     Returns:
         Tuple of (bot, key) or (None, None) if not found
     """
-    if not identifier:
-        # If only one bot, return it
-        if len(spot_bots) == 1:
-            key = list(spot_bots.keys())[0]
-            return spot_bots[key], key
+    global spot_bots
+    with bot_lock:
+        if not identifier:
+            # If only one bot, return it
+            if len(spot_bots) == 1:
+                key = list(spot_bots.keys())[0]
+                return spot_bots[key], key
+            return None, None
+        
+        # Direct key lookup
+        if identifier in spot_bots:
+            return spot_bots[identifier], identifier
+        
+        # Try mode prefixes
+        for prefix in ['live_', 'test_']:
+            key = f"{prefix}{identifier}"
+            if key in spot_bots:
+                return spot_bots[key], key
+        
+        # Search by symbol value
+        for key, bot in spot_bots.items():
+            if bot.symbol == identifier:
+                return bot, key
+        
         return None, None
-    
-    # Direct key lookup
-    if identifier in spot_bots:
-        return spot_bots[identifier], identifier
-    
-    # Try mode prefixes
-    for prefix in ['live_', 'test_']:
-        key = f"{prefix}{identifier}"
-        if key in spot_bots:
-            return spot_bots[key], key
-    
-    # Search by symbol value
-    for key, bot in spot_bots.items():
-        if bot.symbol == identifier:
-            return bot, key
-    
-    return None, None
 
 # ===================== API ENDPOINTS =====================
 
@@ -219,6 +221,7 @@ def get_status():
             "status": "online",
             "running": bot.running,
             "mode": "Live" if bot.is_live_trading else "Test",
+            "is_paper": (not bot.is_live_trading and not bot.filename),
             "realtime_metrics": realtime_metrics,
             "symbol": bot.symbol,
             "current_price": current_price,
@@ -523,10 +526,12 @@ def start_bot():
         cooldown_minutes = data.get('cooldown_minutes', 30)
         
         is_live = (mode.lower() == 'live')
+        is_paper = (mode.lower() == 'paper')
         
-        if not is_live:
+        # Filename required ONLY for backtest (test mode), not for paper trading
+        if not is_live and not is_paper:
             if not filename:
-                return jsonify({"error": "Filename required for test mode"}), 400
+                return jsonify({"error": "Filename required for backtest mode"}), 400
             data_dir = os.path.join(os.getcwd(), 'data')
             full_path = os.path.join(data_dir, filename)
             if not os.path.exists(full_path):
@@ -1068,47 +1073,131 @@ def fetch_data():
 
 @app.route('/api/config/update', methods=['POST'])
 def update_config():
-    """Updates configuration of the running bot."""
+    """Updates configuration of any running bot (Spot)."""
     data = request.json
     symbol = data.get('symbol')
     
     global spot_bots
     
-    if len(spot_bots) == 1 and not symbol:
-        symbol = list(spot_bots.keys())[0]
-    
-    bot = spot_bots.get(symbol)
-    if not bot or not bot.running:
-        return jsonify({"error": "Bot is not running"}), 400
+    # Identify bot: prefer explicit symbol, else if only one exists use it
+    bot = None
+    if symbol:
+        bot, actual_key = find_spot_bot(symbol)
+    elif len(spot_bots) == 1:
+        bot = list(spot_bots.values())[0]
+        symbol = bot.symbol
+
+    if not bot:
+        return jsonify({"error": f"Bot for {symbol or 'selected pair'} is not running"}), 400
         
     try:
-        # Update Resume State
+        # 1. State/UI Toggles
         if 'resume_state' in data:
             bot.resume_state = bool(data['resume_state'])
-            print(f"[{symbol}] Config Update: Resume State set to {bot.resume_state}")
-            logger_setup.log_audit("CONFIG_CHANGE", f"Resume Session: {bot.resume_state}", request.remote_addr)
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Resume Session: {bot.resume_state}", request.remote_addr)
             
-        # Update Dynamic Settings Toggle
         if 'dynamic_settings' in data:
             bot.dynamic_settings = bool(data['dynamic_settings'])
-            print(f"[{symbol}] Config Update: Dynamic Settings set to {bot.dynamic_settings}")
-            logger_setup.log_audit("CONFIG_CHANGE", f"Dynamic Settings: {bot.dynamic_settings}", request.remote_addr)
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Dynamic Settings: {bot.dynamic_settings}", request.remote_addr)
             
-        # Update DCA Toggle
+        # 2. Position & Strategy Settings
+        if 'position_size_percent' in data:
+            bot.position_size_percent = float(data['position_size_percent'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Position Size: {bot.position_size_percent*100}%", request.remote_addr)
+
+        if 'rsi_threshold' in data:
+            bot.strategy.rsi_threshold_buy = float(data['rsi_threshold'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] RSI Threshold: {bot.strategy.rsi_threshold_buy}", request.remote_addr)
+
+        if 'stop_loss_percent' in data:
+            sl = float(data['stop_loss_percent'])
+            bot.strategy.stop_loss_percent = sl
+            bot.strategy.fixed_stop_loss_percent = sl
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Stop Loss: {sl*100}%", request.remote_addr)
+
+        if 'trailing_stop_percent' in data:
+            trailing = float(data['trailing_stop_percent'])
+            bot.strategy.sell_percent = trailing
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Trailing Stop: {trailing*100}%", request.remote_addr)
+
+        # 3. Defense (DCA) Settings
         if 'dca_enabled' in data:
-            if hasattr(bot.strategy, 'dca_enabled'):
-                bot.strategy.dca_enabled = bool(data['dca_enabled'])
-                print(f"[{symbol}] Config Update: Defense Mode (DCA) set to {bot.strategy.dca_enabled}")
-                logger_setup.log_audit("CONFIG_CHANGE", f"DCA Enabled: {bot.strategy.dca_enabled}", request.remote_addr)
+            bot.strategy.dca_enabled = bool(data['dca_enabled'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] DCA Enabled: {bot.strategy.dca_enabled}", request.remote_addr)
+
+        if 'dca_rsi_threshold' in data:
+            bot.strategy.dca_rsi_threshold = float(data['dca_rsi_threshold'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] DCA RSI Threshold: {bot.strategy.dca_rsi_threshold}", request.remote_addr)
+
+        # 4. Advanced Advanced Features
+        if 'multi_timeframe_enabled' in data:
+            bot.strategy.multi_timeframe_enabled = bool(data['multi_timeframe_enabled'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Multi-TF Trend: {bot.strategy.multi_timeframe_enabled}", request.remote_addr)
+
+        if 'volume_confirmation_enabled' in data:
+            bot.strategy.volume_confirmation_enabled = bool(data['volume_confirmation_enabled'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Volume Confirmation: {bot.strategy.volume_confirmation_enabled}", request.remote_addr)
+
+        if 'volume_multiplier' in data:
+            bot.strategy.volume_multiplier = float(data['volume_multiplier'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Volume Multiplier: {bot.strategy.volume_multiplier}", request.remote_addr)
+
+        if 'cooldown_minutes' in data:
+            bot.strategy.cooldown_after_stoploss_minutes = int(data['cooldown_minutes'])
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] SL Cooldown: {bot.strategy.cooldown_after_stoploss_minutes}m", request.remote_addr)
+            
+        # Force state save if positioning changed
+        bot.save_state()
             
         return jsonify({
             "success": True, 
-            "resume_state": bot.resume_state,
-            "dynamic_settings": bot.dynamic_settings,
-            "dca_enabled": getattr(bot.strategy, 'dca_enabled', False)
+            "config": {
+                "symbol": bot.symbol,
+                "rsi_threshold": bot.strategy.rsi_threshold_buy,
+                "stop_loss_percent": bot.strategy.stop_loss_percent,
+                "trailing_stop_percent": bot.strategy.sell_percent,
+                "position_size_percent": bot.position_size_percent,
+                "dca_enabled": bot.strategy.dca_enabled,
+                "dynamic_settings": bot.dynamic_settings,
+                "multi_timeframe_enabled": bot.strategy.multi_timeframe_enabled
+            }
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/grid/config/update', methods=['POST'])
+def update_grid_config_endpoint():
+    """Updates configuration of a running Grid Bot on the fly."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    data = request.json
+    symbol = data.get('symbol')
+    
+    global grid_bots
+    
+    with grid_lock:
+        if not symbol or symbol not in grid_bots:
+            return jsonify({"error": f"Grid Bot for {symbol} is not running"}), 400
+            
+        bot = grid_bots[symbol]
+        
+        try:
+            lower = data.get('lower_bound')
+            upper = data.get('upper_bound')
+            count = data.get('grid_count')
+            cap = data.get('capital')
+            
+            # Using the new update_config method (to be added to GridBot class)
+            if hasattr(bot, 'update_config'):
+                bot.update_config(lower_bound=lower, upper_bound=upper, grid_count=count, capital=cap)
+                logger_setup.log_audit("GRID_CONFIG_CHANGE", f"[{symbol}] Bounds: {lower}-{upper}, Levels: {count}", request.remote_addr)
+                return jsonify({"success": True})
+            else:
+                return jsonify({"error": "GridBot class does not support dynamic updates yet"}), 500
+                
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
 # ==================== GRID BOT ENDPOINTS ====================
 
@@ -1138,41 +1227,18 @@ def start_grid():
         is_live = data.get('is_live', False)
         resume_state = data.get('resume_state', True)
         
-        # BALANCE VALIDATION for Live Mode (includes ETH holdings)
+        if lower_bound >= upper_bound:
+            return jsonify({"error": "Lower bound must be less than upper bound"}), 400
+            
+        # BALANCE VALIDATION with Capital Manager
         if is_live:
-            try:
-                from binance import Client
-                client = Client(config.API_KEY, config.API_SECRET, tld='us')
-                account = client.get_account()
-                usdt_balance = 0.0
-                eth_balance = 0.0
-                
-                for b in account['balances']:
-                    if b['asset'] == 'USDT':
-                        usdt_balance = float(b['free']) + float(b['locked'])
-                    elif b['asset'] == 'ETH':
-                        eth_balance = float(b['free']) + float(b['locked'])
-                
-                # Get ETH price to calculate total capital
-                eth_price = 0.0
-                try:
-                    ticker = client.get_symbol_ticker(symbol='ETHUSDT')
-                    eth_price = float(ticker['price'])
-                except:
-                    pass
-                
-                eth_value_usd = eth_balance * eth_price
-                total_capital = usdt_balance + eth_value_usd
-                
-                if total_capital < capital:
-                    msg = f"Insufficient capital. Required: ${capital:.2f}, Available: ${total_capital:.2f} (USDT: ${usdt_balance:.2f} + ETH: ${eth_value_usd:.2f})"
-                    logging.getLogger("BinanceTradingBot").error(msg)
-                    return jsonify({"error": msg}), 400
-                    
-            except Exception as e:
-                msg = f"Failed to check balance: {e}"
-                logging.getLogger("BinanceTradingBot").error(msg)
-                return jsonify({"error": msg}), 500
+            allocated = capital_manager.get_available('grid')
+            
+            # If 0 allocated, maybe fall back to check unallocated? Assuming explicit allocation for now.
+            if allocated < capital:
+                 msg = f"Insufficient allocated capital for Grid. Required: ${capital:.2f}, Allocated: ${allocated:.2f}. Please adjust in Capital Manager."
+                 logging.getLogger("BinanceTradingBot").error(msg)
+                 return jsonify({"error": msg}), 400
         
         try:
             bot = GridBot(

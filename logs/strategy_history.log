@@ -9870,3 +9870,41 @@
 2026-01-23 08:41:08 - 🔄 TUNING: Vol 4.42% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
 2026-01-23 08:56:11 - 🔄 TUNING: Vol 4.41% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
 2026-01-23 09:11:13 - 🔄 TUNING: Vol 4.39% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 09:26:17 - 🔄 TUNING: Vol 4.39% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 09:41:19 - 🔄 TUNING: Vol 4.36% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 09:56:23 - 🔄 TUNING: Vol 4.37% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 10:11:26 - 🔄 TUNING: Vol 4.38% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 10:26:29 - 🔄 TUNING: Vol 4.36% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2845.96
+2026-01-23 10:41:32 - 🔄 TUNING: Vol 4.40% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 10:56:34 - 🔄 TUNING: Vol 4.42% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 10:57:53 - Trading Pair Configured: ETHUSDT
+2026-01-23 10:57:53 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 10:57:53 - __init__: Initial Volatility Calculated: 0.04427319264669368
+2026-01-23 10:57:53 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 10:57:53 - ♻️ SESSION RESTORED from 2026-01-23T10:56:34.564186
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.64 (Max Drawdown: 2723.58%)
+2026-01-23 10:57:55 - 🔄 TUNING: Vol 4.43% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 11:12:57 - 🔄 TUNING: Vol 4.42% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 11:14:53 - Trading Pair Configured: ETHUSDT
+2026-01-23 11:14:53 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 11:14:53 - __init__: Initial Volatility Calculated: 0.044278820902432146
+2026-01-23 11:14:53 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 11:14:53 - ♻️ SESSION RESTORED from 2026-01-23T11:12:57.278109
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $141.34 (Max Drawdown: 2723.58%)
+2026-01-23 11:14:55 - 🔄 TUNING: Vol 4.43% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 11:28:30 - Trading Pair Configured: ETHUSDT
+2026-01-23 11:28:30 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 11:28:31 - __init__: Initial Volatility Calculated: 0.044238418087811454
+2026-01-23 11:28:31 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 11:28:31 - ♻️ SESSION RESTORED from 2026-01-23T11:24:56.316609
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $141.33 (Max Drawdown: 2723.58%)
+2026-01-23 11:28:32 - 🔄 TUNING: Vol 4.42% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75

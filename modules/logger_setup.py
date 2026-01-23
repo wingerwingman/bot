@@ -11,6 +11,11 @@ class ListHandler(logging.Handler):
     def emit(self, record):
         try:
             log_entry = self.format(record)
+            # Skip DEBUG logs for UI list (even if level allows)
+            if record.levelno < logging.INFO:
+                return
+
+            log_entry = self.format(record)
             recent_errors.appendleft(log_entry) # Newest first
             
             # Persist to file

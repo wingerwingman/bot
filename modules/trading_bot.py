@@ -176,7 +176,7 @@ class BinanceTradingBot:
                      msg = f"CRITICAL: Insufficient funds ({self.quote_asset} & {self.base_asset} near 0). Shutting down."
                      self.logger.critical(msg)
                      print(msg)
-                     sys.exit(0)
+                     raise RuntimeError(msg)
                 # Warn if low but not zero
                 elif self.quote_balance < 10.0 and self.base_balance < 0.001: 
                      print("WARNING: Balances appear low. Ensure you have enough to trade.")
@@ -339,7 +339,8 @@ class BinanceTradingBot:
             'peak_balance': self.peak_balance,
             'max_drawdown': self.max_drawdown,
             'dca_count': self.dca_count,
-            'peak_price_since_buy': self.strategy.peak_price_since_buy
+            'peak_price_since_buy': self.strategy.peak_price_since_buy,
+            'paused': self.paused
         }
         
         try:
@@ -368,6 +369,8 @@ class BinanceTradingBot:
             if state.get('symbol') != self.symbol:
                 self.logger.warning(f"State file is for {state.get('symbol')}, not {self.symbol}. Ignoring.")
                 return
+
+            self.paused = state.get('paused', False)
 
             # Restore position info
             saved_bought_price = state.get('bought_price')
