@@ -99,3 +99,65 @@ def calculate_ma(price_series, period):
     if len(price_series) < period:
         return None
     return sum(list(price_series)[-period:]) / period
+
+def calculate_average_volume(volume_series, period=20):
+    """Calculates the average volume over a period."""
+    if len(volume_series) < period:
+        return None
+    return sum(list(volume_series)[-period:]) / period
+
+def is_volume_confirmed(current_volume, avg_volume, multiplier=1.2):
+    """
+    Checks if current volume is above average (confirmation of strong move).
+    
+    Args:
+        current_volume: Current bar's volume
+        avg_volume: Average volume over recent period
+        multiplier: How many times average volume is required (default 1.2x)
+    
+    Returns:
+        True if volume is confirmed (above threshold), False otherwise
+    """
+    if avg_volume is None or avg_volume == 0:
+        return True  # No data, allow trade
+    return current_volume >= (avg_volume * multiplier)
+
+def calculate_higher_timeframe_trend(klines, ma_period=50):
+    """
+    Analyzes higher timeframe (e.g., 4H) to determine trend direction.
+    
+    Args:
+        klines: List of kline data from Binance API
+        ma_period: Moving average period for trend detection
+    
+    Returns:
+        dict with 'trend' ('bullish', 'bearish', 'neutral'), 'ma_value', 'current_price'
+    """
+    try:
+        if not klines or len(klines) < ma_period:
+            return {'trend': 'neutral', 'ma_value': None, 'current_price': None}
+        
+        # Extract close prices
+        closes = [float(k[4]) for k in klines]
+        current_price = closes[-1]
+        
+        # Calculate MA
+        ma_value = sum(closes[-ma_period:]) / ma_period
+        
+        # Determine trend
+        if current_price > ma_value * 1.01:  # 1% above MA = bullish
+            trend = 'bullish'
+        elif current_price < ma_value * 0.99:  # 1% below MA = bearish
+            trend = 'bearish'
+        else:
+            trend = 'neutral'
+        
+        return {
+            'trend': trend,
+            'ma_value': ma_value,
+            'current_price': current_price
+        }
+    except Exception as e:
+        print(f"Error calculating higher timeframe trend: {e}")
+        return {'trend': 'neutral', 'ma_value': None, 'current_price': None}
+

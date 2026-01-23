@@ -86,7 +86,12 @@ class BinanceTradingBot:
             rsi_threshold_buy=rsi_threshold,
             trading_fee_percentage=trading_fee_percentage,
             dca_enabled=dca_enabled,
-            dca_rsi_threshold=dca_rsi_threshold
+            dca_rsi_threshold=dca_rsi_threshold,
+            # NEW: Advanced features from config
+            volume_confirmation_enabled=config.VOLUME_CONFIRMATION_ENABLED,
+            volume_multiplier=config.VOLUME_MULTIPLIER_THRESHOLD,
+            multi_timeframe_enabled=config.MULTI_TIMEFRAME_ENABLED,
+            cooldown_after_stoploss_minutes=config.STOP_LOSS_COOLDOWN_MINUTES
         )
         
         # New: Generic balance variables
@@ -184,7 +189,6 @@ class BinanceTradingBot:
         self.running = False
         self.bought_price = None
         self.consecutive_stop_losses = 0
-        self.consecutive_stop_losses = 0
         self.finished_data = False
         self.dca_count = 0 # Track number of DCA buys
         
@@ -201,6 +205,15 @@ class BinanceTradingBot:
         self.total_fees = 0.0 # Track total fees (in Quote Asset approx)
         self.peak_balance = 0.0 # Will be set on start/resume
         self.max_drawdown = 0.0
+        
+        # --- NEW: TRADE DURATION TRACKING ---
+        self.entry_time = None  # Timestamp when position was opened
+        self.total_hold_time_minutes = 0  # Cumulative hold time
+        self.trade_durations = []  # List of individual trade durations
+        
+        # --- NEW: SLIPPAGE TRACKING ---
+        self.total_slippage = 0.0  # Cumulative slippage in quote currency
+        self.slippage_events = []  # List of {expected, actual, difference}
 
         
         if self.is_live_trading:
@@ -284,7 +297,8 @@ class BinanceTradingBot:
                             self.logger.info(f"Resuming from previous buy at: {price}, Quantity: {quantity}")
                             print(f"Resuming trade: Holding {quantity} {self.base_asset} bought at {price}")
                         else:
-                            self.logger.warning(f"Trade log indicates a buy, but already holding {self.base_asset}. Not resuming.")
+                            # Already holding position (loaded from state), so log check is redundant but confirms consistency.
+                            self.logger.debug(f"Resume Check: Log indicates buy, and we are holding. State is consistent.")
 
                 except ValueError as e:
                     self.logger.error(f"Error parsing trade log for resume: {e}")
@@ -502,6 +516,105 @@ class BinanceTradingBot:
             self.logger.error(f"Error fetching Fear & Greed Index: {e}")
             return 50
 
+    def fetch_higher_timeframe_trend(self):
+        """
+        Fetches 4H klines and calculates trend using MA50.
+        Updates strategy's higher_tf_trend cache.
+        """
+        try:
+            # Fetch 4H data (need 50+ candles for MA50)
+            klines = self.client.get_historical_klines(
+                self.symbol, 
+                Client.KLINE_INTERVAL_4HOUR, 
+                "10 days ago UTC"  # ~60 candles
+            )
+            
+            trend_data = indicators.calculate_higher_timeframe_trend(klines, ma_period=50)
+            self.strategy.set_higher_timeframe_trend(trend_data)
+            
+            if trend_data['trend'] != 'neutral':
+                self.logger.debug(f"4H Trend: {trend_data['trend'].upper()} (MA50: ${trend_data['ma_value']:.2f})")
+            
+            return trend_data
+        except Exception as e:
+            self.logger.error(f"Error fetching 4H trend: {e}")
+            return {'trend': 'neutral', 'ma_value': None, 'current_price': None}
+
+    def fetch_current_volume(self):
+        """
+        Fetches the current candle's volume from Binance.
+        Returns volume in base asset units.
+        """
+        try:
+            # Get last 2 candles (current + previous for comparison)
+            klines = self.client.get_klines(symbol=self.symbol, interval='15m', limit=2)
+            if klines and len(klines) >= 1:
+                current_volume = float(klines[-1][5])  # Volume is index 5
+                return current_volume
+            return None
+        except Exception as e:
+            self.logger.error(f"Error fetching volume: {e}")
+            return None
+
+    def calculate_slippage(self, expected_price, actual_price, quantity):
+        """
+        Calculates and records slippage for a trade.
+        
+        Args:
+            expected_price: Price at signal time
+            actual_price: Actual fill price
+            quantity: Trade quantity
+        
+        Returns:
+            Slippage amount in quote currency
+        """
+        slippage_per_unit = abs(actual_price - expected_price)
+        slippage_amount = slippage_per_unit * quantity
+        slippage_percent = (slippage_per_unit / expected_price) * 100 if expected_price > 0 else 0
+        
+        # Record event
+        event = {
+            'expected': expected_price,
+            'actual': actual_price,
+            'quantity': quantity,
+            'slippage_amount': slippage_amount,
+            'slippage_percent': slippage_percent,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+        self.slippage_events.append(event)
+        self.total_slippage += slippage_amount
+        
+        if slippage_percent > 0.1:  # Log if slippage > 0.1%
+            self.logger.info(f"Slippage: Expected ${expected_price:.2f}, Got ${actual_price:.2f} ({slippage_percent:.2f}%)")
+        
+        return slippage_amount
+
+    def record_trade_duration(self):
+        """
+        Records the duration of a completed trade.
+        Call this when closing a position.
+        
+        Returns:
+            Duration in minutes, or 0 if no entry_time recorded
+        """
+        if self.entry_time is None:
+            return 0
+        
+        duration_seconds = time.time() - self.entry_time
+        duration_minutes = duration_seconds / 60
+        
+        self.trade_durations.append(duration_minutes)
+        self.total_hold_time_minutes += duration_minutes
+        self.entry_time = None  # Reset for next trade
+        
+        return duration_minutes
+
+    def get_average_trade_duration(self):
+        """Returns average trade duration in minutes."""
+        if not self.trade_durations:
+            return 0
+        return sum(self.trade_durations) / len(self.trade_durations)
+
     def fetch_exchange_filters(self):
         """Fetches precision filters (tick_size, step_size) from Binance."""
         try:
@@ -610,6 +723,7 @@ class BinanceTradingBot:
         """Prints the current performance report."""
         win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0.0
         profit_factor = (self.gross_profit / self.gross_loss) if self.gross_loss > 0 else 999.0
+        avg_duration = self.get_average_trade_duration()
         
         print("\n" + "="*40)
         print(f"       SESSION PERFORMANCE REPORT       ")
@@ -625,6 +739,16 @@ class BinanceTradingBot:
         print(f"Total Trades:      {self.total_trades}")
         print(f"Win Rate:          {win_rate:.1f}% ({self.winning_trades}W / {self.total_trades-self.winning_trades}L)")
         print(f"Profit Factor:     {profit_factor:.2f}")
+        
+        # NEW: Trade duration metrics
+        if avg_duration > 0:
+            print(f"Avg Trade Duration: {avg_duration:.1f} min")
+        
+        # NEW: Slippage metrics  
+        if self.total_slippage > 0:
+            avg_slippage = self.total_slippage / len(self.slippage_events) if self.slippage_events else 0
+            print(f"Total Slippage:    ${self.total_slippage:.2f} (Avg: ${avg_slippage:.2f}/trade)")
+        
         print("="*40 + "\n")
 
     def update_metrics(self, profit_amount, current_equity):
@@ -753,6 +877,12 @@ class BinanceTradingBot:
                         else:
                              self.bought_price = cummulative_quote_qty / executed_qty
                              self.dca_count = 0 # Reset on fresh buy
+                             
+                             # NEW: Record entry time for trade duration tracking
+                             self.entry_time = time.time()
+                        
+                        # NEW: Calculate slippage (expected vs actual)
+                        self.calculate_slippage(current_price, self.bought_price, executed_qty)
                     else:
                         self.bought_price = float(order['fills'][0]['price']) # Fallback
                     
@@ -778,7 +908,7 @@ class BinanceTradingBot:
                         buy_msg += f"\n⚡ DCA Level: {self.dca_count}"
                     notifier.send_telegram_message(buy_msg)
                     
-                    self.log_trade_wrapper("Buy", self.bought_price, executed_qty, total_val)
+                    logger_setup.log_trade(self.logger, self.trade_logger, "Buy", self.bought_price, executed_qty, cummulative_quote_qty, is_test=False)
                     
                     # Track Fees (Estimate: Quote Qty * Fee Rate)
                     # Note: If BNB is used, value is same.
@@ -803,6 +933,7 @@ class BinanceTradingBot:
                             'price': self.bought_price,
                             'qty': executed_qty,
                             'total_value': cummulative_quote_qty,
+                            'fee': float(real_fee if real_fee else est_fee),
                             'entry_reason': 'DCA Defense' if is_dca else 'Signal Buy',
                             'dca_level': self.dca_count,
                             'indicators': {
@@ -825,7 +956,7 @@ class BinanceTradingBot:
                         self.quote_balance -= cost_with_fee
                         self.bought_price = current_price
                         total_val = self.quote_balance + (self.base_balance * current_price)
-                        self.log_trade_wrapper("Buy", current_price, quantity, total_val)
+                        logger_setup.log_trade(self.logger, self.trade_logger, "Buy", current_price, quantity, quantity * current_price, is_test=True)
                     else:
                         self.logger.error(f"Test - Buy: Insufficient {self.quote_asset} balance.")
             except Exception as e:
@@ -874,6 +1005,17 @@ class BinanceTradingBot:
                      net_pnl = self.gross_profit - self.gross_loss
                      win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
                      
+                     # NEW: Record trade duration
+                     trade_duration = self.record_trade_duration()
+                     
+                     # NEW: If this was a stop-loss, record for cooldown
+                     if reason == 'Stop-loss Sell':
+                         self.strategy.record_stoploss()
+                         self.logger.info(f"Cooldown activated for {self.strategy.cooldown_after_stoploss_minutes} minutes")
+                     
+                     # NEW: Calculate sell slippage
+                     self.calculate_slippage(current_price, avg_price, executed_qty)
+                     
                      pnl_emoji = "🟢" if profit_amount >= 0 else "🔴"
                      
                      # Enhanced Telegram with performance summary
@@ -889,12 +1031,12 @@ class BinanceTradingBot:
                          f"Win Rate: {win_rate:.1f}%\n"
                          f"Net P&L: ${net_pnl:.2f}\n"
                          f"Total Fees: ${self.total_fees:.2f}\n"
-                         f"Max Drawdown: {self.max_drawdown:.2f}%\n"
+                    f"Max Drawdown: {self.max_drawdown:.2f}%\n"
                          f"\n💰 Balance: ${self.quote_balance:.2f}"
                      )
                      notifier.send_telegram_message(sell_msg)
                      
-                     self.log_trade_wrapper(reason, avg_price, executed_qty, self.quote_balance, real_profit_percent)
+                     logger_setup.log_trade(self.logger, self.trade_logger, reason, avg_price, executed_qty, revenue, real_profit_percent, is_test=False)
                      
                      # Track Fees (Approx Revenue * Fee Rate)
                      # Track Fees
@@ -927,6 +1069,7 @@ class BinanceTradingBot:
                              'price': avg_price,
                              'qty': executed_qty,
                              'total_value': revenue,
+                             'fee': float(real_fee if real_fee is not None else est_fee),
                              'exit_reason': reason,
                              'pnl_percent': round(real_profit_percent, 2),
                              'pnl_amount': round(profit_amount, 2),
@@ -1168,12 +1311,23 @@ class BinanceTradingBot:
                                 pass
                         
                         self.last_volatility_check_time = datetime.datetime.now()
+                        
+                        # NEW: Fetch higher timeframe trend every volatility check (~10 min)
+                        if self.strategy.multi_timeframe_enabled:
+                            self.fetch_higher_timeframe_trend()
                     
                     # --- EXECUTE STRATEGY ---
                     current_price = self.check_price()
                     if current_price is not None:
                          # 1. Update Data
                          self.strategy.update_data(current_price)
+                         
+                         # NEW: Fetch and update volume data periodically
+                         current_volume = None
+                         if self.strategy.volume_confirmation_enabled:
+                             current_volume = self.fetch_current_volume()
+                             if current_volume:
+                                 self.strategy.update_volume(current_volume)
                          
                          # Warmup Check (5 mins) to stabilize RSI
                          if (time.time() - getattr(self, 'start_time', 0)) < 300:
@@ -1183,8 +1337,8 @@ class BinanceTradingBot:
                          
                          # 2. Check Signals
                          if self.bought_price is None:
-                              # Buy Check
-                              if self.strategy.check_buy_signal(current_price, self.last_price):
+                              # Buy Check (now with volume parameter)
+                              if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
                                    # Dynamic Position Sizing (Risk Parity)
                                    sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
                                    invest_qty = self.calculate_position_size(current_price, sl_price)
@@ -1306,6 +1460,12 @@ class BinanceTradingBot:
         try:
             historical_data = pd.read_csv(self.filename)
             historical_data['Timestamp'] = pd.to_datetime(historical_data['Timestamp'])
+
+            # Pre-calculate Volatility for dynamic settings backtesting
+            # Use 24h window (assuming 15m default i.e. 96 periods) or fallback to 50
+            # rolling std / rolling mean
+            vol_window = 96
+            historical_data['RollingVol'] = historical_data['Price'].rolling(window=vol_window).std() / historical_data['Price'].rolling(window=vol_window).mean()
             
             # --- BACKTEST CONFIGURATION ---
             initial_balance = 1000.0
@@ -1341,15 +1501,18 @@ class BinanceTradingBot:
             self.max_drawdown = 0.0
             
             # Initial Volatility
-            self.last_volatility = self.calculate_volatility()
             if self.is_live_trading:
-                 msg_vol = f"__init__: Initial Volatility Calculated: {self.last_volatility}"
-                 self.logger.debug(msg_vol) # Hide from System
-                 logger_setup.log_strategy(msg_vol) # Show in Strategy
+                self.last_volatility = self.calculate_volatility()
+                msg_vol = f"__init__: Initial Volatility Calculated: {self.last_volatility}"
+                self.logger.debug(msg_vol) # Hide from System
+                logger_setup.log_strategy(msg_vol) # Show in Strategy
+            else:
+                 # Set default for backtest start (will be updated by loop)
+                 self.last_volatility = 0.02
             
             self.strategy.set_volatility(self.last_volatility)
             
-            if self.last_volatility is None:
+            if self.last_volatility is None and self.is_live_trading:
                 self.finished_data = True
                 return
 
@@ -1362,7 +1525,11 @@ class BinanceTradingBot:
             last_tuning_index = 0
             
             for index, row in historical_data.iterrows():
-                current_price = row['Close']
+                current_price = row['Price']
+                
+                # Update Volatility from Historical Data
+                if 'RollingVol' in row and not pd.isna(row['RollingVol']):
+                    self.last_volatility = row['RollingVol']
                 # current_time = row['Timestamp'] # Unused currently
                 
                 # --- DYNAMIC TUNING (Simulated Periodically) ---
@@ -1414,10 +1581,13 @@ class BinanceTradingBot:
                     self.max_drawdown = drawdown
                 
                 # --- STRATEGY UPDATE ---
+                current_volume = row.get('Volume')
                 self.strategy.update_data(current_price)
+                if current_volume is not None:
+                    self.strategy.update_volume(current_volume)
                 
                 if self.bought_price is None:
-                     if self.strategy.check_buy_signal(current_price, self.last_price):
+                     if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
                           # Dynamic Position Sizing (Risk Parity)
                           sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
                           invest_qty = self.calculate_position_size(current_price, sl_price)
@@ -1441,7 +1611,7 @@ class BinanceTradingBot:
                                
                                # Log (Simulated)
                                total_val = self.quote_balance + (self.base_balance * current_price)
-                               self.log_trade_wrapper("Buy", execution_price, quantity, total_val)
+                               logger_setup.log_trade(self.logger, self.trade_logger, "Buy", execution_price, quantity, quantity * execution_price, is_test=True)
                                # Backtest Fee
                                self.total_fees += (quantity * execution_price * self.trading_fee_percentage)
                 else:
@@ -1455,6 +1625,7 @@ class BinanceTradingBot:
                           # APPLY SLIPPAGE (Sell Lower)
                           execution_price = current_price * (1 - self.slippage)
                           
+                          qty_sold = self.base_balance
                           revenue = self.base_balance * execution_price * (1 - self.trading_fee_percentage)
                           profit_amount = revenue - (self.base_balance * self.bought_price)
                           profit_percent = ((execution_price - self.bought_price) / self.bought_price) * 100
@@ -1463,16 +1634,13 @@ class BinanceTradingBot:
                           self.base_balance = 0
                           
                           # Backtest Fee
-                          self.total_fees += (self.base_balance * execution_price * self.trading_fee_percentage) # wait base is 0 line above
-                          # Correct: using pre-reset values implies logic error in my patch attempt.
-                          # self.base_balance was zeroed. Recalculating fee based on revenue.
                           self.total_fees += (revenue * self.trading_fee_percentage)
                           
                           # Metrics Update via Helper
                           self.update_metrics(profit_amount, self.quote_balance)
                           
                           reason = "Sell" if action == 'SELL' else "Stop-loss Sell"
-                          self.log_trade_wrapper(reason, execution_price, 0, self.quote_balance, profit_percent)
+                          logger_setup.log_trade(self.logger, self.trade_logger, reason, execution_price, qty_sold, revenue, profit_percent, is_test=True)
                           
                           self.bought_price = None
 

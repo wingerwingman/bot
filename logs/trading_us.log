@@ -29025,3 +29025,756 @@
    • Levels: 5
    • Capital: $98.425562514
 2026-01-21 10:41:20,565 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:47:40,585 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 10:47:40,586 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:47:40,799 - DEBUG - Fetching account balances...
+2026-01-21 10:47:41,027 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 10:47:41,027 - DEBUG - Starting Balances: USDT=74.70434674, ETH=0.0220128
+2026-01-21 10:47:41,129 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 10:47:41,289 - DEBUG - __init__: Initial Volatility Calculated: 0.03780148023229411
+2026-01-21 10:47:41,289 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 10:47:41,289 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 10:47:41,289 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 10:47:41,289 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T10:46:17.660155
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.50 (Max Drawdown: 1280.61%)
+2026-01-21 10:47:41,289 - DEBUG - __init__ completed
+2026-01-21 10:47:41,398 - DEBUG - Grid Bot active. Using free ETH: 0.0220128 (Grid funds locked)
+2026-01-21 10:47:41,455 - DEBUG - Starting run method...
+2026-01-21 10:47:41,456 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 10:47:41,456 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 10:47:41,456 - DEBUG - Initializing hotkeys...
+2026-01-21 10:47:41,457 - DEBUG - Hotkeys started.
+2026-01-21 10:47:41,457 - DEBUG - Entering main trading loop...
+2026-01-21 10:47:42,025 - DEBUG - Telegram message sent successfully.
+2026-01-21 10:47:42,406 - DEBUG - 🔄 TUNING: Vol 3.78% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 10:47:44,340 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 5
+2026-01-21 10:47:44,340 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 5
+   • Capital: $98.425562514
+2026-01-21 10:47:44,915 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:03:08,523 - INFO - AUDIT WARN: User Action [CAPITAL_UPDATE] via 127.0.0.1: Total: 92.87779874
+2026-01-21 11:03:50,650 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.58, Calc Units 0.0183, Cap 0.0256
+2026-01-21 11:03:50,650 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 11:04:50,753 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.40, Calc Units 0.0183, Cap 0.0256
+2026-01-21 11:04:50,754 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 11:05:50,860 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.40, Calc Units 0.0183, Cap 0.0256
+2026-01-21 11:05:50,861 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 11:06:50,959 - DEBUG - Dynamic Sizing: Risk $2.65 (2%), Dist $144.40, Calc Units 0.0183, Cap 0.0256
+2026-01-21 11:06:50,959 - INFO - 🛡️ DCA Signal Detected! Executing Defense Buy...
+2026-01-21 11:14:30,034 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 11:14:30,034 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 11:14:30,234 - DEBUG - Fetching account balances...
+2026-01-21 11:14:30,473 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 11:14:30,473 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 11:14:30,576 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 11:14:30,738 - DEBUG - __init__: Initial Volatility Calculated: 0.037728767567726994
+2026-01-21 11:14:30,739 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 11:14:30,739 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.02
+2026-01-21 11:14:30,739 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 11:14:30,739 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T11:12:46.536030
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.55 (Max Drawdown: 1280.61%)
+2026-01-21 11:14:30,739 - DEBUG - __init__ completed
+2026-01-21 11:14:30,853 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 11:14:30,902 - DEBUG - Starting run method...
+2026-01-21 11:14:30,902 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 11:14:30,902 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 11:14:30,905 - DEBUG - Initializing hotkeys...
+2026-01-21 11:14:30,906 - DEBUG - Hotkeys started.
+2026-01-21 11:14:30,907 - DEBUG - Entering main trading loop...
+2026-01-21 11:14:31,531 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:14:32,012 - DEBUG - 🔄 TUNING: Vol 3.77% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 11:14:35,656 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 10
+2026-01-21 11:14:35,657 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 10
+   • Capital: $46.43889937
+2026-01-21 11:14:36,199 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:14:42,407 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:14:42,407 - INFO - AUDIT WARN: User Action [GRID_STOP] via 127.0.0.1: Grid Bot ETHUSDT stopped by user
+2026-01-21 11:14:54,426 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2713.51-$3185.43, Levels: 4
+2026-01-21 11:14:54,427 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2713.51 - $3185.43
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 11:14:54,982 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:21:10,723 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 11:21:10,723 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 11:21:10,948 - DEBUG - Fetching account balances...
+2026-01-21 11:21:11,188 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 11:21:11,188 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 11:21:11,290 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 11:21:11,448 - DEBUG - __init__: Initial Volatility Calculated: 0.037744742941533155
+2026-01-21 11:21:11,448 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 11:21:11,448 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 11:21:11,448 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 11:21:11,448 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T11:19:32.928887
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.71 (Max Drawdown: 1280.61%)
+2026-01-21 11:21:11,448 - DEBUG - __init__ completed
+2026-01-21 11:21:11,575 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 11:21:11,623 - DEBUG - Starting run method...
+2026-01-21 11:21:11,623 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 11:21:11,623 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 11:21:11,624 - DEBUG - Initializing hotkeys...
+2026-01-21 11:21:11,625 - DEBUG - Hotkeys started.
+2026-01-21 11:21:11,625 - DEBUG - Entering main trading loop...
+2026-01-21 11:21:12,174 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:21:12,803 - DEBUG - 🔄 TUNING: Vol 3.77% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 11:21:18,503 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2672.48-$3137.26, Levels: 4
+2026-01-21 11:21:18,503 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2672.48 - $3137.26
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 11:21:19,059 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:26:47,793 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 11:26:47,793 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 11:26:47,939 - DEBUG - Fetching account balances...
+2026-01-21 11:26:48,170 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 11:26:48,170 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 11:26:48,284 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 11:26:48,451 - DEBUG - __init__: Initial Volatility Calculated: 0.03777777559015391
+2026-01-21 11:26:48,452 - DEBUG - Strategy Config: RSI=45, SL=7.6%, Trailing=10.0%
+2026-01-21 11:26:48,452 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 11:26:48,452 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 11:26:48,452 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T11:26:13.812905
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.67 (Max Drawdown: 1280.61%)
+2026-01-21 11:26:48,452 - DEBUG - __init__ completed
+2026-01-21 11:26:48,565 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 11:26:48,615 - DEBUG - Starting run method...
+2026-01-21 11:26:48,615 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 11:26:48,615 - WARNING - Trade log indicates a buy, but already holding ETH. Not resuming.
+2026-01-21 11:26:48,616 - DEBUG - Initializing hotkeys...
+2026-01-21 11:26:48,617 - DEBUG - Hotkeys started.
+2026-01-21 11:26:48,617 - DEBUG - Entering main trading loop...
+2026-01-21 11:26:49,201 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:26:49,611 - DEBUG - 🔄 TUNING: Vol 3.78% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 11:26:52,933 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2672.48-$3137.26, Levels: 4
+2026-01-21 11:26:52,933 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2672.48 - $3137.26
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 11:26:53,556 - DEBUG - Telegram message sent successfully.
+2026-01-21 11:29:12,022 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-21 12:04:31,930 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 12:04:31,932 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 12:04:32,133 - DEBUG - Fetching account balances...
+2026-01-21 12:04:32,378 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 12:04:32,378 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 12:04:32,484 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 12:04:32,659 - DEBUG - __init__: Initial Volatility Calculated: 0.037464488289677925
+2026-01-21 12:04:32,659 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 12:04:32,659 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 12:04:32,659 - DEBUG - Restored Peak Price: $2951.78
+2026-01-21 12:04:32,659 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T12:01:57.382764
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $138.60 (Max Drawdown: 1280.61%)
+2026-01-21 12:04:32,659 - DEBUG - __init__ completed
+2026-01-21 12:04:32,768 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 12:04:32,826 - DEBUG - Starting run method...
+2026-01-21 12:04:32,826 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 12:04:32,826 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-21 12:04:32,826 - DEBUG - Initializing hotkeys...
+2026-01-21 12:04:32,827 - DEBUG - Hotkeys started.
+2026-01-21 12:04:32,827 - DEBUG - Entering main trading loop...
+2026-01-21 12:04:33,415 - DEBUG - Telegram message sent successfully.
+2026-01-21 12:04:34,022 - DEBUG - 🔄 TUNING: Vol 3.75% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2804.19
+2026-01-21 12:04:36,322 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2672.48-$3137.26, Levels: 4
+2026-01-21 12:04:36,322 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2672.48 - $3137.26
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 12:04:36,891 - DEBUG - Telegram message sent successfully.
+2026-01-21 12:39:41,216 - DEBUG - 🔄 TUNING: Vol 3.63% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2883.00
+2026-01-21 13:04:33,144 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3042.77 | PnL: 3.08% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 13:19:49,423 - DEBUG - 🔄 TUNING: Vol 3.74% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 13:28:30,628 - WARNING - Download failed for ZECUSD, retrying with ZECUSDT...
+2026-01-21 13:29:05,812 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/zecusdt_5m_data.csv
+2026-01-21 13:29:05,812 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-21 13:29:05,945 - DEBUG - __init__ completed
+2026-01-21 13:29:06,000 - DEBUG - Starting run method...
+2026-01-21 13:29:06,000 - DEBUG - Entering main trading loop...
+2026-01-21 13:29:06,000 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ZEC
+2026-01-21 13:29:06,914 - INFO - *** BUY SIGNAL! RSI=29.00, MACD_Hist=-0.3103, FastMA=273.81, SlowMA=272.33, TrendMA=269.03 ***
+2026-01-21 13:29:06,914 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $267.85, Calc Units 0.0747, Cap 3.6961
+2026-01-21 13:29:06,914 - INFO - DEBUG: Attempting to log trade: Buy,0.07451947,268.11785,999.9800399599604
+2026-01-21 13:29:08,153 - INFO - Test Completed. Final: 980.0199999204605, Trades: 0
+2026-01-21 13:34:56,129 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 13:34:56,129 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:34:56,317 - DEBUG - Fetching account balances...
+2026-01-21 13:34:56,547 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 13:34:56,547 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 13:34:56,650 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 13:34:56,817 - DEBUG - __init__: Initial Volatility Calculated: 0.03739262828874037
+2026-01-21 13:34:56,817 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:34:56,817 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 13:34:56,817 - DEBUG - Restored Peak Price: $3067.67
+2026-01-21 13:34:56,818 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T13:29:50.184495
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $139.28 (Max Drawdown: 1280.61%)
+2026-01-21 13:34:56,818 - DEBUG - __init__ completed
+2026-01-21 13:34:56,924 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 13:34:56,973 - DEBUG - Starting run method...
+2026-01-21 13:34:56,973 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 13:34:56,973 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-21 13:34:56,973 - DEBUG - Initializing hotkeys...
+2026-01-21 13:34:56,975 - DEBUG - Hotkeys started.
+2026-01-21 13:34:56,975 - DEBUG - Entering main trading loop...
+2026-01-21 13:34:57,521 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:34:58,003 - DEBUG - 🔄 TUNING: Vol 3.74% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 13:34:59,825 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2672.48-$3137.26, Levels: 4
+2026-01-21 13:34:59,825 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2672.48 - $3137.26
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 13:35:00,407 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:35:14,724 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/zecusdt_5m_data.csv
+2026-01-21 13:35:14,724 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-21 13:35:14,863 - DEBUG - __init__ completed
+2026-01-21 13:35:14,914 - DEBUG - Starting run method...
+2026-01-21 13:35:14,914 - DEBUG - Entering main trading loop...
+2026-01-21 13:35:14,915 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ZEC
+2026-01-21 13:35:15,740 - INFO - *** BUY SIGNAL! RSI=29.00, MACD_Hist=-0.3103, FastMA=273.81, SlowMA=272.33, TrendMA=269.03 ***
+2026-01-21 13:35:15,740 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $267.85, Calc Units 0.0747, Cap 3.6961
+2026-01-21 13:35:15,740 - INFO - DEBUG: Attempting to log trade: Buy,0.07451947,268.11785,999.9800399599604
+2026-01-21 13:35:16,941 - INFO - Test Completed. Final: 980.0199999204605, Trades: 0
+2026-01-21 13:38:11,870 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 13:38:11,870 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:38:12,076 - DEBUG - Fetching account balances...
+2026-01-21 13:38:12,251 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 13:38:12,252 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 13:38:12,357 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 13:38:12,593 - DEBUG - __init__: Initial Volatility Calculated: 0.03735876613145133
+2026-01-21 13:38:12,593 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:38:12,593 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 13:38:12,593 - DEBUG - Restored Peak Price: $3067.67
+2026-01-21 13:38:12,593 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T13:34:57.748812
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $141.68 (Max Drawdown: 1280.61%)
+2026-01-21 13:38:12,593 - DEBUG - __init__ completed
+2026-01-21 13:38:12,706 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 13:38:12,759 - DEBUG - Starting run method...
+2026-01-21 13:38:12,759 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 13:38:12,760 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-21 13:38:12,760 - DEBUG - Initializing hotkeys...
+2026-01-21 13:38:12,763 - DEBUG - Hotkeys started.
+2026-01-21 13:38:12,767 - DEBUG - Entering main trading loop...
+2026-01-21 13:38:13,312 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:38:13,886 - DEBUG - 🔄 TUNING: Vol 3.74% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 13:38:17,024 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2672.48-$3137.26, Levels: 4
+2026-01-21 13:38:17,024 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2672.48 - $3137.26
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 13:38:17,594 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:41:50,870 - WARNING - Download failed for ZECUSD, retrying with ZECUSDT...
+2026-01-21 13:42:36,978 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/zecusdt_30m_data.csv
+2026-01-21 13:42:36,978 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-21 13:42:37,208 - DEBUG - __init__ completed
+2026-01-21 13:42:37,264 - DEBUG - Starting run method...
+2026-01-21 13:42:37,264 - DEBUG - Entering main trading loop...
+2026-01-21 13:42:37,264 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ZEC
+2026-01-21 13:42:44,980 - INFO - *** BUY SIGNAL! RSI=28.22, MACD_Hist=-1.8028, FastMA=403.12, SlowMA=402.95, TrendMA=396.89 ***
+2026-01-21 13:42:44,980 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $384.03, Calc Units 0.0521, Cap 2.5779
+2026-01-21 13:42:44,980 - INFO - DEBUG: Attempting to log trade: Buy,0.05197521,384.4140299999999,19.979999936196297
+2026-01-21 13:42:45,008 - INFO - Test Completed. Final: 980.0200000638036, Trades: 0
+2026-01-21 13:44:24,338 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 13:44:24,338 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:44:24,546 - DEBUG - Fetching account balances...
+2026-01-21 13:44:24,786 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 13:44:24,786 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 13:44:24,884 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 13:44:25,039 - DEBUG - __init__: Initial Volatility Calculated: 0.037275797210130975
+2026-01-21 13:44:25,039 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:44:25,040 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 13:44:25,040 - DEBUG - Restored Peak Price: $3067.67
+2026-01-21 13:44:25,040 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T13:43:14.773173
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $141.76 (Max Drawdown: 1280.61%)
+2026-01-21 13:44:25,040 - DEBUG - __init__ completed
+2026-01-21 13:44:25,153 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 13:44:25,201 - DEBUG - Starting run method...
+2026-01-21 13:44:25,202 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-21 13:44:25,202 - DEBUG - Initializing hotkeys...
+2026-01-21 13:44:25,201 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 13:44:25,203 - DEBUG - Hotkeys started.
+2026-01-21 13:44:25,204 - DEBUG - Entering main trading loop...
+2026-01-21 13:44:25,770 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:44:26,363 - DEBUG - 🔄 TUNING: Vol 3.73% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 13:44:29,061 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2779.63-$3263.05, Levels: 4
+2026-01-21 13:44:29,061 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2779.63 - $3263.05
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 13:44:29,630 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:44:52,798 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/zecusdt_30m_data.csv
+2026-01-21 13:44:52,798 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-21 13:44:52,971 - DEBUG - __init__ completed
+2026-01-21 13:44:53,024 - DEBUG - Starting run method...
+2026-01-21 13:44:53,024 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ZEC
+2026-01-21 13:44:53,024 - DEBUG - Entering main trading loop...
+2026-01-21 13:45:00,420 - INFO - *** BUY SIGNAL! RSI=28.22, MACD_Hist=-1.8028, FastMA=403.12, SlowMA=402.95, TrendMA=396.89 ***
+2026-01-21 13:45:00,420 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $384.03, Calc Units 0.0521, Cap 2.5779
+2026-01-21 13:45:00,420 - INFO - DEBUG: Attempting to log trade: Buy,0.05197521,384.4140299999999,19.979999936196297
+2026-01-21 13:45:00,440 - INFO - Test Completed. Final: 980.0200000638036, Trades: 0
+2026-01-21 13:47:04,356 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-21 13:47:04,356 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:47:04,550 - DEBUG - Fetching account balances...
+2026-01-21 13:47:04,800 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-21 13:47:04,800 - DEBUG - Starting Balances: USDT=57.00684374, ETH=0.0281128
+2026-01-21 13:47:04,900 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-21 13:47:05,077 - DEBUG - __init__: Initial Volatility Calculated: 0.037275797210130975
+2026-01-21 13:47:05,078 - DEBUG - Strategy Config: RSI=45, SL=7.5%, Trailing=10.0%
+2026-01-21 13:47:05,078 - DEBUG - Restored position: bought_price=2951.78, base_balance=0.0159128
+2026-01-21 13:47:05,078 - DEBUG - Restored Peak Price: $3067.67
+2026-01-21 13:47:05,078 - DEBUG - ♻️ SESSION RESTORED from 2026-01-21T13:44:26.153894
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2951.78
+   • Metrics: Net Profit $-5.54 (4 trades)
+   • Peak Balance: $141.95 (Max Drawdown: 1280.61%)
+2026-01-21 13:47:05,078 - DEBUG - __init__ completed
+2026-01-21 13:47:05,197 - DEBUG - Grid Bot active. Using free ETH: 0.0281128 (Grid funds locked)
+2026-01-21 13:47:05,252 - DEBUG - Starting run method...
+2026-01-21 13:47:05,253 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-21 13:47:05,253 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-21 13:47:05,253 - DEBUG - Initializing hotkeys...
+2026-01-21 13:47:05,254 - DEBUG - Hotkeys started.
+2026-01-21 13:47:05,254 - DEBUG - Entering main trading loop...
+2026-01-21 13:47:05,866 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:47:06,267 - DEBUG - 🔄 TUNING: Vol 3.73% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 13:47:08,589 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2779.63-$3263.05, Levels: 4
+2026-01-21 13:47:08,589 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2779.63 - $3263.05
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-21 13:47:09,175 - DEBUG - Telegram message sent successfully.
+2026-01-21 13:47:16,334 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/zecusdt_30m_data.csv
+2026-01-21 13:47:16,334 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-21 13:47:16,562 - DEBUG - __init__ completed
+2026-01-21 13:47:16,682 - DEBUG - Starting run method...
+2026-01-21 13:47:16,683 - DEBUG - Entering main trading loop...
+2026-01-21 13:47:16,683 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ZEC
+2026-01-21 13:47:23,405 - INFO - *** BUY SIGNAL! RSI=28.22, MACD_Hist=-1.8028, FastMA=403.12, SlowMA=402.95, TrendMA=396.89 ***
+2026-01-21 13:47:23,406 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $384.03, Calc Units 0.0521, Cap 2.5779
+2026-01-21 13:47:23,406 - INFO - DEBUG: Attempting to log trade: Buy,0.05197521,384.4140299999999,19.979999936196297
+2026-01-21 13:47:23,426 - INFO - Test Completed. Final: 980.0200000638036, Trades: 0
+2026-01-21 14:47:06,324 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3032.18 | PnL: 2.72% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 15:47:06,532 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3028.52 | PnL: 2.60% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 16:47:07,404 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2982.53 | PnL: 1.04% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 17:02:43,337 - DEBUG - 🔄 TUNING: Vol 3.56% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 17:47:08,370 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3011.92 | PnL: 2.04% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 18:47:09,204 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3012.12 | PnL: 2.04% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 19:47:10,145 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3028.36 | PnL: 2.59% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 20:38:28,817 - DEBUG - 🔄 TUNING: Vol 3.68% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-21 20:47:11,245 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3005.54 | PnL: 1.82% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 21:47:12,145 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3022.37 | PnL: 2.39% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 22:47:12,851 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3020.55 | PnL: 2.33% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-21 23:47:13,427 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3020.14 | PnL: 2.32% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 00:47:14,476 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3013.22 | PnL: 2.08% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 01:02:07,612 - ERROR - An unexpected error occurred: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-22 01:47:15,571 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2991.39 | PnL: 1.34% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 02:47:16,569 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3011.12 | PnL: 2.01% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 03:47:17,403 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 3000.03 | PnL: 1.63% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 04:47:18,317 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2986.75 | PnL: 1.18% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 05:47:18,420 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2991.19 | PnL: 1.34% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 06:47:18,977 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2963.29 | PnL: 0.39% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 07:35:24,757 - DEBUG - 🔄 TUNING: Vol 3.78% -> RSI Buy < 37 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-22 07:47:19,777 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2954.12 | PnL: 0.08% | Trail Stop: 2914.29 (Profit: -1.27%) | SL < 2774.67
+2026-01-22 08:25:34,401 - DEBUG - 🔄 TUNING: Vol 3.94% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2914.29
+2026-01-22 08:26:00,817 - INFO - EXIT SNAPSHOT [Sell]: PnL -1.29% (Max 0.00%) | Indicators: RSI=0.01, MACD_Hist=-0.3016
+2026-01-22 08:26:00,990 - DEBUG - Grid Bot active. Using free ETH: 0.0122128 (Grid funds locked)
+2026-01-22 08:26:00,990 - INFO - Order Filled: Sold 0.0159 ETH @ 2910.59 (Total 46.28 USDT, PnL -1.40%)
+2026-01-22 08:26:01,582 - DEBUG - Telegram message sent successfully.
+2026-01-22 08:26:01,582 - INFO - DEBUG: Attempting to log trade: Sell,0.0159,2910.59,46.278381,-1.40%
+2026-01-22 08:26:01,698 - INFO - 🧾 Actual Fee Fetched: $0.2638 (from 1 fills)
+2026-01-22 08:29:11,827 - INFO - *** BUY SIGNAL! RSI=0.00, MACD_Hist=0.0404, FastMA=2908.88, SlowMA=2908.88, TrendMA=2910.64 ***
+2026-01-22 08:29:11,827 - DEBUG - Dynamic Sizing: Risk $3.47 (2%), Dist $174.53, Calc Units 0.0199, Cap 0.0352
+2026-01-22 08:29:12,049 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 08:29:12,050 - INFO - Order Filled: Bought 0.0198 ETH @ 2911.42 (Total 57.646116 USDT)
+2026-01-22 08:29:12,629 - DEBUG - Telegram message sent successfully.
+2026-01-22 08:29:12,630 - INFO - DEBUG: Attempting to log trade: Buy,0.0198,2911.4199999999996,57.646116
+2026-01-22 08:29:12,760 - INFO - 🧾 Actual Fee Fetched: $0.3283 (from 1 fills)
+2026-01-22 08:47:19,857 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2967.85 | PnL: 1.94% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 09:47:20,171 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2944.94 | PnL: 1.15% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 10:17:46,687 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 10:17:46,688 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:17:46,878 - DEBUG - Fetching account balances...
+2026-01-22 10:17:47,107 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 10:17:47,108 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 10:17:47,216 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 10:17:47,383 - DEBUG - __init__: Initial Volatility Calculated: 0.03930932691626325
+2026-01-22 10:17:47,383 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:17:47,383 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 10:17:47,383 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 10:17:47,384 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T10:15:56.563271
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $141.95 (Max Drawdown: 2723.58%)
+2026-01-22 10:17:47,384 - DEBUG - __init__ completed
+2026-01-22 10:17:47,492 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 10:17:47,543 - DEBUG - Starting run method...
+2026-01-22 10:17:47,543 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 10:17:47,543 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 10:17:47,544 - DEBUG - Initializing hotkeys...
+2026-01-22 10:17:47,544 - DEBUG - Hotkeys started.
+2026-01-22 10:17:47,544 - DEBUG - Entering main trading loop...
+2026-01-22 10:17:48,217 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:17:48,640 - DEBUG - 🔄 TUNING: Vol 3.93% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 10:17:48,768 - DEBUG - 4H Trend: BEARISH (MA50: $3199.05)
+2026-01-22 10:17:57,290 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2707.87-$3178.81, Levels: 4
+2026-01-22 10:17:57,290 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2707.87 - $3178.81
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-22 10:17:57,895 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:22:49,922 - DEBUG - 4H Trend: BEARISH (MA50: $3199.14)
+2026-01-22 10:26:42,604 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 10:26:42,604 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:26:42,782 - DEBUG - Fetching account balances...
+2026-01-22 10:26:42,935 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 10:26:42,935 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 10:26:43,031 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 10:26:43,186 - DEBUG - __init__: Initial Volatility Calculated: 0.03933271267774036
+2026-01-22 10:26:43,186 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:26:43,186 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 10:26:43,186 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 10:26:43,186 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T10:22:49.453991
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.86 (Max Drawdown: 2723.58%)
+2026-01-22 10:26:43,186 - DEBUG - __init__ completed
+2026-01-22 10:26:43,295 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 10:26:43,343 - DEBUG - Starting run method...
+2026-01-22 10:26:43,344 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 10:26:43,344 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 10:26:43,344 - DEBUG - Initializing hotkeys...
+2026-01-22 10:26:43,345 - DEBUG - Hotkeys started.
+2026-01-22 10:26:43,345 - DEBUG - Entering main trading loop...
+2026-01-22 10:26:43,945 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:26:44,364 - DEBUG - 🔄 TUNING: Vol 3.93% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 10:26:44,482 - DEBUG - 4H Trend: BEARISH (MA50: $3199.02)
+2026-01-22 10:26:54,545 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2706.26-$3176.92, Levels: 4
+2026-01-22 10:26:54,545 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2706.26 - $3176.92
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-22 10:26:55,121 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:31:45,431 - DEBUG - 4H Trend: BEARISH (MA50: $3198.96)
+2026-01-22 10:36:46,598 - DEBUG - 4H Trend: BEARISH (MA50: $3199.14)
+2026-01-22 10:41:48,079 - DEBUG - 4H Trend: BEARISH (MA50: $3199.06)
+2026-01-22 10:42:40,376 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 10:42:40,376 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:42:40,551 - DEBUG - Fetching account balances...
+2026-01-22 10:42:40,715 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 10:42:40,715 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 10:42:40,826 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 10:42:40,990 - DEBUG - __init__: Initial Volatility Calculated: 0.039305721303336476
+2026-01-22 10:42:40,990 - DEBUG - Strategy Config: RSI=45, SL=7.9%, Trailing=10.0%
+2026-01-22 10:42:40,991 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 10:42:40,991 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 10:42:40,991 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T10:41:47.732868
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.81 (Max Drawdown: 2723.58%)
+2026-01-22 10:42:40,991 - DEBUG - __init__ completed
+2026-01-22 10:42:41,099 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 10:42:41,146 - DEBUG - Starting run method...
+2026-01-22 10:42:41,146 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 10:42:41,147 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 10:42:41,147 - DEBUG - Initializing hotkeys...
+2026-01-22 10:42:41,149 - DEBUG - Hotkeys started.
+2026-01-22 10:42:41,149 - DEBUG - Entering main trading loop...
+2026-01-22 10:42:41,785 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:42:42,219 - DEBUG - 🔄 TUNING: Vol 3.93% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 10:42:42,331 - DEBUG - 4H Trend: BEARISH (MA50: $3199.06)
+2026-01-22 10:42:55,969 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2708.12-$3179.1, Levels: 4
+2026-01-22 10:42:55,969 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2708.12 - $3179.1
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-22 10:42:56,525 - DEBUG - Telegram message sent successfully.
+2026-01-22 10:47:43,302 - DEBUG - 4H Trend: BEARISH (MA50: $3199.26)
+2026-01-22 10:52:43,952 - DEBUG - 4H Trend: BEARISH (MA50: $3199.34)
+2026-01-22 10:54:12,238 - ERROR - Start failed: Bot for ETHUSDT is already active and running.
+2026-01-22 10:57:44,488 - DEBUG - 4H Trend: BEARISH (MA50: $3199.38)
+2026-01-22 11:02:45,775 - DEBUG - 4H Trend: BEARISH (MA50: $3199.33)
+2026-01-22 11:03:18,708 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 11:03:18,708 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:03:18,846 - DEBUG - Fetching account balances...
+2026-01-22 11:03:19,082 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 11:03:19,082 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 11:03:19,188 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 11:03:19,348 - DEBUG - __init__: Initial Volatility Calculated: 0.039126280147074095
+2026-01-22 11:03:19,348 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:03:19,348 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 11:03:19,348 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 11:03:19,348 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T11:02:45.439443
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.87 (Max Drawdown: 2723.58%)
+2026-01-22 11:03:19,349 - DEBUG - __init__ completed
+2026-01-22 11:03:19,455 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 11:03:19,509 - DEBUG - Starting run method...
+2026-01-22 11:03:19,510 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 11:03:19,510 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 11:03:19,510 - DEBUG - Initializing hotkeys...
+2026-01-22 11:03:19,512 - DEBUG - Hotkeys started.
+2026-01-22 11:03:19,512 - DEBUG - Entering main trading loop...
+2026-01-22 11:03:20,086 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:03:20,526 - DEBUG - 🔄 TUNING: Vol 3.91% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 11:03:20,639 - DEBUG - 4H Trend: BEARISH (MA50: $3199.33)
+2026-01-22 11:03:25,145 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2720.54-$3193.68, Levels: 4
+2026-01-22 11:03:25,145 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2720.54 - $3193.68
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-22 11:03:25,813 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:03:34,042 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:03:34,042 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:03:34,219 - DEBUG - __init__ completed
+2026-01-22 11:03:34,344 - DEBUG - Starting run method...
+2026-01-22 11:03:34,344 - DEBUG - Entering main trading loop...
+2026-01-22 11:03:34,344 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:03:34,373 - ERROR - Test error: 'Close'
+Traceback (most recent call last):
+  File "/home/wingerwingman/.local/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/wingerwingman/Projects/CryptoBot/modules/trading_bot.py", line 1519, in test
+    current_price = row['Close']
+  File "/home/wingerwingman/.local/lib/python3.10/site-packages/pandas/core/series.py", line 1121, in __getitem__
+    return self._get_value(key)
+  File "/home/wingerwingman/.local/lib/python3.10/site-packages/pandas/core/series.py", line 1237, in _get_value
+    loc = self.index.get_loc(label)
+  File "/home/wingerwingman/.local/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Close'
+2026-01-22 11:08:40,439 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 11:08:40,441 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:08:40,647 - DEBUG - Fetching account balances...
+2026-01-22 11:08:40,874 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 11:08:40,875 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 11:08:40,977 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 11:08:41,141 - DEBUG - __init__: Initial Volatility Calculated: 0.03907448228681042
+2026-01-22 11:08:41,141 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:08:41,142 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 11:08:41,142 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 11:08:41,142 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T11:03:20.246342
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $140.30 (Max Drawdown: 2723.58%)
+2026-01-22 11:08:41,142 - DEBUG - __init__ completed
+2026-01-22 11:08:41,250 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 11:08:41,301 - DEBUG - Starting run method...
+2026-01-22 11:08:41,301 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 11:08:41,301 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 11:08:41,301 - DEBUG - Initializing hotkeys...
+2026-01-22 11:08:41,302 - DEBUG - Hotkeys started.
+2026-01-22 11:08:41,302 - DEBUG - Entering main trading loop...
+2026-01-22 11:08:41,903 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:08:42,324 - DEBUG - 🔄 TUNING: Vol 3.91% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 11:08:42,444 - DEBUG - 4H Trend: BEARISH (MA50: $3199.41)
+2026-01-22 11:08:46,737 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2720.54-$3193.68, Levels: 4
+2026-01-22 11:08:46,737 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2720.54 - $3193.68
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-22 11:08:47,300 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:08:56,657 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:08:56,657 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:08:56,800 - DEBUG - __init__ completed
+2026-01-22 11:08:56,858 - DEBUG - Starting run method...
+2026-01-22 11:08:56,858 - DEBUG - Entering main trading loop...
+2026-01-22 11:08:56,858 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:08:58,243 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:08:58,243 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:08:58,243 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:08:58,344 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:10:03,440 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:03,440 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:03,650 - DEBUG - __init__ completed
+2026-01-22 11:10:03,772 - DEBUG - Starting run method...
+2026-01-22 11:10:03,772 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:03,773 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:05,185 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:10:05,185 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:10:05,185 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:10:05,304 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:10:14,473 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:14,473 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:14,656 - DEBUG - __init__ completed
+2026-01-22 11:10:14,783 - DEBUG - Starting run method...
+2026-01-22 11:10:14,783 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:14,783 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:16,268 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:10:16,268 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:10:16,268 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:10:16,367 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:10:21,346 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:21,346 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:21,551 - DEBUG - __init__ completed
+2026-01-22 11:10:21,673 - DEBUG - Starting run method...
+2026-01-22 11:10:21,674 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:21,674 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:23,164 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:10:23,165 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:10:23,165 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:10:23,266 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:10:33,491 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:33,491 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:33,706 - DEBUG - __init__ completed
+2026-01-22 11:10:33,829 - DEBUG - Starting run method...
+2026-01-22 11:10:33,829 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:33,829 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:35,551 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:10:35,552 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:10:35,552 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:10:35,663 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:10:42,453 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:42,453 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:42,689 - DEBUG - __init__ completed
+2026-01-22 11:10:42,815 - DEBUG - Starting run method...
+2026-01-22 11:10:42,815 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:42,816 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:44,832 - INFO - Test Completed. Final: 1000.0, Trades: 0
+2026-01-22 11:10:51,794 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:51,794 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:10:51,982 - DEBUG - __init__ completed
+2026-01-22 11:10:52,033 - DEBUG - Starting run method...
+2026-01-22 11:10:52,033 - DEBUG - Entering main trading loop...
+2026-01-22 11:10:52,033 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:10:53,856 - INFO - Test Completed. Final: 1000.0, Trades: 0
+2026-01-22 11:10:59,984 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:10:59,984 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:11:00,164 - DEBUG - __init__ completed
+2026-01-22 11:11:00,220 - DEBUG - Starting run method...
+2026-01-22 11:11:00,220 - DEBUG - Entering main trading loop...
+2026-01-22 11:11:00,220 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:11:02,162 - INFO - Test Completed. Final: 1000.0, Trades: 0
+2026-01-22 11:11:11,411 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:11:11,411 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:11:11,648 - DEBUG - __init__ completed
+2026-01-22 11:11:11,766 - DEBUG - Starting run method...
+2026-01-22 11:11:11,767 - DEBUG - Entering main trading loop...
+2026-01-22 11:11:11,767 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:11:12,896 - INFO - *** BUY SIGNAL! RSI=29.78, MACD_Hist=5.6767, FastMA=2835.99, SlowMA=2834.51, TrendMA=2995.95 ***
+2026-01-22 11:11:12,896 - DEBUG - Dynamic Sizing: Risk $20.00 (2%), Dist $2814.24, Calc Units 0.0071, Cap 0.3518
+2026-01-22 11:11:12,897 - INFO - DEBUG: Attempting to log trade: Buy,0.00709252,2817.0542399999995,19.980013538284794
+2026-01-22 11:11:13,015 - INFO - Test Completed. Final: 980.0199864617152, Trades: 0
+2026-01-22 11:11:22,724 - DEBUG - __init__: is_live_trading = False, filename = /home/wingerwingman/Projects/CryptoBot/data/ethusdt_30m_90d.csv
+2026-01-22 11:11:22,724 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:11:22,905 - DEBUG - __init__ completed
+2026-01-22 11:11:22,955 - DEBUG - Starting run method...
+2026-01-22 11:11:22,955 - DEBUG - Entering main trading loop...
+2026-01-22 11:11:22,955 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: test, Symbol: ETH
+2026-01-22 11:11:24,968 - INFO - Test Completed. Final: 1000.0, Trades: 0
+2026-01-22 11:11:48,646 - ERROR - Start failed: LIVE Bot for ETHUSDT is already active and running.
+2026-01-22 11:12:03,665 - ERROR - Start failed: LIVE Bot for ETHUSDT is already active and running.
+2026-01-22 11:12:14,763 - ERROR - Start failed: LIVE Bot for ETHUSDT is already active and running.
+2026-01-22 11:13:43,409 - DEBUG - 4H Trend: BEARISH (MA50: $3199.38)
+2026-01-22 11:18:16,551 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:18:16,551 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-22 11:18:20,730 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 11:18:20,730 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:18:20,964 - DEBUG - Fetching account balances...
+2026-01-22 11:18:21,209 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 11:18:21,209 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 11:18:21,315 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 11:18:21,480 - DEBUG - __init__: Initial Volatility Calculated: 0.03910538592610726
+2026-01-22 11:18:21,480 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:18:21,481 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 11:18:21,481 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 11:18:21,481 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T11:13:42.995708
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $140.43 (Max Drawdown: 2723.58%)
+2026-01-22 11:18:21,481 - DEBUG - __init__ completed
+2026-01-22 11:18:21,588 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 11:18:21,639 - DEBUG - Starting run method...
+2026-01-22 11:18:21,639 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 11:18:21,640 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 11:18:21,640 - DEBUG - Initializing hotkeys...
+2026-01-22 11:18:21,642 - DEBUG - Hotkeys started.
+2026-01-22 11:18:21,643 - DEBUG - Entering main trading loop...
+2026-01-22 11:18:22,209 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:18:22,649 - DEBUG - 🔄 TUNING: Vol 3.91% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 11:28:31,105 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:28:31,106 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-22 11:28:50,181 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-22 11:28:50,181 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:28:50,363 - DEBUG - Fetching account balances...
+2026-01-22 11:28:50,545 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-22 11:28:50,545 - DEBUG - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-22 11:28:50,659 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-22 11:28:50,815 - DEBUG - __init__: Initial Volatility Calculated: 0.03899428209365118
+2026-01-22 11:28:50,815 - DEBUG - Strategy Config: RSI=45, SL=7.8%, Trailing=10.0%
+2026-01-22 11:28:50,815 - DEBUG - Restored position: bought_price=2911.4199999999996, base_balance=0.0320128
+2026-01-22 11:28:50,815 - DEBUG - Restored Peak Price: $2967.85
+2026-01-22 11:28:50,815 - DEBUG - ♻️ SESSION RESTORED from 2026-01-22T11:28:24.951064
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $140.36 (Max Drawdown: 2723.58%)
+2026-01-22 11:28:50,815 - DEBUG - __init__ completed
+2026-01-22 11:28:50,926 - DEBUG - Grid Bot active. Using free ETH: 0.0320128 (Grid funds locked)
+2026-01-22 11:28:50,978 - DEBUG - Starting run method...
+2026-01-22 11:28:50,978 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-22 11:28:50,980 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-22 11:28:50,980 - DEBUG - Initializing hotkeys...
+2026-01-22 11:28:50,983 - DEBUG - Hotkeys started.
+2026-01-22 11:28:50,983 - DEBUG - Entering main trading loop...
+2026-01-22 11:28:51,555 - DEBUG - Telegram message sent successfully.
+2026-01-22 11:28:52,116 - DEBUG - 🔄 TUNING: Vol 3.90% -> RSI Buy < 36 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2819.46
+2026-01-22 12:28:51,517 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2946.8 | PnL: 1.22% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 13:28:52,434 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2936.69 | PnL: 0.87% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 14:28:53,497 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2950.04 | PnL: 1.33% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 15:28:54,308 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2952.76 | PnL: 1.42% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 16:28:55,306 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2951.91 | PnL: 1.39% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 17:28:56,109 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2951.81 | PnL: 1.39% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 18:28:56,841 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2955.37 | PnL: 1.51% | Trail Stop: 2819.46 (Profit: -3.16%) | SL < 2736.73
+2026-01-22 19:28:57,161 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2963.07 | PnL: 1.77% | Trail Stop: 2823.68 (Profit: -3.01%) | SL < 2736.73
+2026-01-22 20:28:57,622 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2965.03 | PnL: 1.84% | Trail Stop: 2823.68 (Profit: -3.01%) | SL < 2736.73
+2026-01-22 21:28:58,409 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2975.17 | PnL: 2.19% | Trail Stop: 2828.89 (Profit: -2.83%) | SL < 2736.73
+2026-01-22 22:28:58,516 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2967.04 | PnL: 1.91% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-22 23:28:59,537 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2942.43 | PnL: 1.07% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 00:29:00,428 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2948.88 | PnL: 1.29% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 01:29:00,648 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2938.08 | PnL: 0.92% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 01:36:35,695 - DEBUG - 🔄 TUNING: Vol 4.04% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2834.42
+2026-01-23 02:29:01,735 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2927.57 | PnL: 0.55% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 03:29:02,363 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2928.27 | PnL: 0.58% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 04:29:02,703 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2937.26 | PnL: 0.89% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 05:29:03,555 - DEBUG - Heartbeat - Holding ETHUSDT | Price: 2937.94 | PnL: 0.91% | Trail Stop: 2834.42 (Profit: -2.64%) | SL < 2736.73
+2026-01-23 06:04:01,412 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared

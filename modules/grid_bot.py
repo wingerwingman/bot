@@ -223,21 +223,11 @@ class GridBot:
                 
                 self.logger.info(f"💰 USDT: ${available_usdt:.2f} free, ${usdt_locked:.2f} locked | {self.symbol.replace('USDT', '')}: {available_base:.6f} free, {base_locked:.6f} locked")
                 
-                # LIMIT CAPITAL USAGE: Respect the slider allocation + Reinvest Net Profit
-                # This allows the bot to use its own winnings but not touch extra wallet funds.
-                allowable_capital = self.capital + self.total_profit
-                if allowable_capital < 0: allowable_capital = 0 # Safety if heavy losses
-                
-                if available_usdt > allowable_capital:
-                    self.logger.info(f"🔒 Limiting USDT usage to alloc+profit: ${allowable_capital:.2f} (Init: ${self.capital:.1f} + Net: ${self.total_profit:.2f})")
-                    available_usdt = allowable_capital
-                
                 # STRICT SEPARATION: Check if Spot Bot is holding funds and reserve them
+                # Must be done BEFORE Capital Logic to correctly value Grid Inventory
                 try:
-                    # Check for live state file first
                     spot_state_file = f"data/state_live_{self.symbol}.json"
                     
-                    # Fallback to test state if not found? No, only care about live funds.
                     if os.path.exists(spot_state_file):
                         with open(spot_state_file, 'r') as f:
                             spot_state = json.load(f)
@@ -247,10 +237,34 @@ class GridBot:
                         # Only subtract if the Spot Bot is actually holding a position (bought entry)
                         if spot_state.get('bought_price'):
                             available_base -= spot_holdings
-                            if available_base < 0: available_base = 0 # Prevent negative
+                            if available_base < 0: available_base = 0 
                             self.logger.info(f"🛑 Reserved {spot_holdings:.6f} {self.symbol.replace('USDT', '')} for Spot Bot. Available for Grid: {available_base:.6f}")
                 except Exception as e:
                     self.logger.warning(f"Failed to check Spot Bot reservations: {e}")
+
+                # LIMIT CAPITAL USAGE: Respect the slider allocation + Reinvest Net Profit
+                # Include existing Grid Inventory (ETH) in the logic to prevent over-allocation.
+                allowable_capital = self.capital + self.total_profit
+                if allowable_capital < 0: allowable_capital = 0 
+
+                # Value of current Grid ETH holdings (Free + Locked - Spot Reservation)
+                # We calculate Total Grid Base by adding Locked funds (active orders) to the Available (Free - Spot)
+                # Note: 'available_base' at this point is (Free - Spot). 
+                # We assume Spot Holdings are NOT in Locked Orders (if they are 'Waiting for Sell', they are free).
+                
+                total_grid_base = available_base
+                if 'base_locked' in locals():
+                     total_grid_base += base_locked
+                
+                base_equity = total_grid_base * current_price
+                
+                # Remaining USDT alloc = Total Cap - ETH Value
+                adjusted_usdt_cap = allowable_capital - base_equity
+                if adjusted_usdt_cap < 0: adjusted_usdt_cap = 0
+
+                if available_usdt > adjusted_usdt_cap:
+                    self.logger.info(f"🔒 Capital Safety: Target ${allowable_capital:.2f} | Held Inv: ${base_equity:.2f} | Max Used USDT: ${adjusted_usdt_cap:.2f}")
+                    available_usdt = adjusted_usdt_cap
                     
             except Exception as e:
                 self.logger.error(f"Error fetching balance: {e}")
@@ -407,6 +421,7 @@ class GridBot:
                         'total_value': float(order['price']) * float(order['qty']),
                         'entry_reason': "Grid Level",
                         'timestamp': datetime.datetime.now().isoformat(),
+                        'fee': float(fee),
                         'pnl_amount': float(net_profit) if order['side'] == 'SELL' else 0.0,
                         'pnl_percent': float((grid_step/order['price'])*100) if order['side'] == 'SELL' else 0.0,
                         'balance_after': 0.0
@@ -468,8 +483,7 @@ class GridBot:
                 except Exception as e:
                     self.logger.error(f"Failed to send Telegram alert: {e}")
                 
-                except Exception as e:
-                    self.logger.error(f"Failed to send Telegram alert: {e}")
+
                 
                 # REPLENISH GRID (Cycle the order)
                 self._place_counter_order(order)

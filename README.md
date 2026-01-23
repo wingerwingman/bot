@@ -1,105 +1,205 @@
-# 🤖 Crypto Trading Bot (Binance.US)
+# 🤖 CryptoBot - Binance.US Trading System
 
-A powerful, modular trading bot with a **modern Web Dashboard**, supporting multiple strategies (**Sniper/DCA**, **Grid Trading**) and a **Shared Capital Manager**.
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![React 18](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Key Features
+A powerful, modular trading bot with a **modern React Dashboard**, supporting multiple strategies (**Spot/DCA**, **Grid Trading**) and a **Shared Capital Manager**.
 
-### 1. 📊 Web Dashboard
-- **React-based UI** for real-time monitoring and control.
-- **Multi-Bot Support**: Run multiple Spot and Grid bots on different symbols simultaneously.
-- **Bot Lifecycle**: Create, start, stop, and permanently **delete** bot instances.
-- **Charts**: Live price charting with indicators (RSI, Bollinger Bands).
-- **Logs**: Real-time strategy decision logs and error tracking.
-- **Controls**: Start/Stop bots, adjust settings on the fly.
-
-### 2. 🛡️ Sniper Strategy (DCA)
-- **RSI-Based Entry**: Buys when oversold (RSI < 30-40) and volatility is favorable.
-- **Defense Mode (DCA)**: If price drops after entry, buys more at lower levels (`config.DCA_MAX_RETRIES`).
-  - Detailed Strategy Logging: Shows exact RSI values and price drops when triggered.
-- **Dynamic Exit**: Uses trailing stops and take-profit targets tailored to volatility.
-
-### 3. 🕸️ Grid Trading Bot
-- **Range Trading**: Profits from sideways markets by buying low and selling high within a range.
-- **Auto-Range**: Automatically sets grid bounds and levels based on **Market Volatility (ATR)**.
-  - *Low Vol*: Tighter range, more levels.
-  - *High Vol*: Wider range, fewer levels.
-- **Dynamic Capital Limit**: Respects allocated capital slider + automatically **reinvests Net Profits** for compounding growth.
-- **Pause & Resume**: Stopping the bot moves it to "Pause" state (keeping orders active). Resuming picks up exactly where it left off.
-- **Robust Persistence**: State is saved after every trade. Crash-proof design ensures no data loss.
-- **Smart Partitioning**: 
-  - **Grid Awareness**: Spot Bot is aware of Grid Bot's locked funds and will not sell them.
-  - **Grid Reservation**: Grid Bot respects Spot Bot's holdings and starts empty if funds are occupied.
-
-### 4. 💰 Capital Manager & Partitioning
-- **Strict Separation**: Spot Strategies and Grid Strategies run on the same account but **never** can touch each other's funds.
-- **P&L Tracking**: Tracks wins/losses and auto-compounds profits per bot.
-- **Live Sync**: "Sync" button on dashboard instantly refreshes all balances from Binance.
-
-### 5. 📱 Notifications
-- **Smart Alerts**:
-  - ✅ **Sniper Trades**: Buy/Sell execution details.
-  - 🤖 **Grid Trades**: Real-time Grid Buy and Net Profit alerts.
-  - 🌊 **Volatility Shifts**: Alerts when market volatility changes >20%.
-  - ❌ **Critical Errors**: Immediate alert if the bot crashes.
-- **Status Updates**: Periodic heartbeat messages (every hour).
+![Dashboard Preview](docs/dashboard-preview.png)
 
 ---
 
-## 🛠️ Setup & Usage
+## ✨ Key Features
+
+### 📊 Web Dashboard
+- **Real-time Monitoring** - Live price charts, RSI, trade history
+- **Multi-Bot Support** - Run Spot and Grid bots on different symbols simultaneously
+- **Bot Lifecycle** - Create, start, stop, pause, and delete bot instances
+- **Logs & Audit Trail** - Strategy decisions, errors, and user actions
+- **Backtest Mode** - Test strategies on historical data before going live
+
+### 🎯 Spot Trading Strategy
+| Feature | Description |
+|---------|-------------|
+| **RSI-Based Entry** | Buys when RSI < 40 (configurable) with trend confirmation |
+| **Defense Mode (DCA)** | Averages down when price drops >2% AND RSI <30 |
+| **Trailing Stop** | Locks in profits by following price upward |
+| **Dynamic Tuning** | Auto-adjusts SL/TP based on real-time volatility (ATR) |
+| **Fear & Greed Integration** | Modifies risk based on market sentiment |
+
+### 🪜 Grid Trading Bot
+| Feature | Description |
+|---------|-------------|
+| **Range Trading** | Profits from sideways markets with buy-low/sell-high orders |
+| **Auto-Range** | Sets bounds based on volatility (ATR) |
+| **Capital-Aware** | Respects minimum order size ($11) and allocated capital |
+| **State Persistence** | Crash-proof design with automatic recovery |
+
+### 💰 Capital Manager
+- **Strict Separation** - Spot and Grid bots never compete for funds
+- **P&L Tracking** - Per-bot profit/loss with win rate stats
+- **Auto-Compound** - Optionally reinvest profits
+- **Live Sync** - Fetch real balances from Binance
+
+### 📱 Notifications
+- **Telegram Alerts** - Trade executions, errors, hourly heartbeats
+- **Volatility Shifts** - Alerts when ATR changes >20%
+- **Critical Errors** - Immediate notification if bot crashes
+
+---
+
+## 🛠️ Installation
 
 ### Prerequisites
 - Python 3.10+
-- Node.js & NPM
-- Binance.US Account (API Key & Secret)
+- Node.js 18+ & npm
+- Binance.US Account with API access
 
-### Installation
-1. **Clone & Install Python Deps**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. **Install Frontend Deps**:
-   ```bash
-   cd botfrontend
-   npm install --legacy-peer-deps
-   ```
-3. **Environment**:
-   Create `.env` file:
-   ```
-   API_KEY=your_key
-   API_SECRET=your_secret
-   TELEGRAM_TOKEN=your_token
-   TELEGRAM_CHAT_ID=your_id
-   ADMIN_USER=admin
-   ADMIN_PASS=pass
-   ADMIN_TOKEN=secret_token
-   ```
+### Quick Start
 
-### Running
-1. **Start Backend**:
-   ```bash
-   python main.py
-   ```
-2. **Start Frontend (in new terminal)**:
-   ```bash
-   cd botfrontend
-   npm start
-   ```
-3. **Open Dashboard**:
-   http://localhost:3000
+```bash
+# 1. Clone the repository
+git clone https://github.com/yourusername/CryptoBot.git
+cd CryptoBot
+
+# 2. Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# OR
+venv\Scripts\activate     # Windows
+
+# 3. Install Python dependencies
+pip install -r requirements.txt
+
+# 4. Install frontend dependencies
+cd botfrontend
+npm install --legacy-peer-deps
+cd ..
+
+# 5. Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Binance.US API (required)
+BINANCE_US_API_KEY=your_api_key_here
+BINANCE_US_API_SECRET=your_api_secret_here
+
+# Telegram Notifications (optional)
+TELEGRAM_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+
+# Dashboard Authentication
+ADMIN_USER=admin
+ADMIN_PASS=your_secure_password
+ADMIN_TOKEN=random_secret_token_for_sessions
+```
+
+---
+
+## 🚀 Running the Bot
+
+### Start Backend (API Server)
+```bash
+python main.py
+```
+The server starts on `http://localhost:5050`
+
+### Start Frontend (in a new terminal)
+```bash
+cd botfrontend
+npm start
+```
+Opens dashboard at `http://localhost:3000`
+
+### CLI Mode (Advanced)
+```bash
+python main.py --cli
+```
+For terminal-based operation without the web UI.
+
+---
+
+## 📂 Project Structure
+
+```
+CryptoBot/
+├── main.py                 # Entry point (server or CLI mode)
+├── modules/                # Backend logic
+│   ├── trading_bot.py      # Spot bot: signals, execution, state
+│   ├── grid_bot.py         # Grid bot: range trading
+│   ├── strategy.py         # Signal generation (RSI, MACD, MA)
+│   ├── indicators.py       # Technical analysis (ATR, RSI, MACD)
+│   ├── capital_manager.py  # Fund allocation & P&L tracking
+│   ├── server.py           # Flask API endpoints
+│   ├── logger_setup.py     # Logging configuration
+│   ├── notifier.py         # Telegram integration
+│   └── config.py           # Environment & constants
+├── botfrontend/            # React dashboard
+│   └── src/components/     # UI components
+├── data/                   # State persistence & CSV data
+├── logs/                   # Application logs
+├── tests/                  # Unit tests
+└── docs/                   # Documentation
+```
 
 ---
 
 ## 🧪 Testing
-Run the full unit test suite:
+
 ```bash
+# Run all tests
 python -m pytest tests/ -v
+
+# Run with coverage
+python -m pytest tests/ --cov=modules --cov-report=html
 ```
 
-## 📂 Project Structure
-- `modules/`: Core logic (Strategy, GridBot, CapitalManager).
-- `botfrontend/`: React dashboard source.
-- `data/`: Persistence files (grid_state.json, capital_state.json).
-- `logs/`: Application logs.
+---
+
+## 📖 Documentation
+
+- [FEATURES.md](FEATURES.md) - Detailed feature documentation
+- [IMPROVEMENTS.md](IMPROVEMENTS.md) - Planned enhancements
+- [FIXES.md](FIXES.md) - Recent bug fixes
 
 ---
-*Disclaimer: Use at your own risk. Crypto markets are highly volatile.*
+
+## 🔒 Security Notes
+
+- **Never commit `.env`** - Contains API secrets
+- **API Keys** - Use read-only keys when possible; enable trading only for trusted setups
+- **CORS** - Backend only accepts requests from `localhost:3000`
+- **Authentication** - Dashboard requires login; sessions expire
+
+---
+
+## ⚠️ Disclaimer
+
+**USE AT YOUR OWN RISK.** This software is for educational purposes. Cryptocurrency trading involves substantial risk of loss. The developers are not responsible for any financial losses incurred while using this bot.
+
+---
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) for details.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+*Last updated: 2026-01-22*

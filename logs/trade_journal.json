@@ -2,6 +2,49 @@
   {
     "action": "BUY",
     "symbol": "ETHUSDT",
+    "price": 2911.4199999999996,
+    "qty": 0.0198,
+    "total_value": 57.646116,
+    "fee": 0.3282847246,
+    "entry_reason": "Signal Buy",
+    "dca_level": 0,
+    "indicators": {
+      "rsi": null,
+      "macd_hist": 0.0404,
+      "volatility": 3.94,
+      "fear_greed": 20
+    },
+    "balance_after": 45.63910874,
+    "timestamp": "2026-01-22T08:29:12.767924"
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 2910.59,
+    "qty": 0.0159,
+    "total_value": 46.278381,
+    "fee": 0.2637707072,
+    "exit_reason": "Sell",
+    "pnl_percent": -1.4,
+    "pnl_amount": -0.65,
+    "entry_price": null,
+    "indicators": {
+      "rsi": 0.01,
+      "macd_hist": -0.3016,
+      "volatility": 3.94,
+      "fear_greed": 20
+    },
+    "session_stats": {
+      "total_trades": 5,
+      "win_rate": 20.0,
+      "net_pnl": -6.19
+    },
+    "balance_after": 103.28522474,
+    "timestamp": "2026-01-22T08:26:01.704695"
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
     "price": 2875.69,
     "qty": 0.0159,
     "total_value": 45.723471,

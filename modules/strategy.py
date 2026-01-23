@@ -30,7 +30,12 @@ class Strategy:
                  trading_fee_percentage=0.001,
                  use_trailing_stop=True,
                  dca_enabled=False,
-                 dca_rsi_threshold=30):
+                 dca_rsi_threshold=30,
+                 # New: Advanced features
+                 volume_confirmation_enabled=True,
+                 volume_multiplier=1.2,
+                 multi_timeframe_enabled=True,
+                 cooldown_after_stoploss_minutes=30):
                  
         self.stop_loss_percent = stop_loss_percent
         self.sell_percent = sell_percent  # Also used as trailing stop distance
@@ -50,34 +55,137 @@ class Strategy:
         self.dca_rsi_threshold = dca_rsi_threshold
         
         self.price_history = deque(maxlen=250)  # Increased for 200 MA
+        self.volume_history = deque(maxlen=30)  # NEW: Volume tracking
         self.current_volatility = None
         
         # Trailing stop tracking
         self.peak_price_since_buy = None
         
-    def update_data(self, price):
-        """Adds a new price point to history."""
+        # NEW: Advanced feature settings
+        self.volume_confirmation_enabled = volume_confirmation_enabled
+        self.volume_multiplier = volume_multiplier
+        self.multi_timeframe_enabled = multi_timeframe_enabled
+        self.cooldown_after_stoploss_minutes = cooldown_after_stoploss_minutes
+        
+        # NEW: State for cooldown tracking
+        self.last_stoploss_time = None
+        
+        # NEW: Higher timeframe trend cache
+        self.higher_tf_trend = None
+        self.higher_tf_last_update = None
+        
+    def update_data(self, price, volume=None):
+        """Adds a new price point (and optionally volume) to history."""
         if price is not None:
             self.price_history.append(price)
+        if volume is not None:
+            self.volume_history.append(volume)
+
+    def update_volume(self, volume):
+        """Adds a new volume data point."""
+        if volume is not None:
+            self.volume_history.append(volume)
 
     def set_volatility(self, value):
         """Updates the current market volatility (ATR)."""
         self.current_volatility = value
+    
+    def set_higher_timeframe_trend(self, trend_data):
+        """Updates the cached higher timeframe trend."""
+        import time
+        self.higher_tf_trend = trend_data
+        self.higher_tf_last_update = time.time()
+    
+    def record_stoploss(self):
+        """Records the time of a stop-loss event for cooldown tracking."""
+        import time
+        self.last_stoploss_time = time.time()
+        
+    def is_in_cooldown(self):
+        """
+        Checks if we're still in cooldown period after a stop-loss.
+        Returns True if we should NOT trade yet.
+        """
+        import time
+        if self.last_stoploss_time is None:
+            return False
+        
+        elapsed_minutes = (time.time() - self.last_stoploss_time) / 60
+        return elapsed_minutes < self.cooldown_after_stoploss_minutes
+    
+    def get_cooldown_remaining(self):
+        """Returns remaining cooldown time in minutes, or 0 if not in cooldown."""
+        import time
+        if self.last_stoploss_time is None:
+            return 0
+        elapsed_minutes = (time.time() - self.last_stoploss_time) / 60
+        remaining = self.cooldown_after_stoploss_minutes - elapsed_minutes
+        return max(0, remaining)
+    
+    def check_volume_confirmation(self, current_volume):
+        """
+        Checks if current volume confirms a strong signal.
+        Returns True if volume is above average (or feature disabled).
+        """
+        if not self.volume_confirmation_enabled:
+            return True
+        
+        avg_volume = indicators.calculate_average_volume(self.volume_history)
+        return indicators.is_volume_confirmed(current_volume, avg_volume, self.volume_multiplier)
+    
+    def check_higher_timeframe_trend(self):
+        """
+        Checks if higher timeframe trend is bullish.
+        Returns True if bullish or neutral, False if bearish.
+        """
+        if not self.multi_timeframe_enabled:
+            return True  # Feature disabled, allow entry
+        
+        if self.higher_tf_trend is None:
+            return True  # No data yet, allow entry
+        
+        # Allow entry in bullish or neutral trends
+        return self.higher_tf_trend.get('trend') != 'bearish'
         
     def reset_trailing_stop(self):
         """Resets the trailing stop peak tracker (call after selling)."""
         self.peak_price_since_buy = None
 
-    def check_buy_signal(self, current_price, last_price):
+    def check_buy_signal(self, current_price, last_price, current_volume=None):
         """
         Determines if a buy signal is generated based on:
+        - COOLDOWN: Skip if recently stopped out
+        - MULTI-TIMEFRAME: 4H trend must be bullish/neutral
+        - VOLUME: Current volume must be above average
         - Trend Filter: Price above 200 MA (bullish trend)
         - RSI < 40 (oversold/neutral, opportunity to buy)
         - MA Cross: Fast MA > Slow MA (short-term momentum)
         
-        REMOVED: -1% drop requirement (was too restrictive)
+        Returns: True if buy signal, False otherwise
         """
         if current_price is None:
+            return False
+
+        # ===== NEW FILTER #1: COOLDOWN AFTER STOP-LOSS =====
+        if self.is_in_cooldown():
+            remaining = self.get_cooldown_remaining()
+            # Only log occasionally to avoid spam
+            # logger_setup.log_strategy(f"⏳ COOLDOWN: {remaining:.1f} min remaining after stop-loss")
+            return False
+        
+        # ===== NEW FILTER #2: MULTI-TIMEFRAME TREND =====
+        if not self.check_higher_timeframe_trend():
+            htf = self.higher_tf_trend
+            if htf:
+                logger_setup.log_strategy(f"📉 BUY REJECTED: 4H trend is BEARISH (MA50: ${htf.get('ma_value', 0):.2f})")
+            return False
+        
+        # ===== NEW FILTER #3: VOLUME CONFIRMATION =====
+        if current_volume is not None and not self.check_volume_confirmation(current_volume):
+            avg_vol = indicators.calculate_average_volume(self.volume_history)
+            if avg_vol:
+                needed = avg_vol * self.volume_multiplier
+                # logger_setup.log_strategy(f"📉 BUY REJECTED: Low volume ({current_volume:.0f} < {needed:.0f} required)")
             return False
 
         # Calculate indicators

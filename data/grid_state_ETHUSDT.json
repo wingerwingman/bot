@@ -2,8 +2,8 @@
   "symbol": "ETHUSDT",
   "lower_bound": 2713.51,
   "upper_bound": 3185.43,
-  "grid_count": 5,
-  "capital": 98.425562514,
+  "grid_count": 10,
+  "capital": 46.43889937,
   "active_orders": [
     {
       "order_id": 1356682614,
@@ -54,5 +54,5 @@
   "total_fees": 0.1159355,
   "buy_fills": 4,
   "sell_fills": 0,
-  "running": true
+  "running": false
 }

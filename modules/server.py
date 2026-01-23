@@ -102,11 +102,11 @@ def get_status():
     
     # Add Spot Bots
     with bot_lock:
-        for symbol, bot in spot_bots.items():
+        for bot_key, bot in spot_bots.items():
             net_profit = bot.gross_profit - bot.gross_loss
             active_bots.append({
-                "id": f"spot_{symbol}",
-                "symbol": symbol,
+                "id": f"spot_{bot_key}",  # bot_key is already mode_symbol
+                "symbol": bot.symbol,
                 "type": "spot",
                 "status": "running" if bot.running else "stopped",
                 "profit": net_profit,
@@ -133,7 +133,19 @@ def get_status():
     if req_symbol and req_type == 'spot':
         bot = spot_bots.get(req_symbol)
         if not bot:
-             # Try to find any spot bot if none specified? No, strict match.
+             # Fallback: Prefer live if ambiguous, then test
+             if f"live_{req_symbol}" in spot_bots:
+                 bot = spot_bots[f"live_{req_symbol}"]
+             elif f"test_{req_symbol}" in spot_bots:
+                 bot = spot_bots[f"test_{req_symbol}"]
+             else:
+                 # Generic search (symbol match in value)
+                 for key, b in spot_bots.items():
+                     if b.symbol == req_symbol:
+                         bot = b
+                         break
+        
+        if not bot:
              return jsonify({"status": "idle", "running": False, "symbol": req_symbol})
         
         # ... Reuse logic to extract detailed metrics for ONE bot ...
@@ -213,11 +225,23 @@ def get_status():
 @app.route('/api/metrics', methods=['GET'])
 def get_metrics():
     symbol = request.args.get('symbol')
+    bot_key = request.args.get('key')
     
-    # If specific running bot requested
-    if symbol:
-        bot = spot_bots.get(symbol)
-        if bot:
+    # If specific running bot requested by unique key
+    if bot_key:
+        bot = spot_bots.get(bot_key)
+    # Fallback to symbol (legacy/simple view), assuming LIVE if ambiguous
+    elif symbol:
+        # try live first, then test? Or just construct live key
+        bot = spot_bots.get(f"live_{symbol}")
+        # If not found, try finding any bot with that symbol (e.g. test)
+        if not bot:
+             for k, b in spot_bots.items():
+                 if b.symbol == symbol:
+                     bot = b
+                     break
+    
+    if bot:
             win_rate = (bot.winning_trades / bot.total_trades * 100) if bot.total_trades > 0 else 0.0
             profit_factor = (bot.gross_profit / bot.gross_loss) if bot.gross_loss > 0 else 999.0
             return jsonify({
@@ -432,15 +456,18 @@ def start_bot():
         quote_asset = data.get('quote_asset', 'USDT')  # Currency to buy with
         base_asset = data.get('base_asset', 'ETH')     # Crypto to trade
         symbol = f"{base_asset}{quote_asset}"
+        mode = data.get('mode', 'test')  # 'live' or 'test'
         
-        if symbol in spot_bots and spot_bots[symbol].running:
-            msg = f"Start failed: Bot for {symbol} is already active and running."
+        # Use mode-prefixed key to allow live and test bots to run simultaneously
+        bot_key = f"{mode}_{symbol}"
+        
+        if bot_key in spot_bots and spot_bots[bot_key].running:
+            msg = f"Start failed: {mode.upper()} Bot for {symbol} is already active and running."
             logging.getLogger("BinanceTradingBot").error(msg)
             return jsonify({"error": msg}), 400
         
         # If exists but stopped, we will overwrite it below.
         
-        mode = data.get('mode', 'test')  # 'live' or 'test'
         filename = data.get('filename')  # For test mode
         position_size = data.get('position_size_percent', 25) / 100
         
@@ -451,6 +478,12 @@ def start_bot():
         dynamic_settings = data.get('dynamic_settings', False)
         dca_enabled = data.get('dca_enabled', True)
         dca_rsi_threshold = data.get('dca_rsi_threshold', 30)
+        
+        # Advanced Settings (NEW)
+        multi_timeframe_enabled = data.get('multi_timeframe_enabled', True)
+        volume_confirmation_enabled = data.get('volume_confirmation_enabled', True)
+        volume_multiplier = data.get('volume_multiplier', 1.2)
+        cooldown_minutes = data.get('cooldown_minutes', 30)
         
         is_live = (mode.lower() == 'live')
         
@@ -466,6 +499,12 @@ def start_bot():
             filename = None
         
         resume_session = data.get('resumeSession', True)
+        
+        # Update config module with advanced settings before creating bot
+        config.MULTI_TIMEFRAME_ENABLED = multi_timeframe_enabled
+        config.VOLUME_CONFIRMATION_ENABLED = volume_confirmation_enabled
+        config.VOLUME_MULTIPLIER_THRESHOLD = volume_multiplier
+        config.STOP_LOSS_COOLDOWN_MINUTES = cooldown_minutes
         
         try:
             bot = BinanceTradingBot(
@@ -483,9 +522,9 @@ def start_bot():
                 dca_rsi_threshold=dca_rsi_threshold
             )
             bot.start()
-            spot_bots[symbol] = bot
+            spot_bots[bot_key] = bot
             logger_setup.log_audit("START_BOT", f"Mode: {mode}, Symbol: {base_asset}", request.remote_addr)
-            return jsonify({"success": True, "mode": mode, "symbol": bot.symbol})
+            return jsonify({"success": True, "mode": mode, "symbol": bot.symbol, "bot_key": bot_key})
         except Exception as e:
             notifier.send_telegram_message(f"❌ <b>BOT START ERROR ({symbol})</b>\nFailed to start: {e}")
             return jsonify({"error": str(e)}), 500
@@ -497,7 +536,7 @@ def stop_bot():
         return jsonify({"error": "Unauthorized"}), 401
     
     data = request.json or {}
-    symbol = data.get('symbol')
+    symbol = data.get('symbol')  # This is actually the bot_key (like "live_ETHUSDT")
         
     global spot_bots
     
@@ -505,23 +544,29 @@ def stop_bot():
         with bot_lock:
             if not symbol:
                  # If only 1 bot running, stop it? Or strictly require symbol?
-                 # Strict is safer for multi-bot.
-                 # Actually, let's just loop and stop ALL if no symbol? 
-                 # Or just error. Let's error.
                  if len(spot_bots) == 1:
                      symbol = list(spot_bots.keys())[0]
                  else:
-                     return jsonify({"error": "Symbol required to stop specific bot"}), 400
+                     return jsonify({"error": "Symbol/bot_key required to stop specific bot"}), 400
             
+            # Try direct lookup first (new format: mode_symbol)
             bot = spot_bots.get(symbol)
+            
+            # Fallback: try to find by just symbol if old format
             if not bot:
-                 return jsonify({"error": f"No bot running for symbol {symbol}"}), 400
+                for key, b in spot_bots.items():
+                    if b.symbol == symbol or key.endswith(f"_{symbol}"):
+                        bot = b
+                        symbol = key  # Update to actual key
+                        break
+            
+            if not bot:
+                 return jsonify({"error": f"No bot running for {symbol}"}), 400
             
             if bot.running:
                 bot.stop()
             
             # Do NOT delete the bot, keep it in memory as 'stopped'
-            # del spot_bots[symbol]
             
             logger_setup.log_audit("STOP_BOT", f"Bot {symbol} stopped by user", request.remote_addr)
             return jsonify({"success": True})
@@ -760,14 +805,21 @@ def get_performance():
         trades = get_trade_journal(500)
         
         if trades:
-            wins = sum(1 for t in trades if t.get('action') == 'SELL' and t.get('pnl_amount', 0) >= 0)
-            losses = sum(1 for t in trades if t.get('action') == 'SELL' and t.get('pnl_amount', 0) < 0)
-            total_sells = wins + losses
+            sells = [t for t in trades if t.get('action') == 'SELL']
+            wins = sum(1 for t in sells if t.get('pnl_amount', 0) >= 0)
+            losses = len(sells) - wins
+            total_sells = len(sells)
             
-            summary['total_trades'] = len([t for t in trades if t.get('action') == 'SELL'])
+            # Calculate Profit Factor
+            gross_profit = sum(t.get('pnl_amount', 0) for t in sells if t.get('pnl_amount', 0) > 0)
+            gross_loss = sum(abs(t.get('pnl_amount', 0)) for t in sells if t.get('pnl_amount', 0) < 0)
+            profit_factor = round(gross_profit / gross_loss, 2) if gross_loss > 0 else (999.0 if gross_profit > 0 else 0.0)
+
+            summary['total_trades'] = total_sells
             summary['winning_trades'] = wins
             summary['losing_trades'] = losses
             summary['win_rate'] = round((wins / total_sells * 100), 1) if total_sells > 0 else 0
+            summary['profit_factor'] = profit_factor
         
         return jsonify(summary)
     except Exception as e:

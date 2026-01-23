@@ -237,7 +237,7 @@ def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
 
     return logger, trade_logger
 
-def log_trade(main_logger, trade_logger, action, price, quantity=None, total_value=None, profit=None):
+def log_trade(main_logger, trade_logger, action, price, quantity=None, total_value=None, profit=None, is_test=False):
     """
     Helper to log trades to both the specific trade logger and general debug.
     """
@@ -251,7 +251,10 @@ def log_trade(main_logger, trade_logger, action, price, quantity=None, total_val
         msg = ",".join(msg_parts)
             
         main_logger.info(f"DEBUG: Attempting to log trade: {msg}") 
-        trade_logger.info(msg)
+        
+        # Only log to file if NOT a test trade
+        if not is_test:
+            trade_logger.info(msg)
         
         # Add visible console print since we muted debug logs
         print(f"💰 {action.upper()}: Price {price} | Qty {quantity} | Val {total_value} | PnL {profit if profit else '0'}%")
