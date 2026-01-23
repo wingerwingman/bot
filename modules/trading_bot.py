@@ -9,7 +9,7 @@ import requests
 import math
 from collections import deque
 from binance import Client, BinanceAPIException
-from pynput import keyboard
+
 
 # Import new modules using relative imports
 from . import config
@@ -661,7 +661,7 @@ class BinanceTradingBot:
             if self.dynamic_settings:
                 fg_val = getattr(self, 'fear_greed_index', 50)
                 if fg_val <= 20:
-                    risk_percent = 0.025 # Extreme Fear -> Higher Risk (Buy the dip)
+                    risk_percent = 0.02 # Stable risk in extreme fear (Quality > Quantity)
                 elif fg_val >= 75:
                     risk_percent = 0.015 # Extreme Greed -> Lower Risk (Protect capital) 
 
@@ -702,41 +702,10 @@ class BinanceTradingBot:
             return invest_amount / current_price
 
 
-    def sell_on_ctrl_s(self):
-        if self.bought_price is not None and self.base_balance > 0:
-            try:
-                current_price = self.check_price()
-                if current_price is None: return
 
-                profit = ((current_price - self.bought_price) / self.bought_price) * 100
-
-                if self.is_live_trading:
-                    self.client.create_order(symbol=self.symbol, side=Client.SIDE_SELL, type=Client.ORDER_TYPE_MARKET, quantity=self.base_balance)
-                    self.quote_balance = self.get_balance(self.quote_asset)
-                    self.base_balance = self.get_balance(self.base_asset)
-                    self.log_trade_wrapper("Ctrl+S Sell", current_price, 0, self.quote_balance, profit)
-                else:
-                    proceeds = self.base_balance * current_price * (1 - self.trading_fee_percentage)
-                    self.quote_balance += proceeds
-                    self.log_trade_wrapper("Ctrl+S Sell", current_price, self.base_balance, self.quote_balance, profit)
-                    self.base_balance = 0
-
-                self.bought_price = None
-                self.shutdown_bot()
-                return
-
-            except Exception as e:
-                self.logger.error(f"Error placing sell order on Ctrl+Alt+S: {e}")
-                notifier.send_telegram_message(f"❌ <b>PANIC SELL FAILED</b>\nError: {e}")
-                return
-        else:
-            self.logger.info(f"No {self.base_asset} to sell.")
-            return
 
     def shutdown_bot(self):
         self.logger.info("Shutting down the bot...")
-        if hasattr(self, 'hotkeys'):
-            self.hotkeys.stop()
         self.stop()
 
     def print_performance_report(self):
@@ -784,6 +753,14 @@ class BinanceTradingBot:
             self.consecutive_wins = 0
             if self.consecutive_losses > self.max_loss_streak:
                 self.max_loss_streak = self.consecutive_losses
+            
+            # Consecutive losses alert
+            if self.consecutive_losses >= 3 and self.is_live_trading:
+                notifier.send_telegram_message(
+                    f"⚠️ <b>WARNING: LOSS STREAK ({self.symbol})</b>\n"
+                    f"Bot has reached {self.consecutive_losses} consecutive losses.\n"
+                    f"Consider pausing or reviewing settings."
+                )
             
         # Drawdown logic
         if current_equity > self.peak_balance:
@@ -1162,14 +1139,10 @@ class BinanceTradingBot:
             self.check_trade_log_and_resume()
             
             try:
-                self.logger.debug("Initializing hotkeys...")
-                self.hotkeys = keyboard.GlobalHotKeys({'<ctrl>+<alt>+s': self.sell_on_ctrl_s})
-                self.hotkeys.start()
-                self.logger.debug("Hotkeys started.")
-            except Exception as e:
-                self.logger.error(f"Error registering hotkeys: {e}")
-                self.logger.warning("Continuing without hotkeys...")
-                pass 
+                # Hotkeys removed (Web UI Control Only)
+                pass
+            except Exception:
+                pass
 
         # FREQUENCY UPDATE: Check every 5 minutes (User Preference)
         volatility_check_interval = 5 * 60 
@@ -1264,6 +1237,16 @@ class BinanceTradingBot:
                                 logger_setup.log_strategy(msg)
                                 notifier.send_telegram_message(f"<b>{msg}</b>")
                         
+                        # --- LOW BALANCE ALERT ---
+                        if self.is_live_trading:
+                            available_quote = self.get_balance(self.quote_asset)
+                            if available_quote < 15.0: # Minimum to place a profitable trade after fees
+                                notifier.send_telegram_message(
+                                    f"⚠️ <b>LOW BALANCE WARNING ({self.symbol})</b>\n"
+                                    f"Available {self.quote_asset}: ${available_quote:.2f}\n"
+                                    f"Please add funds to ensure bot can execute next trade."
+                                )
+                        
                         # --- INDICATOR SNAPSHOT (every volatility check = ~10 min) ---
                         if len(self.strategy.price_history) > 14:
                             snap_rsi = indicators.calculate_rsi(self.strategy.price_history)
@@ -1288,8 +1271,9 @@ class BinanceTradingBot:
                             vol_percent = vol * 100
                             
                             # FORMULA BASED (Retuned for tighter profit banking)
-                            # SL = ~2.0x Vol (was 2.0) - Cap at 6%
-                            new_sl_percent = min(6.0, max(1.5, vol_percent * 2.0))
+                            # SL = ~2.0x Vol (was 2.0) - Cap at 8%
+                            # Using 8% cap (was 6%) to allow room for high-volatility regime swings.
+                            new_sl_percent = min(8.0, max(1.5, vol_percent * 2.0))
                             
                             # Trail = ~1.5x Vol (was 3.0!) - Tighter to lock profit
                             # Previous 8.2% was too loose, preventing sales on small pumps.
@@ -1304,14 +1288,18 @@ class BinanceTradingBot:
                             
                             # --- FEAR & GREED MODIFIER ---
                             fg_msg = ""
+                            vol_multiplier = 1.2 # Default
+                            
                             if self.fear_greed_index is not None:
                                 fg_val = self.fear_greed_index
                                 if fg_val <= 25:
-                                    new_rsi += 5
-                                    fg_msg = " (+5 Extreme Fear)"
+                                    new_rsi -= 8  # Wait for DEEPER dip in extreme fear
+                                    vol_multiplier = 1.5 # Require massive volume to confirm bottom
+                                    fg_msg = " (-8 Extreme Fear, 1.5x Vol)"
                                 elif fg_val <= 40:
-                                    new_rsi += 2
-                                    fg_msg = " (+2 Fear)"
+                                    new_rsi -= 3  # Wait for slightly deeper dip
+                                    vol_multiplier = 1.3
+                                    fg_msg = " (-3 Fear, 1.3x Vol)"
                                 elif fg_val >= 75:
                                     new_rsi -= 5
                                     fg_msg = " (-5 Extreme Greed)"
@@ -1319,8 +1307,12 @@ class BinanceTradingBot:
                                     new_rsi -= 2
                                     fg_msg = " (-2 Greed)"
                                 
-                                # Clamp final RSI to safe bounds (30-60)
-                                new_rsi = max(30, min(60, new_rsi))
+                                # Apply Dynamic Volume Multiplier if enabled
+                                if self.strategy.volume_confirmation_enabled:
+                                    self.strategy.volume_multiplier = vol_multiplier
+
+                                # Clamp final RSI to safe bounds (25-60)
+                                new_rsi = max(25, min(60, new_rsi))
 
                             
                             # Convert back to decimal for Python logic
@@ -1723,5 +1715,7 @@ class BinanceTradingBot:
             self.finished_data = True
 
         except Exception as e:
-            self.logger.exception(f"Test error: {e}")
+            self.logger.exception(f"Fatal error in bot {self.symbol}: {e}")
+            if self.is_live_trading or self.filename is None:
+                notifier.send_telegram_message(f"🚨 <b>CRITICAL SPOT ERROR ({self.symbol})</b>\nBot crashed unexpectedly: {e}")
             self.finished_data = True

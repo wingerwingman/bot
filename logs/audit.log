@@ -8,3 +8,9 @@
 {"timestamp": "2026-01-23 13:32:42", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2752.55-$3231.25, Levels: 4"}
 {"timestamp": "2026-01-23 13:42:25", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
 {"timestamp": "2026-01-23 13:42:29", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2752.55-$3231.25, Levels: 4"}
+{"timestamp": "2026-01-23 13:52:10", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-23 13:52:13", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2752.55-$3231.25, Levels: 4"}
+{"timestamp": "2026-01-23 14:08:15", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-23 14:08:18", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2752.55-$3231.25, Levels: 4"}
+{"timestamp": "2026-01-23 14:18:38", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-23 14:18:40", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2752.55-$3231.25, Levels: 4"}

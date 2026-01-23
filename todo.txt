@@ -1,11 +1,24 @@
 # CryptoBot TODO List
 Updated: 2026-01-23
-✅ All Advanced Filters and Volatility Spacing are now adjustable while running.
-resume session still cant be toggled when bot is running.
+Max win and loss are not updating on the spot bot tab.
+## 🟡 MEDIUM PRIORITY (Remaining)
+- [ ] Fix manual_sell on Grid Bot (currently only Spot)
+- [ ] Add "Sell Now" button to Grid Bot Panel
+- [ ] Implement "Daily Loss Limit" (Risk Management)
+- [ ] Sentiment Analysis (Future)
+
+## 📁 FILES MODIFIED THIS SESSION
+- `modules/server.py` - Logic for Paper Trading mode
+- `botfrontend/src/components/ControlPanel.js` - UI for Paper Trading mode
+- `botfrontend/src/components/BacktestDashboard.js` - Updated for context
+- `todo.txt` - Updated status
+
 
 ## ✅ COMPLETED
 
 ### High Priority
+✅ All Advanced Filters, Volatility Spacing, and Resume Session are now adjustable while running.
+✅ Warning Alerts (Low balance, loss streaks, crashes) implemented.
 - [x] **Add "Paper Trading Mode" (Item 30)**
     - Backend: Updated `server.py` to allow simulated trading without a backtest file.
     - Frontend: Added "Paper Trading" vs "Backtest" toggle in Control Panel (Test Mode).
@@ -27,15 +40,3 @@ resume session still cant be toggled when bot is running.
 - [x] Fix logs - throttling
 - [x] Separate activity and strategy clear buttons
 - [x] Center bot icons
-
-## 🟡 MEDIUM PRIORITY (Remaining)
-- [ ] Fix manual_sell on Grid Bot (currently only Spot)
-- [ ] Add "Sell Now" button to Grid Bot Panel
-- [ ] Implement "Daily Loss Limit" (Risk Management)
-- [ ] Sentiment Analysis (Future)
-
-## 📁 FILES MODIFIED THIS SESSION
-- `modules/server.py` - Logic for Paper Trading mode
-- `botfrontend/src/components/ControlPanel.js` - UI for Paper Trading mode
-- `botfrontend/src/components/BacktestDashboard.js` - Updated for context
-- `todo.txt` - Updated status

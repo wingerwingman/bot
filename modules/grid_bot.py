@@ -757,24 +757,49 @@ class GridBot:
         )
         notifier.send_telegram_message(start_msg)
         
-        while self.running:
-            try:
-                # Skip order checks while paused (still running, just not trading)
-                if self.paused:
-                    time.sleep(5)
-                    continue
+        try:
+            while self.running:
+                try:
+                    # Skip order checks while paused (still running, just not trading)
+                    if self.paused:
+                        time.sleep(5)
+                        continue
+                        
+                    fills_before = self.buy_fills + self.sell_fills
+                    self.check_order_fills()
                     
-                fills_before = self.buy_fills + self.sell_fills
-                self.check_order_fills()
+                    # Save state if any fills occurred
+                    if (self.buy_fills + self.sell_fills) > fills_before:
+                        self._save_state()
+                        
+                    time.sleep(5)  # Check every 5 seconds
+                except Exception as e:
+                    self.logger.error(f"Grid loop error: {e}")
+                    time.sleep(10)
                 
-                # Save state if any fills occurred
-                if (self.buy_fills + self.sell_fills) > fills_before:
-                    self._save_state()
-                    
-                time.sleep(5)  # Check every 5 seconds
-            except Exception as e:
-                self.logger.error(f"Grid loop error: {e}")
-                time.sleep(10)
+                # --- LOW BALANCE ALERT (Every ~hour) ---
+                last_bal_check = getattr(self, 'last_bal_alert_time', 0)
+                if self.is_live and time.time() - last_bal_check > 3600:
+                    try:
+                        self.last_bal_alert_time = time.time()
+                        account = self.client.get_account()
+                        for b in account['balances']:
+                            if b['asset'] == 'USDT':
+                                free_usdt = float(b['free'])
+                                if free_usdt < 15.0:
+                                    notifier.send_telegram_message(
+                                        f"⚠️ <b>LOW BALANCE WARNING (Grid: {self.symbol})</b>\n"
+                                        f"Free USDT: ${free_usdt:.2f}\n"
+                                        f"Bot may fail to place new buy orders."
+                                    )
+                                break
+                    except:
+                        pass
+        except Exception as fatal_e:
+            if self.running:
+                self.logger.critical(f"CRITICAL FATAL ERROR in {self.symbol} Grid Bot: {fatal_e}")
+                notifier.send_telegram_message(f"🚨 <b>CRITICAL GRID ERROR ({self.symbol})</b>\nBot crashed unexpectedly: {fatal_e}")
+            raise fatal_e
         
         # Cleanup - save final state
         # USER PREFERENCE: Treat Stop as Pause. Do NOT cancel orders.
@@ -803,10 +828,13 @@ class GridBot:
             if self.is_live:
                 notifier.send_telegram_message(f"▶️ <b>GRID BOT RESUMED</b>\nSymbol: {self.symbol}")
 
-    def update_config(self, lower_bound=None, upper_bound=None, grid_count=None, capital=None, auto_rebalance_enabled=None, volatility_spacing_enabled=None):
+    def update_config(self, lower_bound=None, upper_bound=None, grid_count=None, capital=None, auto_rebalance_enabled=None, volatility_spacing_enabled=None, resume_state=None):
         """Update bot configuration on the fly."""
         needs_reset = False
         
+        if resume_state is not None:
+            self.resume_state = bool(resume_state)
+
         if auto_rebalance_enabled is not None:
             self.auto_rebalance_enabled = bool(auto_rebalance_enabled)
             

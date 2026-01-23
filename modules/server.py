@@ -263,7 +263,9 @@ def get_status():
             "buy_fills": bot.total_trades + (1 if bot.bought_price else 0),
             "sell_fills": bot.total_trades,
             "total_fees": getattr(bot, 'total_fees', 0.0),
-            "net_profit": net_profit
+            "net_profit": net_profit,
+            "max_win_streak": getattr(bot, 'max_win_streak', 0),
+            "max_loss_streak": getattr(bot, 'max_loss_streak', 0)
         }
         
         # Get strategy settings
@@ -361,6 +363,8 @@ def get_metrics():
                 "profit_factor": profit_factor,
                 "max_drawdown": bot.max_drawdown,
                 "peak_balance": bot.peak_balance,
+                "max_win_streak": getattr(bot, 'max_win_streak', 0),
+                "max_loss_streak": getattr(bot, 'max_loss_streak', 0),
                 "source": "live",
                 "symbol": symbol
             })
@@ -1280,6 +1284,7 @@ def update_grid_config_endpoint():
             cap = data.get('capital')
             auto_rebalance = data.get('auto_rebalance_enabled')
             vol_spacing = data.get('volatility_spacing_enabled')
+            resume_session = data.get('resume_state')
             
             # Using the new update_config method (to be added to GridBot class)
             if hasattr(bot, 'update_config'):
@@ -1289,7 +1294,8 @@ def update_grid_config_endpoint():
                     grid_count=count, 
                     capital=cap,
                     auto_rebalance_enabled=auto_rebalance,
-                    volatility_spacing_enabled=vol_spacing
+                    volatility_spacing_enabled=vol_spacing,
+                    resume_state=resume_session
                 )
                 logger_setup.log_audit("GRID_CONFIG_CHANGE", f"[{symbol}] Bounds: {lower}-{upper}, Levels: {count}, Rebal: {auto_rebalance}, VolSpace: {vol_spacing}", request.remote_addr)
                 return jsonify({"success": True})

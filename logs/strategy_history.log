@@ -9954,3 +9954,34 @@
    • Metrics: Net Profit $-6.19 (5 trades)
    • Peak Balance: $139.71 (Max Drawdown: 2723.58%)
 2026-01-23 13:42:26 - 🔄 TUNING: Vol 4.50% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 13:52:10 - Trading Pair Configured: ETHUSDT
+2026-01-23 13:52:10 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 13:52:10 - __init__: Initial Volatility Calculated: 0.045116192602805034
+2026-01-23 13:52:10 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 13:52:10 - ♻️ SESSION RESTORED from 2026-01-23T13:47:27.275900
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.70 (Max Drawdown: 2723.58%)
+2026-01-23 13:52:11 - 🔄 TUNING: Vol 4.51% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 14:07:15 - 🔄 TUNING: Vol 4.49% -> RSI Buy < 35 (+5 Extreme Fear) | SL 6.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 14:08:15 - Trading Pair Configured: ETHUSDT
+2026-01-23 14:08:15 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 14:08:15 - __init__: Initial Volatility Calculated: 0.04491898141802947
+2026-01-23 14:08:15 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 14:08:15 - ♻️ SESSION RESTORED from 2026-01-23T14:07:15.049636
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.55 (Max Drawdown: 2723.58%)
+2026-01-23 14:08:16 - 🔄 TUNING: Vol 4.49% -> RSI Buy < 25 (-8 Extreme Fear, 1.5x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2866.75
+2026-01-23 14:18:37 - Trading Pair Configured: ETHUSDT
+2026-01-23 14:18:37 - Starting Balances: USDT=45.63910874, ETH=0.0320128
+2026-01-23 14:18:38 - __init__: Initial Volatility Calculated: 0.044913189255645025
+2026-01-23 14:18:38 - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-23 14:18:38 - ♻️ SESSION RESTORED from 2026-01-23T14:18:18.617900
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2911.4199999999996
+   • Metrics: Net Profit $-6.19 (5 trades)
+   • Peak Balance: $139.97 (Max Drawdown: 2723.58%)
+2026-01-23 14:18:39 - 🔄 TUNING: Vol 4.49% -> RSI Buy < 25 (-8 Extreme Fear, 1.5x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2866.75

@@ -53,3 +53,14 @@ Antigravity
 - [x] **Adjustable Advanced Strategy Filters**: Fixed a bug in `ControlPanel.js` that was preventing M-TF trend, Volume Confirmation, and SL Cooldown from being adjusted while the bot was running. These are now fully hot-swappable in real-time.
 - [x] **Dashboard Visibility for Win Tracking**: Added "🔥 Max Win Streak" and "🧊 Max Loss Streak" stats to the `LiveDashboard.js` and `ControlPanel.js` performance cards. Users can now see their consecutive performance at a glance.
 - [x] **Volatility Spacing Bug Fix**: Resolved a critical UI bug where "Volatility-Based Spacing" would revert while running. Fixed key mismatches in the status poll and reinforced backend persistence.
+- [x] **Hot-Swappable Resume Session**: Updated both Spot and Grid bots to allow toggling "Resume Session" while running. Changed frontend `disabled` logic and added backend update support for Grid.
+- [x] **Proactive Warning Alerts (#25)**: Implemented Telegram alerts for critical events:
+    - **Low Balance**: Warns if USDT < $15.
+    - **Loss Streaks**: Warns if Spot Bot loses 3+ trades consecutively.
+    - **Bot Crash Protection**: Added global exception handlers to notify via Telegram if a bot thread terminates unexpectedly.
+    - **Volatility Shifts**: Added notifications for >20% change in ATR.
+- [x] **Panic Regime Optimization**: Implemented advanced regime detection logic for "Extreme Fear" (based on recent log analysis):
+    *   **Inverted Fear RSI**: Now waits for deeper dips (subtracts 8 from RSI threshold) instead of entering early.
+    *   **High-Vol Stop Loss**: Increased SL cap to 8% to prevent stop-loss hunting during ATR spikes.
+    *   **Adaptive Volume Confirmation**: Requires 1.5x volume during panics to ensure a sustainable bounce.
+    *   **Risk Stabilization**: Capped risk parity at 2.0% during fear to prioritize quality over quantity.
