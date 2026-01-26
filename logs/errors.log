@@ -1,34 +1,10 @@
-2026-01-26 09:27:09,583 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 09:38:12,682 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:38:37,764 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:38:53,784 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x75c7bbb47250>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 09:39:09,798 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x75c7bbb06800>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 09:39:30,196 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:39:46,213 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x75c7bbb17ac0>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 09:40:22,920 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:40:33,943 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x75c7bbb07250>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 09:41:13,158 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:41:29,178 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:41:54,188 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:42:10,202 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x75c7b9f23af0>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 09:43:12,672 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:45:59,722 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 09:53:16,072 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 09:53:48,851 - ERROR - Failed to start Grid Bot: HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ping (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fca884f25f0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
-2026-01-26 09:53:49,312 - ERROR - Failed to send Telegram message: {"ok":false,"error_code":400,"description":"Bad Request: can't parse entities: Unsupported start tag \"urllib3.connection.httpsconnection\" at byte offset 182"}
-2026-01-26 10:04:23,557 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 10:19:22,865 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 10:24:07,397 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 10:29:50,774 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 10:55:50,364 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 11:39:59,617 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 11:58:15,746 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:02:21,686 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:03:26,072 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:05:12,441 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:06:43,515 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:08:26,038 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:22:00,607 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
-2026-01-26 12:26:01,805 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:27:18,765 - ERROR - Error calculating ATR: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:28:06,141 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:40:33,803 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:42:26,223 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:42:57,107 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:43:13,126 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x76e9c595d870>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
+2026-01-26 12:43:36,777 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x76e9c590ae00>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2026-01-26 12:44:13,094 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:44:53,205 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:47:52,109 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:48:13,567 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:50:47,327 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)

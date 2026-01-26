@@ -54,6 +54,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 
 ### 💰 Capital Manager
 - **Strict Separation** - Spot and Grid bots never compete for funds
+- **Privacy Mode** - Toggle to hide sensitive capital/sliders (Streamer friendly)
 - **P&L Tracking** - Per-bot profit/loss with win rate stats
 - **Auto-Compound** - Optionally reinvest profits
 - **Live Sync** - Fetch real balances from Binance
@@ -64,6 +65,11 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Stall Alerts** - Critical notification if a bot process hangs (>5 mins)
 - **Daily Summary** - 8:00 AM report with P&L and Streak stats
 - **Critical Errors** - Immediate notification if bot crashes
+
+### 🛡️ Security & Logging
+- **Log Rotation** - Automatic rotation (Max 25MB) to prevent disk overflow
+- **Idempotent Safety** - Race-condition proof logging setup
+- **Audit Trail** - Tracks every user action (Start, Stop, Config Change)
 
 ---
 

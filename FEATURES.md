@@ -70,7 +70,7 @@ CryptoBot/
 | | Trade Export | `server.py`, `LogsPage.js` | Download trade history as CSV. |
 | **Analytics** | Sharpe Ratio | `trading_bot.py` | Risk-adjusted return calculation. |
 | | In-Memory Journal | `trading_bot.py` | Full trade history for Test/Paper sessions. |
-| **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, P&L display. |
+| **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, **Privacy Toggle**. |
 | | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history, **Manual Sell**. |
 | | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
 | **Resilience** | Panic Button | `server.py`, `App.js` | Global emergency shutdown & total liquidation. |

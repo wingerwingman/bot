@@ -33469,3 +33469,67 @@ KeyError: 'Close'
 2026-01-26 12:27:18,765 - ERROR - Error calculating ATR: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
 2026-01-26 12:27:26,026 - DEBUG - 4H Trend: BEARISH (MA50: $3015.10)
 2026-01-26 12:28:06,141 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:30:05,161 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:30:36,914 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:30:54,370 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:32:27,413 - DEBUG - 4H Trend: BEARISH (MA50: $3015.08)
+2026-01-26 12:36:25,318 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.5, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-26 12:36:25,319 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-26 12:36:25,319 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-26 12:36:25,499 - INFO - Initializing ML Predictor...
+2026-01-26 12:36:25,499 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-26 12:36:25,500 - DEBUG - Fetching account balances...
+2026-01-26 12:36:25,732 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-26 12:36:25,732 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-26 12:36:25,838 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-26 12:36:25,994 - DEBUG - __init__: Initial Volatility Calculated: 0.042604035416647514
+2026-01-26 12:36:25,994 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-26 12:36:25,997 - INFO - Restored strategy settings from DB.
+2026-01-26 12:36:25,997 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-26 12:36:25,997 - DEBUG - Restored Peak Price: $2927.7200000000003
+2026-01-26 12:36:25,997 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-26 19:32:26)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $92.02 (Max Drawdown: 2723.58%)
+2026-01-26 12:36:25,997 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-26 12:36:25,997 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-26 12:36:25,998 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-26 12:36:25,998 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-26 12:36:25,998 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-26 12:36:25,998 - DEBUG - Applied startup overrides to resumed state.
+2026-01-26 12:36:25,998 - DEBUG - __init__ completed
+2026-01-26 12:36:26,105 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-26 12:36:26,156 - DEBUG - Starting run method...
+2026-01-26 12:36:26,156 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-26 12:36:26,157 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-26 12:36:26,157 - DEBUG - Entering main trading loop...
+2026-01-26 12:36:26,693 - DEBUG - Telegram message sent successfully.
+2026-01-26 12:36:27,127 - DEBUG - 🔄 TUNING: Vol 4.26% -> RSI Buy < 25 (-8 Extreme Fear, 1.5x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2781.33
+2026-01-26 12:36:27,313 - DEBUG - 4H Trend: BEARISH (MA50: $3015.09)
+2026-01-26 12:36:29,886 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2766.84-$3058.08, Levels: 4
+2026-01-26 12:36:29,887 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2766.84 - $3058.08
+   • Levels: 4
+   • Capital: $46.43889937
+2026-01-26 12:36:30,458 - DEBUG - Telegram message sent successfully.
+2026-01-26 12:37:08,956 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:37:36,633 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-26 12:37:48,403 - INFO - AUDIT WARN: User Action [CLEAR_ERRORS] via 127.0.0.1: Error log cleared
+2026-01-26 12:38:05,285 - INFO - AUDIT WARN: User Action [CLEAR_LOGS] via 127.0.0.1: Audit logs cleared by user
+2026-01-26 12:40:33,803 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:41:32,448 - DEBUG - 4H Trend: BEARISH (MA50: $3015.09)
+2026-01-26 12:42:26,223 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:42:57,107 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:43:13,126 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x76e9c595d870>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
+2026-01-26 12:43:36,777 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x76e9c590ae00>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2026-01-26 12:44:13,094 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:44:53,205 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:46:34,925 - DEBUG - 4H Trend: BEARISH (MA50: $3015.20)
+2026-01-26 12:47:52,109 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:48:13,567 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:50:47,327 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:51:36,918 - DEBUG - 🔄 TUNING: Vol 4.25% -> RSI Buy < 25 (-8 Extreme Fear, 1.5x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2786.09
+2026-01-26 12:51:37,047 - DEBUG - 4H Trend: BEARISH (MA50: $3015.18)
+2026-01-26 12:56:39,374 - DEBUG - 4H Trend: BEARISH (MA50: $3014.98)
+2026-01-26 13:01:40,231 - DEBUG - 4H Trend: BEARISH (MA50: $3006.76)

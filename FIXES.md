@@ -31,3 +31,17 @@
 - **Server Error Handling**: Fixed a potential `NameError` in `server.py`'s `/api/metrics` endpoint by initializing the `bot` variable correctly.
 - **Frontend Configuration Refactor**: Centralized `API_BASE` in `config.js` and updated all frontend components (`ControlPanel`, `LiveDashboard`, etc.) to import it, improving maintainability and reducing hardcoded values.
 - **Code Cleanliness**: Removed inline imports in `modules/strategy.py` to improve performance and code quality.
+
+## 7. Security & Hardening (Bot Audit)
+- **Issue**: Found hardcoded API secrets in legacy test files and race conditions in the logging system.
+- **Fix**: 
+    - Purged secrets from `tests/verify_multibot.py`.
+    - Implemented **Idempotent Logging** to prevent duplicate logs when internal threads restart.
+    - Added **Log Rotation** (Max 25MB total history) to prevent infinite file growth.
+    - Fixed duplicate route definitions in `server.py` that caused startup crashes.
+- **Affected Files**: `modules/logger_setup.py`, `modules/server.py`, `tests/verify_multibot.py`.
+
+## 8. UI Privacy & Usability
+- **Issue**: "Total Capital" and allocation sliders were always visible, cluttering the view and exposing financial data on stream.
+- **Fix**: Implemented a **"Edit Capital" Toggle**. By default, total equity, auto-compound settings, and allocation sliders are hidden.
+- **Affected Files**: `botfrontend/src/components/CapitalPanel.js`.

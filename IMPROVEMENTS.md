@@ -163,16 +163,32 @@ Updated: 2026-01-26
 **Description:** Centrally manage risk across multiple symbols and strategies to ensure no single asset exceeds X% of total equity.
 
 ### 23. Database Migration (SQLAlchemy)
-**Status:** PROPOSED
-**Description:** Migrate from flat JSON files (`bot_state.json`) to a proper database using SQLAlchemy ORM.
+**Status:** IMPLEMENTED
+**Description:** Migrated from flat JSON files (`bot_state.json`) to a proper database using SQLAlchemy ORM.
 **Stratgey:** 
-- Use **SQLite** as the default storage (serverless, single-file, zero config).
-- Use **SQLAlchemy** models so the bot is "Database Agnostic" (can switch to PostgreSQL/MySQL later by changing 1 config line).
+- Uses **SQLite** as the default storage (`data/bot_data.db`).
+- Uses **SQLAlchemy** models for `BotState`, `GridState`, and `CapitalState`.
+- Includes **Auto-Migration** logic for schema updates.
 **Benefit:** 
 - ACID compliance (crash-proof).
 - High concurrency support.
 - Future-proof for cloud scaling.
 
+### 24. Codebase Hardening & Security (Audit)
+**Status:** IMPLEMENTED
+**Description:** 
+- Removed hardcoded API secrets from test files.
+- Implemented **Logger Rotation** (5MB x 5 files) to prevent disk overflow.
+- **Race Condition Fix**: Made `setup_logger` idempotent to prevent duplicate handlers.
+- **Server Stability**: Improved exception handling to prevent API crashes.
+
+### 25. UI Privacy & Cleanliness
+**Status:** IMPLEMENTED
+**Description:** 
+- **Capital Panel**: Hidden sensitive financial sliders and inputs behind an "Edit Capital" toggle.
+- **Git Security**: Enforced `.gitignore` for local SQLite databases.
+
 ---
 
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-26*
+
