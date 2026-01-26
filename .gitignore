@@ -43,6 +43,8 @@ logs/*.json
 # Data (keep structure, ignore contents)
 data/*.json
 data/*.csv
+data/*.db
+*.db
 !data/.gitkeep
 
 # Build artifacts

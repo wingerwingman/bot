@@ -33465,3 +33465,7 @@ KeyError: 'Close'
    • Levels: 4
    • Capital: $46.43889937
 2026-01-26 12:22:05,174 - DEBUG - Telegram message sent successfully.
+2026-01-26 12:26:01,805 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:27:18,765 - ERROR - Error calculating ATR: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:27:26,026 - DEBUG - 4H Trend: BEARISH (MA50: $3015.10)
+2026-01-26 12:28:06,141 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)

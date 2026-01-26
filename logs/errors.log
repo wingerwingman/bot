@@ -29,3 +29,6 @@
 2026-01-26 12:06:43,515 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
 2026-01-26 12:08:26,038 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
 2026-01-26 12:22:00,607 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-26 12:26:01,805 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:27:18,765 - ERROR - Error calculating ATR: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 12:28:06,141 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
