@@ -5,12 +5,13 @@ Places limit orders at fixed price intervals to profit from sideways markets.
 """
 
 import time
+import re
 import threading
 import logging
 import json
 import os
 import datetime
-from binance import Client
+from binance import Client, BinanceAPIException
 from . import config
 from . import logger_setup
 from . import indicators
@@ -57,7 +58,11 @@ class GridBot:
         self.fee_rate = 0.001  # 0.1% per trade (0.2% round-trip)
         self.buy_fills = 0
         self.sell_fills = 0
-        self.paused = False  # NEW: Pause state
+        
+        # Health & Reliability (Phase 2)
+        self.last_active_timestamp = time.time()
+        self.ban_until = None
+        self.paused = False # NEW: Pause state
         self.auto_rebalance_enabled = auto_rebalance_enabled # Use arg
         self.volatility_spacing_enabled = volatility_spacing_enabled # Use arg
         self.rebalance_count = 0 
@@ -82,54 +87,86 @@ class GridBot:
             self._load_state()
     
     def _save_state(self):
-        """Save Grid Bot state to file."""
+        """Save Grid Bot state to Database (SQLAlchemy)."""
         try:
-            os.makedirs('data', exist_ok=True)
-            state = {
-                'symbol': self.symbol,
-                'lower_bound': self.lower_bound,
-                'upper_bound': self.upper_bound,
-                'grid_count': self.grid_count,
+            from .database import db_session
+            from .models import GridState
+            
+            session = db_session()
+            
+            grid_state = session.query(GridState).filter_by(symbol=self.symbol).first()
+            if not grid_state:
+                grid_state = GridState(symbol=self.symbol)
+                session.add(grid_state)
+            
+            grid_state.is_active = self.running
+            grid_state.lower_bound = self.lower_bound
+            grid_state.upper_bound = self.upper_bound
+            grid_state.grid_count = self.grid_count
+            grid_state.total_profit = self.total_profit
+            grid_state.buy_fills = self.buy_fills
+            grid_state.sell_fills = self.sell_fills
+            grid_state.active_orders = self.active_orders # JSON list
+            
+            # Serialize Configuration
+            grid_state.configuration = {
                 'capital': self.capital,
-                'active_orders': self.active_orders,
-                'filled_orders': self.filled_orders,
-                'total_profit': self.total_profit,
-                'total_fees': self.total_fees,
-                'buy_fills': self.buy_fills,
-                'sell_fills': self.sell_fills,
-                'paused': self.paused,
                 'auto_rebalance_enabled': self.auto_rebalance_enabled,
                 'volatility_spacing_enabled': self.volatility_spacing_enabled,
-                'rebalance_count': self.rebalance_count,
-                'running': self.running
+                'paused': self.paused,
             }
-            with open(self.state_file, 'w') as f:
-                json.dump(state, f, indent=2)
+            
+            # Serialize Metrics
+            grid_state.metrics = {
+                'total_fees': self.total_fees,
+                'rebalance_count': self.rebalance_count,
+                'filled_orders': self.filled_orders[-100:] # Keep last 100 in DB
+            }
+            
+            session.commit()
+            session.close()
+            
         except Exception as e:
-            self.logger.error(f"Error saving grid state: {e}")
+            self.logger.error(f"Error saving grid state to DB: {e}")
     
     def _load_state(self):
-        """Load Grid Bot state from file."""
+        """Load Grid Bot state from Database (SQLAlchemy)."""
         try:
-            if os.path.exists(self.state_file):
-                with open(self.state_file, 'r') as f:
-                    state = json.load(f)
+            from .database import db_session
+            from .models import GridState
+            
+            session = db_session()
+            state = session.query(GridState).filter_by(symbol=self.symbol).first()
+            
+            if state:
+                # Basic Fields
+                self.lower_bound = state.lower_bound
+                self.upper_bound = state.upper_bound
+                self.grid_count = state.grid_count
+                self.total_profit = state.total_profit or 0.0
+                self.buy_fills = state.buy_fills or 0
+                self.sell_fills = state.sell_fills or 0
+                self.active_orders = state.active_orders or []
                 
-                # Only restore if same symbol
-                if state.get('symbol') == self.symbol:
-                    self.active_orders = state.get('active_orders', [])
-                    self.filled_orders = state.get('filled_orders', [])
-                    self.total_profit = state.get('total_profit', 0.0)
-                    self.total_fees = state.get('total_fees', 0.0)
-                    self.buy_fills = state.get('buy_fills', 0)
-                    self.sell_fills = state.get('sell_fills', 0)
-                    self.paused = state.get('paused', False)
-                    self.auto_rebalance_enabled = state.get('auto_rebalance_enabled', True)
-                    self.volatility_spacing_enabled = state.get('volatility_spacing_enabled', False)
-                    self.rebalance_count = state.get('rebalance_count', 0)
-                    self.logger.info(f"♻️ Grid state restored: {self.buy_fills} buys, {self.sell_fills} sells, ${self.total_profit:.2f} net profit (fees: ${self.total_fees:.2f})")
+                # Configuration
+                config = state.configuration or {}
+                self.capital = config.get('capital', self.capital)
+                self.paused = config.get('paused', False)
+                self.auto_rebalance_enabled = config.get('auto_rebalance_enabled', True)
+                self.volatility_spacing_enabled = config.get('volatility_spacing_enabled', False)
+                
+                # Metrics
+                metrics = state.metrics or {}
+                self.total_fees = metrics.get('total_fees', 0.0)
+                self.rebalance_count = metrics.get('rebalance_count', 0)
+                self.filled_orders = metrics.get('filled_orders', [])
+                
+                self.logger.info(f"♻️ Grid state restored from DB: {self.buy_fills} buys, {self.sell_fills} sells, ${self.total_profit:.2f} net profit (fees: ${self.total_fees:.2f})")
+                
+            session.close()
+            
         except Exception as e:
-            self.logger.error(f"Error loading grid state: {e}")
+            self.logger.error(f"Error loading grid state from DB: {e}")
     
     def clear_state(self):
         """Clear saved state and reset counters."""
@@ -198,13 +235,52 @@ class GridBot:
         return size_per_level
     
     def get_current_price(self):
-        """Get current market price."""
-        try:
-            ticker = self.client.get_symbol_ticker(symbol=self.symbol)
-            return float(ticker['price'])
-        except Exception as e:
-            self.logger.error(f"Error getting price: {e}")
-            return None
+        """Get current market price with retry logic."""
+        self.last_active_timestamp = time.time()
+        retries = 3
+        for i in range(retries):
+            try:
+                ticker = self.client.get_symbol_ticker(symbol=self.symbol)
+                return float(ticker['price'])
+            except BinanceAPIException as e:
+                if e.code == -1003:
+                    unban_str = ""
+                    try:
+                        match = re.search(r'until\s+(\d+)', e.message)
+                        if match:
+                             ts = int(match.group(1)) / 1000.0
+                             self.ban_until = ts # Store for auto-restart
+                             dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                             unban_str = f"\n⏳ Ban Lifted At: {dt}"
+                    except:
+                        pass
+                        
+                    self.logger.critical(f"🚨 IP BANNED BY BINANCE (Way too much request weight). Stopping Grid Bot.{unban_str}")
+                    self.running = False
+                    try:
+                        notifier.send_telegram_message(f"🚨 <b>CRITICAL: IP BANNED (Grid: {self.symbol})</b>\nBot stopped.{unban_str}")
+                    except:
+                        pass
+                    return None
+                 # Other API errors
+                self.logger.error(f"Binance API Error: {e}")
+                
+            except Exception as e:
+                error_str = str(e)
+                is_network_error = "NameResolutionError" in error_str or "Connection" in error_str or "Timeout" in error_str
+                
+                if is_network_error:
+                    if i < retries - 1:
+                        sleep_time = 2 * (i + 1)
+                        self.logger.warning(f"Network error getting price (Attempt {i+1}/{retries}). Retrying in {sleep_time}s... Error: {e}")
+                        time.sleep(sleep_time)
+                        continue
+                    else:
+                         self.logger.error(f"Failed to get price after {retries} attempts: {e}")
+                else:
+                    self.logger.error(f"Error getting price: {e}")
+                
+        return None
     
     def place_grid_orders(self):
         """
@@ -565,6 +641,56 @@ class GridBot:
                     self.logger.error(f"Error cancelling order: {e}")
         
         self.active_orders.clear()
+
+    def manual_sell(self, reason="Manual Sell"):
+        """Cancel all orders and market sell everything currently held by this grid bot."""
+        self.logger.info(f"🚨 {reason} triggered. Liquidating Grid Bot...")
+        
+        # 1. Cancel all limit orders
+        self.cancel_all_orders()
+        
+        # 2. Market sell remaining base asset if live
+        if self.is_live:
+            try:
+                base_asset = self.symbol.replace('USDT', '')
+                account = self.client.get_account()
+                available_base = 0.0
+                for b in account['balances']:
+                    if b['asset'] == base_asset:
+                        available_base = float(b['free'])
+                        break
+                
+                # Check Spot Bot reservations to avoid selling Spot Bot's coins
+                spot_state_file = f"data/state_live_{self.symbol}.json"
+                if os.path.exists(spot_state_file):
+                    try:
+                        with open(spot_state_file, 'r') as f:
+                            spot_state = json.load(f)
+                        if spot_state.get('bought_price'):
+                            spot_holdings = float(spot_state.get('base_balance_at_buy') or spot_state.get('base_balance', 0.0))
+                            available_base = max(0.0, available_base - spot_holdings)
+                            self.logger.info(f"Reserved {spot_holdings} {base_asset} for Spot Bot. Grid selling {available_base}")
+                    except:
+                        pass
+                
+                if available_base > 0:
+                    qty = self.round_qty(available_base)
+                    # Use a small buffer to avoid "insufficient balance" due to fees or sub-tick amounts
+                    if qty > 0:
+                        order = self.client.create_order(
+                            symbol=self.symbol, 
+                            side='SELL', 
+                            type='MARKET', 
+                            quantity=qty
+                        )
+                        self.logger.info(f"✅ Market Sell Executed for {qty} {base_asset} (Panic/Manual)")
+                        notifier.send_telegram_message(f"🚨 <b>GRID LIQUIDATED ({self.symbol})</b>\nManual sell executed via dashboard.")
+            except Exception as e:
+                self.logger.error(f"Failed to execute market sell during grid liquidation: {e}")
+        
+        # 3. Clear memory and persistence
+        self.clear_state()
+        self.logger.info("Grid Bot state cleared. Bot remains in 'running' state but with no orders.")
     
     def get_status(self):
         """Return current grid status for UI."""
@@ -836,10 +962,16 @@ class GridBot:
             self.resume_state = bool(resume_state)
 
         if auto_rebalance_enabled is not None:
-            self.auto_rebalance_enabled = bool(auto_rebalance_enabled)
+            new_val = bool(auto_rebalance_enabled)
+            if new_val != self.auto_rebalance_enabled:
+                 self.logger.info(f"🔄 Grid Config: Auto-Rebalance set to {new_val}")
+            self.auto_rebalance_enabled = new_val
             
         if volatility_spacing_enabled is not None:
-            self.volatility_spacing_enabled = bool(volatility_spacing_enabled)
+            new_val = bool(volatility_spacing_enabled)
+            if new_val != self.volatility_spacing_enabled:
+                 self.logger.info(f"🔄 Grid Config: Volatility-Based Spacing set to {new_val}")
+            self.volatility_spacing_enabled = new_val
         
         if lower_bound is not None and float(lower_bound) != self.lower_bound:
             self.lower_bound = float(lower_bound)

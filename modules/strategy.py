@@ -36,7 +36,17 @@ class Strategy:
                  volume_confirmation_enabled=True,
                  volume_multiplier=1.2,
                  multi_timeframe_enabled=True,
-                 cooldown_after_stoploss_minutes=30):
+                 cooldown_after_stoploss_minutes=30,
+                 # New: Manual Control Features
+                 missed_trade_log_enabled=True,
+                 support_resistance_check_enabled=False,
+                 ml_confirmation_enabled=False,
+                 order_book_check_enabled=False,
+                 # Phase 3: Advanced Trading
+                 ttp_activation_pct=0.015,
+                 ttp_callback_pct=0.005,
+                 dca_max_levels=5,
+                 dca_multiplier=1.5):
                  
         self.stop_loss_percent = stop_loss_percent
         self.sell_percent = sell_percent  # Also used as trailing stop distance
@@ -68,12 +78,60 @@ class Strategy:
         self.multi_timeframe_enabled = multi_timeframe_enabled
         self.cooldown_after_stoploss_minutes = cooldown_after_stoploss_minutes
         
+        # NEW feature flags
+        self.missed_trade_log_enabled = missed_trade_log_enabled
+        self.support_resistance_check_enabled = support_resistance_check_enabled
+        self.ml_confirmation_enabled = ml_confirmation_enabled
+        self.order_book_check_enabled = order_book_check_enabled
+        
+        # New Phase 3 Attributes
+        self.ttp_activation_pct = ttp_activation_pct
+        self.ttp_callback_pct = ttp_callback_pct
+        self.dca_max_levels = dca_max_levels
+        self.dca_multiplier = dca_multiplier
+        self.ttp_active = False # Flag to indicate if trailing has started
+        
+        # External modules/data placeholders
+        self.ml_predictor = None
+        self.current_support = None
+        self.current_resistance = None
+        
         # NEW: State for cooldown tracking
         self.last_stoploss_time = None
         
         # NEW: Higher timeframe trend cache
         self.higher_tf_trend = None
         self.higher_tf_last_update = None
+        
+        # Log throttling state
+        self.last_trend_log_time = 0
+        self.last_rejection_reason = None
+        
+        # Phase 5: Sentiment Analysis
+        self.sentiment_enabled = False # Default off, user enables in Config
+        self.sentiment_threshold = 0.0 # Neutral or better
+        
+        from .sentiment_analyzer import SentimentAnalyzer
+        self.sentiment_analyzer = SentimentAnalyzer()
+
+    def set_ml_predictor(self, predictor):
+        """Sets the ML predictor instance."""
+        self.ml_predictor = predictor
+
+    def set_support_resistance(self, support, resistance):
+        """Updates current support/resistance levels."""
+        self.current_support = support
+        self.current_resistance = resistance
+
+    def log_missed_trade(self, price, reason):
+        """Logs rejected signals if enabled."""
+        if self.missed_trade_log_enabled:
+             # Only log if reason changed to avoid spamming the log every second
+             if self.last_rejection_reason != reason:
+                 # Clean reason string for log
+                 clean_reason = reason.replace('\n', ' ')
+                 logger_setup.log_strategy(f"📉 MISSED TRADE: {clean_reason} | Price: ${price:.2f}")
+                 self.last_rejection_reason = reason  # Update reason to prevent spam
         
     def update_data(self, price, volume=None):
         """Adds a new price point (and optionally volume) to history."""
@@ -147,6 +205,7 @@ class Strategy:
     def reset_trailing_stop(self):
         """Resets the trailing stop peak tracker (call after selling)."""
         self.peak_price_since_buy = None
+        self.ttp_active = False
 
     def check_buy_signal(self, current_price, last_price, current_volume=None):
         """
@@ -163,6 +222,13 @@ class Strategy:
         if current_price is None:
             return False
 
+        # Calculate indicators early
+        rsi = indicators.calculate_rsi(self.price_history)
+        
+        # Define "Deep Dip" condition (RSI < 30) to bypass trend filters
+        # This allows catching "major dips" even if the 4H trend is bearish
+        is_deep_dip = rsi is not None and rsi < 30
+
         # ===== NEW FILTER #1: COOLDOWN AFTER STOP-LOSS =====
         if self.is_in_cooldown():
             remaining = self.get_cooldown_remaining()
@@ -171,10 +237,18 @@ class Strategy:
             return False
         
         # ===== NEW FILTER #2: MULTI-TIMEFRAME TREND =====
-        if not self.check_higher_timeframe_trend():
+        # MODIFIED: Allow buying if it's a "Deep Dip" (RSI < 30) regardless of trend
+        if not is_deep_dip and not self.check_higher_timeframe_trend():
             htf = self.higher_tf_trend
             if htf:
-                logger_setup.log_strategy(f"📉 BUY REJECTED: 4H trend is BEARISH (MA50: ${htf.get('ma_value', 0):.2f})")
+                 # Throttle Logging: Only log if significant time passed or reason changed
+                 current_time = time.time()
+                 reason_key = f"trend_bearish_{htf.get('ma_value', 0)}"
+                 
+                 if (current_time - self.last_trend_log_time > 900) or (self.last_rejection_reason != reason_key):
+                     logger_setup.log_strategy(f"📉 BUY REJECTED: 4H trend is BEARISH (MA50: ${htf.get('ma_value', 0):.2f})")
+                     self.last_trend_log_time = current_time
+                     self.last_rejection_reason = reason_key
             return False
         
         # ===== NEW FILTER #3: VOLUME CONFIRMATION =====
@@ -184,12 +258,23 @@ class Strategy:
                 needed = avg_vol * self.volume_multiplier
                 # logger_setup.log_strategy(f"📉 BUY REJECTED: Low volume ({current_volume:.0f} < {needed:.0f} required)")
             return False
+            
+        # ===== NEW FILTER #4: SENTIMENT ANALYSIS =====
+        if self.sentiment_enabled:
+            score = self.sentiment_analyzer.get_sentiment_score()
+            if score < self.sentiment_threshold:
+                 # Throttle Log
+                 current_time = time.time()
+                 if (current_time - self.last_trend_log_time > 900):
+                     logger_setup.log_strategy(f"📉 BUY REJECTED: Sentiment Bearish ({score:.2f} < {self.sentiment_threshold})")
+                     self.last_trend_log_time = current_time
+                 return False
 
-        # Calculate indicators
+        # Calculate remaining indicators
         ma_fast = indicators.calculate_ma(self.price_history, self.ma_fast_period)
         ma_slow = indicators.calculate_ma(self.price_history, self.ma_slow_period)
         ma_trend = indicators.calculate_ma(self.price_history, self.ma_trend_period)
-        rsi = indicators.calculate_rsi(self.price_history)
+        # RSI already calculated above
 
         # Ensure we have enough data for all indicators
         if rsi is None or ma_fast is None or ma_slow is None:
@@ -206,53 +291,43 @@ class Strategy:
             trend_is_bullish = current_price > ma_trend
             
             if not trend_is_bullish and not is_deep_dip:
-                # logger_setup.log_strategy(f"📉 BUY REJECTED: Trend filter failed. Price ${current_price:.2f} < MA200 ${ma_trend:.2f} (RSI={rsi:.1f})")
+                self.last_rejection_reason = f"Trend Bearish (Must be > ${ma_trend:.2f})"
                 return False
 
         # 2. RSI CHECK: Buy when not overbought
         if rsi >= self.rsi_threshold_buy:
-            # logger_setup.log_strategy(f"📉 BUY REJECTED: RSI too high. RSI={rsi:.1f} >= threshold {self.rsi_threshold_buy}")
+            self.last_rejection_reason = f"RSI Too High ({rsi:.1f} >= {self.rsi_threshold_buy})"
             return False
 
         # 3. MACD MOMENTUM FILTER (New)
-        # Avoid buying falling knives. Wait for momentum to turn up.
         macd, hist, signal = indicators.calculate_macd(self.price_history)
         if hist is not None:
-             # We need previous histogram to check slope. 
-             # Re-calc matches current bar. We can just check if Hist > 0 (Uptrend) or check slope if we had history.
-             # Since we don't store historical MACD easily without recalculating everything...
-             # Let's trust pandas_ta to run on the whole series. 
-             # Actually, calculate_macd runs on the series. We can get the *previous* value by slicing the series -1.
-             # BUT calculate_macd returns scalar.
-             # Let's modify usage: To start simple, just require Histogram > 0 OR (RSI < 25 typically means huge crash, maybe we skip MACD there?)
-             # Better: Strict filter -> Histogram must be increasing (Hist > Prev_Hist).
-             # To do this efficienty, we really should assume we are at the "end". 
-             # For now, let's just use a simple Histogram check: 
-             # If Histogram is VERY negative, DON'T BUY.
-             
-             # Actually, simpler logic:
-             # If Histogram < 0 and Histogram < Signal (or just Histogram is decreasing? We don't know prev).
-             # Let's just stick to: If MACD Line < Signal Line (Hist < 0) AND RSI > 30, DON'T BUY.
-             # (i.e. Only buy normally if MACD is bullish. If MACD Bearish, requires Deep Dip RSI < 30).
-             
              if hist < 0 and rsi > 30 and not is_deep_dip:
-                 # MACD Bearish (Momentum down) AND RSI not super low. Wait.
-                 # logger_setup.log_strategy(f"📉 BUY REJECTED: MACD bearish. Histogram={hist:.4f} < 0, RSI={rsi:.1f}")
+                 self.last_rejection_reason = f"MACD Bearish (Hist {hist:.4f} < 0)"
                  return False
 
         # 4. MA CROSS: Short-term bullish momentum
         if ma_fast <= ma_slow:
-            # logger_setup.log_strategy(f"📉 BUY REJECTED: MA cross bearish. FastMA={ma_fast:.2f} <= SlowMA={ma_slow:.2f}")
+            self.last_rejection_reason = f"MA Cross Bearish (Fast ${ma_fast:.2f} <= Slow ${ma_slow:.2f})"
             return False
 
         # All conditions met!
+        self.last_rejection_reason = "BUYING NOW"
         trend_str = f"{ma_trend:.2f}" if ma_trend else "N/A"
         macd_str = f"{hist:.4f}" if hist is not None else "N/A"
         
+        # Build extra confirmation string
+        extra_conf = ""
+        if self.ml_confirmation_enabled and self.ml_predictor:
+             # Just re-predict for log (cheap) or store it
+             pass 
+             # For now just verify it passed
+             extra_conf += " | ML: PASS "
+        if self.support_resistance_check_enabled:
+             extra_conf += " | S/R: Safe "
+
         # Log the signal
-        import logging
-        logger = logging.getLogger("BinanceTradingBot")
-        logger.info(f"*** BUY SIGNAL! RSI={rsi:.2f}, MACD_Hist={macd_str}, FastMA={ma_fast:.2f}, SlowMA={ma_slow:.2f}, TrendMA={trend_str} ***")
+        strategy_logger.info(f"*** BUY SIGNAL! RSI={rsi:.2f}, MACD_Hist={macd_str}, FastMA={ma_fast:.2f}, TrendMA={trend_str}{extra_conf} ***")
         
         return True
 
@@ -277,32 +352,39 @@ class Strategy:
         if current_price > self.peak_price_since_buy:
             self.peak_price_since_buy = current_price
 
-        # 1. TRAILING STOP LOSS (replaces fixed take-profit)
-        # FEE PROTECTION: Only activate trailing stop if we are above Break-Even
-        # Break Even = Bought Price + 2x Fee (Buy fee + Sell fee)
+        # 1. TRAiling TAKE PROFIT (TTP)
+        profit_pct = ((current_price - bought_price) / bought_price)
         break_even_price = bought_price * (1 + 2 * self.trading_fee_percentage)
         
-        if self.use_trailing_stop and self.peak_price_since_buy > break_even_price:
-            # Only activate trailing stop once we're in REAL profit (net of fees)
-            trail_distance = self.sell_percent  # Use sell_percent as trailing distance
-            trailing_stop_price = self.peak_price_since_buy * (1 - trail_distance)
+        # Check if we should activate TTP (only if we are above activation threshold AND above break-even)
+        if not self.ttp_active and current_price > break_even_price:
+            if profit_pct >= self.ttp_activation_pct:
+                self.ttp_active = True
+                self.peak_price_since_buy = current_price
+                logger_setup.log_strategy(f"🔥 TTP ACTIVATED at {current_price:.2f} (+{profit_pct*100:.2f}%)")
+
+        if self.ttp_active:
+            # Update peak
+            if current_price > self.peak_price_since_buy:
+                self.peak_price_since_buy = current_price
+                # self.logger.debug(f"New Peak: {self.peak_price_since_buy}")
+
+            # Calculate trailing stop price
+            trailing_stop_price = self.peak_price_since_buy * (1 - self.ttp_callback_pct)
             
-            # Calculate how close we are to selling
-            drop_from_peak = (self.peak_price_since_buy - current_price) / self.peak_price_since_buy
-            drop_needed = trail_distance
-            closeness = (drop_from_peak / drop_needed) * 100 if drop_needed > 0 else 0
-            
-            # Log near-misses (>70% of way to trailing stop)
-            # if closeness > 70 and closeness < 100:
-            #     profit_pct = ((current_price - bought_price) / bought_price) * 100
-            #     logger_setup.log_strategy(f"⚠️ NEAR-MISS SELL: {closeness:.0f}% to trailing stop. Profit={profit_pct:.1f}%, Peak=${self.peak_price_since_buy:.2f}")
-            
-            # Make sure trailing stop is above entry (lock in some profit)
-            # Actually, if we are trailing, we respect the trail.
             if current_price < trailing_stop_price:
-                profit_pct = ((current_price - bought_price) / bought_price) * 100
-                logger_setup.log_strategy(f"✅ TRAILING STOP triggered at ${current_price:.2f} (Peak: ${self.peak_price_since_buy:.2f}, Profit: {profit_pct:.1f}%)")
-                print(f"*** TRAILING STOP triggered at {current_price:.2f} (Peak: {self.peak_price_since_buy:.2f}, BreakEven: {break_even_price:.2f}) ***")
+                final_profit = ((current_price - bought_price) / bought_price) * 100
+                logger_setup.log_strategy(f"✅ TTP TRIGGERED at ${current_price:.2f} (Peak: ${self.peak_price_since_buy:.2f}, Profit: {final_profit:.2f}%)")
+                self.reset_trailing_stop()
+                return 'SELL'
+
+        # Legacy Trailing Stop (Fallback/Alternative use)
+        # If TTP isn't active, but we have use_trailing_stop enabled for general protection
+        elif self.use_trailing_stop and current_price > break_even_price:
+            # Standard logic (follows from entry)
+            trail_distance = self.sell_percent
+            trailing_stop_price = self.peak_price_since_buy * (1 - trail_distance)
+            if current_price < trailing_stop_price:
                 self.reset_trailing_stop()
                 return 'SELL'
 

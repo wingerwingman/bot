@@ -1,5 +1,28 @@
 # CryptoBot TODO List
+-------------------------------
+do not delete this section.
+set bot to start backup after the ban has been lifted if ban error happened.also need to get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
+still need to fix the spot bot saying stopped when it is running for a long time before it updates and shows the bot running again.
+--------------------------------
+
+
 Updated: 2026-01-23
+- [x] **Add "Amount Bought ($)" to Trade Journal**
+    - Added `Value ($)` column to Control Panel Trade Journal table.
+    - Shows Cost Basis (`entry_value`) for Sells to indicate original investment size.
+
+- [x] **Fix duplicate/ghost bot appearing on start**
+    - Updated ControlPanel to use correct `bot_key` (e.g. `live_ETHUSDT`) for selection ID.
+
+- [x] **Improve Network Resilience (Grid Bot & Spot Bot)**
+    - Added retry logic to `get_current_price` in Grid Bot to handle `NameResolutionError` and timeouts.
+    - Throttled error logs for network issues to prevent spam.
+    - **Added Critical Kill Switch for IP Bans (Error -1003)**: Bots will auto-stop and Server will pause polling to prevent extending bans.
+    - **Parse Ban Duration**: Bot detects `until <timestamp>` in ban message and displays "Ban Lifted At: YYYY-MM-DD HH:MM:SS" in logs/alerts.
+    - **Detailed Waiting Status**: Spot Bot now displays exact strategy rejection reason (e.g. "RSI too high: 45 > 30") instead of generic "Waiting...".
+
+
+
 - [x] **Max win/loss streak stats not updating**
     - Logic for streak calculation refined in `trading_bot.py`.
 - [x] **Backtest Bot Name Fix**
@@ -12,11 +35,12 @@ Updated: 2026-01-23
 - [ ] Sentiment Analysis (Future)
 
 ## 📁 FILES MODIFIED THIS SESSION
-- `modules/server.py` - Logic for Paper Trading mode
-- `botfrontend/src/components/ControlPanel.js` - UI for Paper Trading mode
-- `botfrontend/src/components/BacktestDashboard.js` - Updated for context
-- `todo.txt` - Updated status
-
+- `modules/indicators.py` - Fixed ATR Calculation
+- `modules/trading_bot.py` - Atomic save_state, removed inline import
+- `modules/server.py` - Fixed bug in metrics
+- `botfrontend/src/` - Refactored API_BASE to config.js
+- `botfrontend/src/components/*.js` - Updated for config.js
+- `FIXES.md` - Updated
 
 ## ✅ COMPLETED
 
@@ -46,3 +70,15 @@ Updated: 2026-01-23
 - [x] Fix logs - throttling
 - [x] Separate activity and strategy clear buttons
 - [x] Center bot icons
+
+### Code Review & Refactoring
+- [x] **Critical: Fix ATR Calculation Bug**
+    - Fixed division by `period` instead of `num_bars` in `indicators.py`.
+- [x] **Critical: Fix Race Condition in State Persistence**
+    - Implemented atomic file writing (write-temp-rename) in `trading_bot.py` `save_state`.
+- [x] **Refactor: Centralize Frontend Config**
+    - Moved `API_BASE` to `botfrontend/src/config.js` and updated all components.
+- [x] **Refactor: Remove Inline Imports**
+    - Cleaned up imports in `modules/strategy.py`.
+- [x] **Bug: Fix Server Metrics Error**
+    - Fixed potential `NameError` in `server.py` `get_metrics`.

@@ -17,6 +17,9 @@ ADMIN_TOKEN = os.getenv('ADMIN_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
+# Sentiment Analysis
+CRYPTOPANIC_API_KEY = os.getenv('CRYPTOPANIC_API_KEY')
+
 # File Names
 TRADING_LOG_FILE = 'logs/trading_us.log'
 TRADE_LOG_FILE = 'logs/trades_us.log'
@@ -43,3 +46,12 @@ VOLUME_MULTIPLIER_THRESHOLD = 1.2  # Volume must be 1.2x average to confirm
 MULTI_TIMEFRAME_ENABLED = True     # Check 4H trend before entry
 TREND_TIMEFRAME = '4h'             # Higher timeframe for trend confirmation
 TREND_MA_PERIOD = 50               # MA period on higher timeframe
+
+# New Features (Manual Control)
+MISSED_TRADE_LOG_ENABLED = True       # Log rejected signals (Imp 4)
+ORDER_BOOK_CHECK_ENABLED = False       # Check bid/ask spread (Imp 5) - Default OFF for manual control
+ORDER_BOOK_DEPTH_RATIO = 2.0          # Min ratio of Bids to Asks to verify support (Example)
+SUPPORT_RESISTANCE_CHECK_ENABLED = False # Avoid buying at resistance (Imp 6) - Default OFF
+SUPPORT_RESISTANCE_WINDOW = 50        # Lookback period for finding peaks
+ML_CONFIRMATION_ENABLED = False       # Use ML model to confirm signals (Imp 15) - Default OFF
+HEATMAP_CALCULATION_ENABLED = True    # Calculate profitability by hour (Imp 8)

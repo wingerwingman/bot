@@ -84,7 +84,7 @@ def calculate_volatility_from_klines(klines, period=14):
                 abs(low - prev_close)        # Current Low - Previous Close
             )
             atr += tr
-        atr /= num_bars  # FIX: Divide by actual number of bars, not period
+        atr /= num_bars  # Fixed: Divide by actual number of bars, not period
         return atr
     except Exception as e:
         raise e
@@ -159,6 +159,35 @@ def calculate_higher_timeframe_trend(klines, ma_period=50):
             'current_price': current_price
         }
     except Exception as e:
-        print(f"Error calculating higher timeframe trend: {e}")
         return {'trend': 'neutral', 'ma_value': None, 'current_price': None}
+
+def calculate_support_resistance(klines, window=50):
+    """
+    Identifies recent Support and Resistance levels.
+    
+    Args:
+        klines: List of kline data
+        window: data window to look for local min/max
+        
+    Returns:
+        dict with 'support', 'resistance' (prices)
+    """
+    try:
+        if not klines or len(klines) < window:
+            return {'support': None, 'resistance': None}
+        
+        # Helper to extract H/L
+        highs = [float(k[2]) for k in klines[-window:]]
+        lows = [float(k[3]) for k in klines[-window:]]
+        
+        # Simple approach: Max high and Min low in window
+        # For more robustness, we could use pivots or clusters, but this is a good start as per requirements.
+        resistance = max(highs)
+        support = min(lows)
+        
+        return {'support': support, 'resistance': resistance}
+        
+    except Exception as e:
+        print(f"Error calculating S/R: {e}")
+        return {'support': None, 'resistance': None}
 

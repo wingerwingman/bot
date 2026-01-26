@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import threading
 import pandas as pd
@@ -17,6 +18,13 @@ from . import indicators
 from . import logger_setup
 from . import notifier
 from .strategy import Strategy
+
+try:
+    from .ml_predictor import TradePredictor
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    print("⚠️  ML Module (scikit-learn) not found. ML features will be disabled.")
 
 class BinanceTradingBot:
     """
@@ -47,7 +55,26 @@ class BinanceTradingBot:
                  resume_state=True,
                  dca_enabled=True,
                  dca_rsi_threshold=30,
-                 allocated_capital=0.0):
+                 allocated_capital=0.0,
+                 # Advanced Filters (NEW: passed explicitly)
+                 multi_timeframe_enabled=None,
+                 volume_confirmation_enabled=None,
+                 volume_multiplier=None,
+                 cooldown_minutes=None,
+                 missed_trade_log_enabled=None,
+                 order_book_check_enabled=None,
+                 support_resistance_check_enabled=None,
+                 ml_confirmation_enabled=None):
+        
+        # Store for overrides (to prevent load_state from overwriting NEW settings)
+        self._arg_multi_timeframe = multi_timeframe_enabled
+        self._arg_volume_confirmation = volume_confirmation_enabled
+        self._arg_volume_multiplier = volume_multiplier
+        self._arg_cooldown = cooldown_minutes
+        self._arg_missed_log = missed_trade_log_enabled
+        self._arg_order_book = order_book_check_enabled
+        self._arg_sr_check = support_resistance_check_enabled
+        self._arg_ml_check = ml_confirmation_enabled
         
         self.slippage = slippage
         self.position_size_percent = position_size_percent
@@ -89,11 +116,15 @@ class BinanceTradingBot:
             trading_fee_percentage=trading_fee_percentage,
             dca_enabled=dca_enabled,
             dca_rsi_threshold=dca_rsi_threshold,
-            # NEW: Advanced features from config
-            volume_confirmation_enabled=config.VOLUME_CONFIRMATION_ENABLED,
-            volume_multiplier=config.VOLUME_MULTIPLIER_THRESHOLD,
-            multi_timeframe_enabled=config.MULTI_TIMEFRAME_ENABLED,
-            cooldown_after_stoploss_minutes=config.STOP_LOSS_COOLDOWN_MINUTES
+            # Pass arguments if provided, else fall back to config (ensures isolation)
+            volume_confirmation_enabled=volume_confirmation_enabled if volume_confirmation_enabled is not None else config.VOLUME_CONFIRMATION_ENABLED,
+            volume_multiplier=volume_multiplier if volume_multiplier is not None else config.VOLUME_MULTIPLIER_THRESHOLD,
+            multi_timeframe_enabled=multi_timeframe_enabled if multi_timeframe_enabled is not None else config.MULTI_TIMEFRAME_ENABLED,
+            cooldown_after_stoploss_minutes=cooldown_minutes if cooldown_minutes is not None else config.STOP_LOSS_COOLDOWN_MINUTES,
+            missed_trade_log_enabled=missed_trade_log_enabled if missed_trade_log_enabled is not None else config.MISSED_TRADE_LOG_ENABLED,
+            support_resistance_check_enabled=support_resistance_check_enabled if support_resistance_check_enabled is not None else config.SUPPORT_RESISTANCE_CHECK_ENABLED,
+            ml_confirmation_enabled=ml_confirmation_enabled if ml_confirmation_enabled is not None else config.ML_CONFIRMATION_ENABLED,
+            order_book_check_enabled=order_book_check_enabled if order_book_check_enabled is not None else config.ORDER_BOOK_CHECK_ENABLED
         )
         
         # New: Generic balance variables
@@ -106,6 +137,25 @@ class BinanceTradingBot:
         self.balance_usdt = 0 
         self.eth_bal = 0
         self.btc_bal = 0
+        
+        # Health & Reliability (Phase 2)
+        self.last_active_timestamp = time.time()
+        self.ban_until = None
+        self.consecutive_stop_losses = 0
+        
+        # Initialize ML Predictor (Imp 15)
+        # Check either the argument or the strategy's internal state
+        if self.strategy.ml_confirmation_enabled:
+            if ML_AVAILABLE:
+                self.logger.info("Initializing ML Predictor...")
+                predictor = TradePredictor()
+                if predictor.train():
+                    self.strategy.set_ml_predictor(predictor)
+                    self.logger.info("ML Predictor trained and attached to Strategy.")
+                else:
+                    self.logger.warning("ML Predictor failed to train (not enough data?). Confirmation disabled.")
+            else:
+                self.logger.warning("ML Feature enabled but scikit-learn not installed.")
         
         if self.is_live_trading:
             # 1. Fetch and Display All Positive Balances (for logging)
@@ -246,6 +296,31 @@ class BinanceTradingBot:
             # Load state from previous session (crash recovery)
             if self.resume_state:
                 self.load_state()
+                
+                # RE-APPLY OVERRIDES: Ensure settings passed to START command take precedence over loaded state
+                if self._arg_multi_timeframe is not None:
+                    self.logger.info(f"Applying OVERRIDE: multi_timeframe_enabled = {self._arg_multi_timeframe}")
+                    self.strategy.multi_timeframe_enabled = self._arg_multi_timeframe
+                if self._arg_volume_confirmation is not None:
+                    self.logger.info(f"Applying OVERRIDE: volume_confirmation_enabled = {self._arg_volume_confirmation}")
+                    self.strategy.volume_confirmation_enabled = self._arg_volume_confirmation
+                if self._arg_volume_multiplier is not None:
+                    self.strategy.volume_multiplier = self._arg_volume_multiplier
+                if self._arg_cooldown is not None:
+                    self.strategy.cooldown_after_stoploss_minutes = self._arg_cooldown
+                if self._arg_missed_log is not None:
+                    self.strategy.missed_trade_log_enabled = self._arg_missed_log
+                if self._arg_order_book is not None:
+                    self.logger.info(f"Applying OVERRIDE: order_book_check_enabled = {self._arg_order_book}")
+                    self.strategy.order_book_check_enabled = self._arg_order_book
+                if self._arg_sr_check is not None:
+                    self.logger.info(f"Applying OVERRIDE: support_resistance_check_enabled = {self._arg_sr_check}")
+                    self.strategy.support_resistance_check_enabled = self._arg_sr_check
+                if self._arg_ml_check is not None:
+                    self.logger.info(f"Applying OVERRIDE: ml_confirmation_enabled = {self._arg_ml_check}")
+                    self.strategy.ml_confirmation_enabled = self._arg_ml_check
+                    
+                self.logger.debug("Applied startup overrides to resumed state.")
             else:
                 self.logger.debug("Starting FRESH session (Resume disabled).")
                 # Forcefully remove the state file to prevent any ghost data loading
@@ -330,93 +405,151 @@ class BinanceTradingBot:
         return os.path.join('data', f'state_{mode_prefix}_{self.symbol}.json')
     
     def save_state(self):
-        """Saves bot state to JSON for crash recovery."""
+        """Saves bot state to Database (SQLAlchemy)."""
         if not self.is_live_trading:
             return  # Don't save state for backtests
-        
-        state = {
-            'symbol': self.symbol,
-            'quote_asset': self.quote_asset,
-            'base_asset': self.base_asset,
-            'bought_price': self.bought_price,
-            'base_balance_at_buy': self.base_balance if self.bought_price else None,
-            'position_size_percent': self.position_size_percent,
-            'last_update': datetime.datetime.now().isoformat(),
-            # Metrics
-            'total_trades': self.total_trades,
-            'winning_trades': self.winning_trades,
-            'gross_profit': self.gross_profit,
-            'gross_loss': self.gross_loss,
-            'peak_balance': self.peak_balance,
-            'max_drawdown': self.max_drawdown,
-            'dca_count': self.dca_count,
-            'peak_price_since_buy': self.strategy.peak_price_since_buy,
-            'paused': self.paused
-        }
-        
+
         try:
-            os.makedirs('data', exist_ok=True)
-            with open(self.get_state_file_path(), 'w') as f:
-                json.dump(state, f, indent=2)
-            # self.logger.debug(f"State saved: bought_price={self.bought_price}")
+            from .database import db_session
+            from .models import BotState
+
+            session = db_session()
+            
+            # Upsert logic
+            bot_state = session.query(BotState).filter_by(symbol=self.symbol).first()
+            if not bot_state:
+                bot_state = BotState(symbol=self.symbol)
+                session.add(bot_state)
+
+            bot_state.is_active = self.running
+            bot_state.base_balance = self.base_balance
+            bot_state.quote_balance = self.quote_balance
+            bot_state.bought_price = self.bought_price
+            bot_state.dca_count = self.dca_count
+            bot_state.peak_price = self.strategy.peak_price_since_buy
+            bot_state.stop_loss_price = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent) if self.bought_price else None
+            bot_state.last_volatility = self.last_volatility
+            
+            # Serialize Strategy Settings
+            bot_state.configuration = {
+                'rsi_threshold_buy': self.strategy.rsi_threshold_buy,
+                'stop_loss_percent': self.strategy.stop_loss_percent,
+                'fixed_stop_loss_percent': self.strategy.fixed_stop_loss_percent,
+                'sell_percent': self.strategy.sell_percent,
+                'dca_enabled': self.strategy.dca_enabled,
+                'dca_rsi_threshold': self.strategy.dca_rsi_threshold,
+                'volume_confirmation_enabled': self.strategy.volume_confirmation_enabled,
+                'volume_multiplier': self.strategy.volume_multiplier,
+                'multi_timeframe_enabled': self.strategy.multi_timeframe_enabled,
+                'cooldown_after_stoploss_minutes': self.strategy.cooldown_after_stoploss_minutes,
+                'missed_trade_log_enabled': self.strategy.missed_trade_log_enabled,
+                'support_resistance_check_enabled': self.strategy.support_resistance_check_enabled,
+                'ml_confirmation_enabled': self.strategy.ml_confirmation_enabled,
+                'order_book_check_enabled': self.strategy.order_book_check_enabled,
+                'ttp_activation_pct': self.strategy.ttp_activation_pct,
+                'ttp_callback_pct': self.strategy.ttp_callback_pct,
+                'dca_max_levels': self.strategy.dca_max_levels,
+                'dca_multiplier': self.strategy.dca_multiplier,
+                'sentiment_enabled': self.strategy.sentiment_enabled,
+                'sentiment_threshold': self.strategy.sentiment_threshold
+            }
+            
+            # Metrics
+            bot_state.metrics = {
+                'total_trades': self.total_trades,
+                'winning_trades': self.winning_trades,
+                'gross_profit': self.gross_profit,
+                'gross_loss': self.gross_loss,
+                'peak_balance': self.peak_balance,
+                'max_drawdown': self.max_drawdown,
+                'max_win_streak': self.max_win_streak,
+                'max_loss_streak': self.max_loss_streak,
+                'consecutive_wins': self.consecutive_wins,
+                'consecutive_losses': self.consecutive_losses
+            }
+            
+            session.commit()
+            # self.logger.debug(f"State saved to DB: bought_price={self.bought_price}")
+            
         except Exception as e:
-            self.logger.error(f"Error saving state: {e}")
+            self.logger.error(f"Error saving state to DB: {e}")
+            session.rollback()
+        finally:
+            session.close()
 
     def load_state(self):
-        """Loads bot state from JSON on startup."""
+        """Loads bot state from Database (SQLAlchemy) on startup."""
         if not self.is_live_trading:
             return  # Don't load state for backtests
 
-        state_file = self.get_state_file_path()
-        if not os.path.exists(state_file):
-            self.logger.debug("No previous state file found. Starting fresh.")
-            return
-
         try:
-            with open(state_file, 'r') as f:
-                state = json.load(f)
-
-            # Verify it's for the same trading pair
-            if state.get('symbol') != self.symbol:
-                self.logger.warning(f"State file is for {state.get('symbol')}, not {self.symbol}. Ignoring.")
+            from .database import db_session
+            from .models import BotState
+            
+            session = db_session()
+            state = session.query(BotState).filter_by(symbol=self.symbol).first()
+            
+            if not state:
+                self.logger.debug("No previous state found in DB. Starting fresh.")
+                session.close()
                 return
-
-            self.paused = state.get('paused', False)
+                
+            # Restore Metrics
+            metrics = state.metrics or {}
+            self.total_trades = metrics.get('total_trades', 0)
+            self.winning_trades = metrics.get('winning_trades', 0)
+            self.gross_profit = metrics.get('gross_profit', 0.0)
+            self.gross_loss = metrics.get('gross_loss', 0.0)
+            self.peak_balance = metrics.get('peak_balance', 0.0)
+            self.max_drawdown = metrics.get('max_drawdown', 0.0)
+            self.max_win_streak = metrics.get('max_win_streak', 0)
+            self.max_loss_streak = metrics.get('max_loss_streak', 0)
+            self.consecutive_wins = metrics.get('consecutive_wins', 0)
+            self.consecutive_losses = metrics.get('consecutive_losses', 0)
+            
+            # Restore Strategy Settings
+            config = state.configuration or {}
+            self.strategy.rsi_threshold_buy = config.get('rsi_threshold_buy', self.strategy.rsi_threshold_buy)
+            self.strategy.stop_loss_percent = config.get('stop_loss_percent', self.strategy.stop_loss_percent)
+            self.strategy.fixed_stop_loss_percent = config.get('fixed_stop_loss_percent', self.strategy.fixed_stop_loss_percent)
+            self.strategy.sell_percent = config.get('sell_percent', self.strategy.sell_percent)
+            self.strategy.dca_enabled = config.get('dca_enabled', self.strategy.dca_enabled)
+            self.strategy.dca_rsi_threshold = config.get('dca_rsi_threshold', self.strategy.dca_rsi_threshold)
+            self.strategy.volume_confirmation_enabled = config.get('volume_confirmation_enabled', self.strategy.volume_confirmation_enabled)
+            self.strategy.volume_multiplier = config.get('volume_multiplier', self.strategy.volume_multiplier)
+            self.strategy.multi_timeframe_enabled = config.get('multi_timeframe_enabled', self.strategy.multi_timeframe_enabled)
+            self.strategy.cooldown_after_stoploss_minutes = config.get('cooldown_after_stoploss_minutes', self.strategy.cooldown_after_stoploss_minutes)
+            self.strategy.missed_trade_log_enabled = config.get('missed_trade_log_enabled', self.strategy.missed_trade_log_enabled)
+            self.strategy.support_resistance_check_enabled = config.get('support_resistance_check_enabled', self.strategy.support_resistance_check_enabled)
+            self.strategy.ml_confirmation_enabled = config.get('ml_confirmation_enabled', self.strategy.ml_confirmation_enabled)
+            self.strategy.order_book_check_enabled = config.get('order_book_check_enabled', self.strategy.order_book_check_enabled)
+            # Phase 3 & 5
+            self.strategy.ttp_activation_pct = config.get('ttp_activation_pct', self.strategy.ttp_activation_pct)
+            self.strategy.ttp_callback_pct = config.get('ttp_callback_pct', self.strategy.ttp_callback_pct)
+            self.strategy.dca_max_levels = config.get('dca_max_levels', self.strategy.dca_max_levels)
+            self.strategy.dca_multiplier = config.get('dca_multiplier', self.strategy.dca_multiplier)
+            self.strategy.sentiment_enabled = config.get('sentiment_enabled', self.strategy.sentiment_enabled)
+            self.strategy.sentiment_threshold = config.get('sentiment_threshold', self.strategy.sentiment_threshold)
+            
+            self.logger.info("Restored strategy settings from DB.")
 
             # Restore position info
-            saved_bought_price = state.get('bought_price')
-            if saved_bought_price:
-                self.bought_price = saved_bought_price
-                # Also restore the base balance (ETH quantity) from saved state
-                saved_base_balance = state.get('base_balance_at_buy')
-                if saved_base_balance:
-                    self.base_balance = saved_base_balance
-                    self.logger.debug(f"Restored position: bought_price={self.bought_price}, base_balance={self.base_balance}")
-                    print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}, Qty: {self.base_balance:.6f}")
-                else:
-                    self.logger.debug(f"Restored position: bought_price={self.bought_price}")
-                    print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}")
+            if state.bought_price:
+                self.bought_price = state.bought_price
+                self.base_balance = state.base_balance
+                self.dca_count = state.dca_count or 0
+                self.logger.debug(f"Restored position: bought_price={self.bought_price}, base_balance={self.base_balance}")
+                print(f"🔄 Resuming position: Entry @ ${self.bought_price:.2f}, Qty: {self.base_balance:.6f}")
 
             # Restore Peak Price Logic
-            peak_val = state.get('peak_price_since_buy')
-            if peak_val:
-                self.strategy.peak_price_since_buy = float(peak_val)
+            if state.peak_price:
+                self.strategy.peak_price_since_buy = float(state.peak_price)
                 self.logger.debug(f"Restored Peak Price: ${self.strategy.peak_price_since_buy}")
 
-            # Restore metrics
-            self.total_trades = state.get('total_trades', 0)
-            self.winning_trades = state.get('winning_trades', 0)
-            self.gross_profit = state.get('gross_profit', 0)
-            self.gross_loss = state.get('gross_loss', 0)
-            self.peak_balance = state.get('peak_balance', 0)
-            self.max_drawdown = state.get('max_drawdown', 0)
-            self.dca_count = state.get('dca_count', 0)
-
-            last_update = state.get('last_update', 'unknown')
-
-            # Request: "add loging of what price and other data is loaded when restarting"
+            # Log restoration
+            updated_at = state.updated_at.strftime("%Y-%m-%d %H:%M:%S") if state.updated_at else "Unknown"
             log_msg = (
-                f"♻️ SESSION RESTORED from {last_update}\n"
+                f"♻️ SESSION RESTORED from DB ({updated_at})\n"
                 f"   • Symbol: {self.symbol}\n"
                 f"   • Position: {'OPEN @ ' + str(self.bought_price) if self.bought_price else 'NO POSITION'}\n"
                 f"   • Metrics: Net Profit ${self.gross_profit - self.gross_loss:.2f} ({self.total_trades} trades)\n"
@@ -424,15 +557,13 @@ class BinanceTradingBot:
             )
             self.logger.debug(log_msg)
             print(log_msg)
-
-            # Log to Strategy Tab as well (FULL DETAIL per user request)
             logger_setup.log_strategy(log_msg)
 
-            # Force immediate strategy re-check to populate "Strategy Tuning" tab
             self.last_volatility_check_time = None
+            session.close()
 
         except Exception as e:
-            self.logger.error(f"Error loading state: {e}")
+            self.logger.error(f"Error loading state from DB: {e}")
 
     def clear_state(self):
         """Clears the saved state (called after successful position close)."""
@@ -446,11 +577,94 @@ class BinanceTradingBot:
             self.logger.info("State cleared (position closed)")
 
 
+    def update_support_resistance(self):
+        """
+        Updates S/R levels in the strategy using recent klines.
+        Imp 6: Support/Resistance Awareness
+        """
+        if not config.SUPPORT_RESISTANCE_CHECK_ENABLED:
+            return
+
+        try:
+            # Fetch 4H klines for S/R (Trend Timeframe)
+            klines = self.client.get_klines(symbol=self.symbol, interval=config.TREND_TIMEFRAME, limit=config.SUPPORT_RESISTANCE_WINDOW)
+            sr_data = indicators.calculate_support_resistance(klines, window=config.SUPPORT_RESISTANCE_WINDOW)
+            
+            if sr_data['support'] and sr_data['resistance']:
+                self.strategy.set_support_resistance(sr_data['support'], sr_data['resistance'])
+                # self.logger.debug(f"Updated S/R: Support=${sr_data['support']}, Resistance=${sr_data['resistance']}")
+        except Exception as e:
+            self.logger.error(f"Error updating S/R: {e}")
+
+    def check_order_book(self):
+        """
+        Checks Order Book Depth/Spread.
+        Imp 5: Order Book Depth
+        Returns: True if safe to trade (liquid enough), False otherwise.
+        """
+        if not config.ORDER_BOOK_CHECK_ENABLED:
+            return True
+            
+        try:
+            depth = self.client.get_order_book(symbol=self.symbol)
+            bids = depth['bids']
+            asks = depth['asks']
+            
+            if not bids or not asks:
+                return False
+                
+            best_bid = float(bids[0][0])
+            best_ask = float(asks[0][0])
+            spread_pct = ((best_ask - best_bid) / best_bid) * 100
+            
+            # Log Spread (Imp 5 requirement)
+            self.logger.info(f"Order Book: Bid=${best_bid}, Ask=${best_ask}, Spread={spread_pct:.4f}%")
+            
+            if spread_pct > 0.5: # 0.5% spread is too high for scalping
+                self.logger.warning(f"High Spread ({spread_pct:.2f}%) - Order Book Check Failed")
+                return False
+                
+            # Depth Ratio (Example Check)
+            # sum top 5 bids vs top 5 asks volume
+            bid_vol = sum([float(b[1]) for b in bids[:5]])
+            ask_vol = sum([float(a[1]) for a in asks[:5]])
+            
+            if ask_vol > bid_vol * 3: # Huge sell wall?
+                 # self.logger.warning(f"Sell Wall Detected (Ask Vol {ask_vol} > 3x Bid Vol {bid_vol})")
+                 pass
+                 
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error checking order book: {e}")
+            return True # Fail safe: Allow if API fails? Or Block? Block is safer.
+            
     def check_price(self):
+        self.last_active_timestamp = time.time()
         try:
             ticker = self.client.get_symbol_ticker(symbol=self.symbol)
             return float(ticker['price'])
         except BinanceAPIException as e:
+            if e.code == -1003:
+                unban_str = ""
+                try:
+                     # Parse timestamp "IP banned until 1769278258028"
+                     match = re.search(r'until\s+(\d+)', e.message)
+                     if match:
+                         ts = int(match.group(1)) / 1000.0
+                         self.ban_until = ts # Store for auto-restart
+                         dt = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                         unban_str = f"\n⏳ Ban Lifted At: {dt}"
+                except:
+                     pass
+
+                self.logger.critical(f"🚨 IP BANNED BY BINANCE (Way too much request weight). Stopping Bot immediately.{unban_str}")
+                self.running = False
+                try:
+                    notifier.send_telegram_message(f"🚨 <b>CRITICAL: IP BANNED</b>\nBot stopped to prevent extending ban.{unban_str}")
+                except:
+                    pass
+                return None
             self.logger.error(f"Binance API Error: {e}")
             return None
         except (ConnectionError, TimeoutError, requests.exceptions.ChunkedEncodingError, requests.exceptions.ConnectionError) as e:
@@ -459,7 +673,7 @@ class BinanceTradingBot:
             return None
         except Exception as e:
             error_str = str(e)
-            if "Connection aborted" in error_str or "RemoteDisconnected" in error_str:
+            if "Connection aborted" in error_str or "RemoteDisconnected" in error_str or "NameResolutionError" in error_str or "Temporary failure in name resolution" in error_str or "Read timed out" in error_str or "Network is unreachable" in error_str:
                 self.logger.warning(f"Connection unstable (Retrying in 5s): {e}")
                 time.sleep(5)
                 return None
@@ -714,10 +928,11 @@ class BinanceTradingBot:
         self.stop()
 
     def print_performance_report(self):
-        """Prints the current performance report."""
+        """Prints the current performance report with Enhanced Analytics."""
         win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0.0
         profit_factor = (self.gross_profit / self.gross_loss) if self.gross_loss > 0 else 999.0
         avg_duration = self.get_average_trade_duration()
+        net_pnl = self.gross_profit - self.gross_loss
         
         print("\n" + "="*40)
         print(f"       SESSION PERFORMANCE REPORT       ")
@@ -730,16 +945,39 @@ class BinanceTradingBot:
         print(f"Max Drawdown:    {self.max_drawdown*100:.2f}%")
         print(f"Avg Duration:    {avg_duration:.1f} min")
         
+        # Imp 9: Live P&L Thermometer
+        print("\n--- 🌡️ SESSION P&L ---")
+        pnl_blocks = int(net_pnl * 2) # Every $0.50 profit = 1 block? Or scale dynamically. 
+        # Simple scale:
+        if net_pnl > 0:
+            bar = "🟩" * min(10, int(net_pnl))
+            print(f"P&L: ${net_pnl:.2f} {bar}")
+        elif net_pnl < 0:
+            bar = "🟥" * min(10, int(abs(net_pnl)))
+            print(f"P&L: -${abs(net_pnl):.2f} {bar}")
+        else:
+            print("P&L: $0.00 ⬜")
+
         if self.total_slippage > 0:
             avg_slippage = self.total_slippage / len(self.slippage_events) if self.slippage_events else 0
             print(f"Total Slippage:  ${self.total_slippage:.2f} (Avg: ${avg_slippage:.2f}/trade)")
         
-        if self.is_live_trading:
-             print(f"Current Quote Bal: {self.quote_balance:.4f} {self.quote_asset}")
-             print(f"Current Base Bal:  {self.base_balance:.4f} {self.base_asset}")
-        else:
-             print(f"Ending Balance:    ${self.quote_balance:.2f} {self.quote_asset}")
+        # Imp 10: Strategy Settings Comparison
+        print("\n--- 🔧 STRATEGY SETTINGS ---")
+        print(f"Current RSI Threshold: {self.strategy.rsi_threshold_buy} (Default: 40)")
+        print(f"Current Stop Loss:     {self.strategy.fixed_stop_loss_percent*100:.1f}% (Default: {config.DEFAULT_VOLATILITY_PERIOD*0.1:.1f}%)")
+        print(f"ML Confirmation:       {'ON' if self.strategy.ml_confirmation_enabled else 'OFF'}")
         
+        # Imp 8: Heat Map (Simple Text Version)
+        if config.HEATMAP_CALCULATION_ENABLED and self.total_trades > 5:
+            print("\n--- 🔥 HOURLY HEATMAP ---")
+            # Calculate from journal (requires journal to be populated correctly)
+            hour_pnl = {}
+            for t in self.trade_journal:
+                # Approximate hour from timestamp if available or just skip for now
+                pass
+            print("(Requires more trade history for heatmap)")
+
         print("="*40 + "\n")
 
     def update_metrics(self, profit_amount, current_equity):
@@ -771,8 +1009,10 @@ class BinanceTradingBot:
         if current_equity > self.peak_balance:
             self.peak_balance = current_equity
         
-        if self.peak_balance > 0:
+        if self.peak_balance > 0.01:
             drawdown = (self.peak_balance - current_equity) / self.peak_balance
+            # Ensure drawdown is a ratio (0.0 to 1.0)
+            drawdown = max(0.0, min(1.0, drawdown))
             if drawdown > self.max_drawdown:
                 self.max_drawdown = drawdown
 
@@ -1058,11 +1298,20 @@ class BinanceTradingBot:
                     cost_with_fee = quantity * current_price * (1 + self.trading_fee_percentage)
                     
                     if quote_bal >= cost_with_fee:
+                        if is_dca:
+                            # Weighted Average for Sim
+                            total_cost = (self.base_balance * self.bought_price) + (quantity * current_price)
+                            total_qty = self.base_balance + quantity
+                            self.bought_price = total_cost / total_qty
+                            self.dca_count += 1
+                        else:
+                            self.bought_price = current_price
+                            self.dca_count = 0
+                            self.entry_time = time.time()
+
                         self.base_balance += quantity
                         self.quote_balance -= cost_with_fee
-                        self.bought_price = current_price
-                        total_val = self.quote_balance + (self.base_balance * current_price)
-                        logger_setup.log_trade(self.logger, self.trade_logger, "Buy", current_price, quantity, quantity * current_price, is_test=True)
+                        logger_setup.log_trade(self.logger, self.trade_logger, "Buy" if not is_dca else "DCA Buy", current_price, quantity, quantity * current_price, is_test=True)
                     else:
                         self.logger.error(f"Test - Buy: Insufficient {self.quote_asset} balance.")
             except Exception as e:
@@ -1176,6 +1425,7 @@ class BinanceTradingBot:
                              'pnl_percent': round(real_profit_percent, 2),
                              'pnl_amount': round(profit_amount, 2),
                              'entry_price': self.bought_price if hasattr(self, '_last_entry_price') else None,
+                             'entry_value': (self.bought_price * executed_qty) if self.bought_price else None, # Cost Basis
                              'indicators': {
                                  'rsi': round(rsi_val, 2) if rsi_val else None,
                                  'macd_hist': round(hist, 4) if hist else None,
@@ -1227,22 +1477,15 @@ class BinanceTradingBot:
 
     def run(self):
         self.logger.debug("Starting run method...")
-        if self.is_live_trading:
-            # Re-check resume logic
-            self.check_trade_log_and_resume()
-            
-            try:
-                # Hotkeys removed (Web UI Control Only)
-                pass
-            except Exception:
-                pass
-
-        # FREQUENCY UPDATE: Check every 5 minutes (User Preference)
-        volatility_check_interval = 5 * 60 
-        last_heartbeat_time = time.time()
-        
         try:
-
+            if self.is_live_trading:
+                # Re-check resume logic
+                self.check_trade_log_and_resume()
+                
+            # FREQUENCY UPDATE: Check every 5 minutes (User Preference)
+            volatility_check_interval = 5 * 60 
+            last_heartbeat_time = time.time()
+            
             self.logger.debug("Entering main trading loop...")
             # PAPER TRADING INITIALIZATION
             if not self.is_live_trading and self.filename is None:
@@ -1317,8 +1560,8 @@ class BinanceTradingBot:
 
                         self.strategy.set_volatility(self.last_volatility)
                         
-                        # Save State Periodically (every 5 mins) to persist Trail Data
-                        if self.bought_price:
+                        # Save State Periodically (every 5 mins) to persist Trail Data and Settings
+                        if self.is_live_trading:
                             self.save_state()
                         
                         # --- VOLATILITY CHANGE ALERT (>20% shift) ---
@@ -1352,8 +1595,6 @@ class BinanceTradingBot:
                             hist_str = f"{snap_hist:+.4f}" if snap_hist else "N/A"
                             rsi_str = f"{snap_rsi:.1f}" if snap_rsi else "N/A"
                             
-                            # logger_setup.log_strategy(f"📊 SNAPSHOT: Price=${snap_price:.2f} | RSI={rsi_str} | MACD_Hist={hist_str} | Trend={trend} | Vol={self.last_volatility*100:.2f}%")
-                        
                         # FETCH SENTIMENT (Fear & Greed)
                         if self.dynamic_settings:
                              self.fear_greed_index = self.fetch_fear_and_greed()
@@ -1457,6 +1698,10 @@ class BinanceTradingBot:
                         # NEW: Fetch higher timeframe trend every volatility check (~10 min)
                         if self.strategy.multi_timeframe_enabled:
                             self.fetch_higher_timeframe_trend()
+                            
+                        # NEW: Update Support/Resistance (Imp 6)
+                        if config.SUPPORT_RESISTANCE_CHECK_ENABLED:
+                            self.update_support_resistance()
                     
                     # --- EXECUTE STRATEGY ---
                     current_price = self.check_price()
@@ -1487,53 +1732,51 @@ class BinanceTradingBot:
                          if self.bought_price is None:
                               # Buy Check (now with volume parameter)
                               if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
-                                   # Dynamic Position Sizing (Risk Parity)
-                                   sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
-                                   invest_qty = self.calculate_position_size(current_price, sl_price)
-                                   
-                                   # Fallback if calc fails or return low
-                                   if invest_qty == 0:
-                                       invest_qty = (self.get_balance(self.quote_asset) * self.position_size_percent) / current_price
-                                   
-                                   invest_amount = invest_qty * current_price
-                                   self.buy(current_price, invest_amount)
+                                   # Final Check: Order Book (Imp 5)
+                                   if self.check_order_book():
+                                       # Dynamic Position Sizing (Risk Parity)
+                                       sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                       invest_qty = self.calculate_position_size(current_price, sl_price)
+                                       
+                                       # Fallback if calc fails or return low
+                                       if invest_qty == 0:
+                                           invest_qty = (self.get_balance(self.quote_asset) * self.position_size_percent) / current_price
+                                       
+                                       invest_amount = invest_qty * current_price
+                                       self.buy(current_price, invest_amount)
+                                   else:
+                                       # Logged in check_order_book
+                                       if config.MISSED_TRADE_LOG_ENABLED:
+                                           logger_setup.log_strategy(f"📉 MISSED TRADE: Order Book Unsafe | Price: ${current_price:.2f}")
                          else:
-                              # DCA Check (Sniper Mode)
-                              # DCA Check (Sniper Mode)
+                               # DCA Check (Sniper Mode)
                               dca_triggered = False
-                              if self.dca_count < config.DCA_MAX_RETRIES:
+                              if self.dca_count < self.strategy.dca_max_levels:
                                   # Cooldown Check (Prevent Spam Loops)
                                   last_attempt = getattr(self, 'last_dca_attempt', 0)
                                   if (time.time() - last_attempt) < 60:
                                       pass # Wait for cooldown
                                   elif self.strategy.check_dca_signal(current_price, self.bought_price):
                                       # Calc trigger details for log
-                                      dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
+                                      dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.price_history) > 14 else 0
                                       drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100
                                       
-                                      # Log moved to execution block to prevent spam
-                                      # self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
-                                      # logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
+                                      # RECURSIVE MULTIPLIER (Phase 3)
+                                      multiplier = self.strategy.dca_multiplier ** self.dca_count
+                                      invest_amount = (self.quote_balance * self.position_size_percent) * multiplier
                                       
-                                      # notifier.send_telegram_message(f"🛡️ <b>DCA SNIPER ACTIVATED</b>\nSymbol: {self.symbol}\nReason: RSI Oversold ({dca_rsi:.1f}) & Price Drop (-{drop_pct:.2f}%)")
+                                      # Fund safety
+                                      available = self.get_balance(self.quote_asset)
+                                      if invest_amount > available * 0.98:
+                                          invest_amount = available * 0.98
                                       
-                                      # Calculate Buy Size (Use standard logic * Scale Factor)
-                                      # Logic: Try to buy 1x Standard Position Size
-                                      sl_dummy = current_price * 0.95 # 5% dummy SL for sizing calc
-                                      invest_qty = self.calculate_position_size(current_price, sl_dummy)
-                                      invest_qty *= config.DCA_SCALE_FACTOR
-                                      invest_amount = invest_qty * current_price
-                                      
-                                      # Check Funds
-                                      if self.quote_balance >= invest_amount * 0.99:
-                                           self.logger.info("🛡️ DCA Signal Detected! Executing Defense Buy...")
-                                           logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
+                                      if invest_amount > 10: 
+                                           self.logger.info(f"🛡️ Recursive DCA! Level {self.dca_count+1}/{self.strategy.dca_max_levels} (Mult: {multiplier:.2f}x)")
+                                           logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | Level {self.dca_count+1} | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
                                            self.buy(current_price, invest_amount, is_dca=True)
                                            dca_triggered = True
                                       else:
-                                           msg = f"DCA Signal Ignored: Insufficient Funds ({self.quote_balance:.2f} < {invest_amount:.2f})"
-                                           self.logger.warning(msg)
-                                           logger_setup.log_strategy(msg)
+                                           self.logger.warning(f"DCA Ignored: Amount ${invest_amount:.2f} too low or no funds.")
 
                               if not dca_triggered:
                                   # UPDATE UI REAL-TIME STATUS (Trail/SL)
@@ -1542,9 +1785,6 @@ class BinanceTradingBot:
                                       u_trail = u_peak * (1 - self.strategy.sell_percent)
                                       u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
                                       
-                                      # Calculate Target to Lock Profit (Break Even Trail)
-                                      # Goal: Peak * (1 - sell_pct) > Entry
-                                      # Peak > Entry / (1 - sell_pct)
                                       if self.strategy.sell_percent < 1:
                                            u_target = self.bought_price / (1 - self.strategy.sell_percent)
                                       else:
@@ -1553,8 +1793,6 @@ class BinanceTradingBot:
                                       self.current_trail_price = u_trail
                                       self.current_hard_stop = u_sl
                                       self.lock_profit_price = u_target
-                                  
-                                  # Sell Checks
                                   
                                   # Sell Checks
                                   action = self.strategy.check_sell_signal(current_price, self.bought_price)
@@ -1596,13 +1834,16 @@ class BinanceTradingBot:
                     time.sleep(1) # React faster (Safe: Weight 1x60 = 60/1200)
             else:
                 self.test()
-                self.running = False
+                # self.running = False handled in finally
         except Exception as e:
             self.logger.exception(f"An error occurred in run: {e}")
             notifier.send_telegram_message(f"⚠️ <b>CRITICAL ERROR</b>\nBot Crashed: {str(e)}")
-            self.stop()
+            # self.stop() # handled in finally
         except KeyboardInterrupt:
             self.shutdown_bot()
+        finally:
+            self.running = False
+            self.logger.info("Bot execution loop ended. Status set to Stopped.")
 
     def test(self):
         try:
@@ -1792,6 +2033,8 @@ class BinanceTradingBot:
                               'symbol': self.symbol,
                               'price': execution_price,
                               'qty': qty_sold,
+                              'total_value': revenue, # Total Exit Value
+                              'entry_value': self.bought_price * qty_sold if self.bought_price else 0, # Total Entry Cost
                               'pnl_amount': round(profit_amount, 2),
                               'pnl_percent': round(profit_percent, 2),
                               'balance_after': self.quote_balance,

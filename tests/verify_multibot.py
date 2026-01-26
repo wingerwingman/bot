@@ -2,11 +2,7 @@ import requests
 import time
 
 BASE_URL = "http://localhost:5000"
-ADMIN_TOKEN = "test_token_123" 
-# Note: Ensure config.ADMIN_TOKEN matches or we mock headers. 
-# Since we are running against the local server (if running), or importing app.
-# Better to run against the running server if it was up, but it's not guaranteed.
-# Actually, I'll use the Flask test client approach which relies on importing the app.
+ADMIN_TOKEN = os.getenv('ADMIN_TOKEN', 'test_token_123') 
 
 import sys
 import os
@@ -18,13 +14,10 @@ def test_multibot():
     # Mock Auth
     app.config['TESTING'] = True
     
-    # We need to bypass check_auth manually or mock headers
-    # server.py uses request.headers.get('X-Auth-Token')
-    headers = {'X-Auth-Token': 'secret_token_123'} # Default in config.py usually
-    
-    # But wait, config might be loaded from env.
+    # Check config for token
     from modules import config
-    headers = {'X-Auth-Token': config.ADMIN_TOKEN}
+    token = config.ADMIN_TOKEN or 'test_token_123'
+    headers = {'X-Auth-Token': token}
 
     with app.test_client() as client:
         print("1. Starting Spot Bot (ETHUSDT)...")

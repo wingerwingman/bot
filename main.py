@@ -46,6 +46,10 @@ def main():
 
 def run_server_mode():
     """Start the API server and wait for commands from the web UI."""
+    # Initialize Database & Perform Auto-Migration BEFORE importing server/bots
+    from modules import database
+    database.init_db()
+    
     from modules import server
     
     print("\nStarting in SERVER mode...")

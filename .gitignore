@@ -1,6 +1,7 @@
 # Environment & Secrets
 .env
 *.env.local
+antigravitybotperformance.txt
 
 # Python
 __pycache__/

@@ -24,3 +24,10 @@
 - **Issue**: Test/Backtest bots were appearing on the Live Dashboard, and Live bots were appearing on the Backtest Dashboard.
 - **Fix**: Added strict filtering in `LiveDashboard` and `ControlPanel` to isolate bot lists based on their mode.
 - **Affected Files**: `botfrontend/src/components/LiveDashboard.js`, `botfrontend/src/components/ControlPanel.js`.
+
+## 6. Critical Bug Fixes (Code Review)
+- **ATR Calculation**: Fixed a critical bug in `modules/indicators.py` where ATR was derived by dividing by `period` instead of `num_bars`, leading to incorrect volatility readings.
+- **Race Condition in State Saving**: Implemented atomic file writing (`write to tmp` -> `rename`) in `trading_bot.py`'s `save_state` method to prevent data corruption during crashes or interruptions.
+- **Server Error Handling**: Fixed a potential `NameError` in `server.py`'s `/api/metrics` endpoint by initializing the `bot` variable correctly.
+- **Frontend Configuration Refactor**: Centralized `API_BASE` in `config.js` and updated all frontend components (`ControlPanel`, `LiveDashboard`, etc.) to import it, improving maintainability and reducing hardcoded values.
+- **Code Cleanliness**: Removed inline imports in `modules/strategy.py` to improve performance and code quality.

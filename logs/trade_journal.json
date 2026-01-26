@@ -2,6 +2,76 @@
   {
     "action": "BUY",
     "symbol": "ETHUSDT",
+    "price": 2927.7200000000003,
+    "qty": 0.0078,
+    "total_value": 22.836216,
+    "fee": 0.13013533249999998,
+    "entry_reason": "Signal Buy",
+    "dca_level": 0,
+    "indicators": {
+      "rsi": 0.13,
+      "macd_hist": 0.056,
+      "volatility": 4.26,
+      "fear_greed": 20
+    },
+    "balance_after": 69.13134474,
+    "timestamp": "2026-01-26T12:17:19.690023"
+  },
+  {
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 2949.02,
+    "qty": 0.0063,
+    "total_value": 18.578826,
+    "entry_reason": "Grid Level",
+    "timestamp": "2026-01-26T08:11:26.470779",
+    "fee": 0.070590711,
+    "pnl_amount": 0.5862165780000002,
+    "pnl_percent": 3.9151989474469495,
+    "balance_after": 0.0
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
+    "price": 2829.35,
+    "qty": 0.0063,
+    "total_value": 17.824905,
+    "entry_reason": "Grid Level",
+    "timestamp": "2026-01-25T12:20:42.593692",
+    "fee": 0.0678886606,
+    "pnl_amount": 0.0,
+    "pnl_percent": 0.0,
+    "balance_after": 0.0
+  },
+  {
+    "timestamp": "2026-01-25T11:13:03.794311",
+    "action": "SELL",
+    "symbol": "ETHUSDT",
+    "price": 2861.46846875,
+    "qty": 0.032,
+    "total_value": 91.566991,
+    "fee": 0.5218796736,
+    "exit_reason": "Sell",
+    "pnl_percent": -1.72,
+    "pnl_amount": -1.6,
+    "entry_price": null,
+    "entry_value": 93.16543999999999,
+    "indicators": {
+      "rsi": 0.0,
+      "macd_hist": -1.8793,
+      "volatility": 4.45,
+      "fear_greed": 25
+    },
+    "session_stats": {
+      "total_trades": 6,
+      "win_rate": 16.7,
+      "net_pnl": -7.79
+    },
+    "balance_after": 137.20609974
+  },
+  {
+    "action": "BUY",
+    "symbol": "ETHUSDT",
     "price": 2911.4199999999996,
     "qty": 0.0198,
     "total_value": 57.646116,

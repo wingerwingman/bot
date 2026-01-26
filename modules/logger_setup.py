@@ -1,6 +1,7 @@
 from collections import deque
 import logging
 import os
+import json
 from . import config
 recent_errors = deque(maxlen=100)
 strategy_logs = deque(maxlen=50) # Strategy Tuning Logs
@@ -171,26 +172,26 @@ def clear_all_logs():
             f.truncate(0)
 
 def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
-    """Sets up the main logger and the trade-specific logger."""
+    """Sets up the main logger and the trade-specific logger with Rotation and Idempotency."""
     
-    # 1. Clear log files on startup - DISABLED per user request for persistence
-    # if os.path.exists(config.TRADING_LOG_FILE):
-    #     open(config.TRADING_LOG_FILE, 'w').close()
-    # if os.path.exists(config.TRADE_LOG_FILE):
-    #     open(config.TRADE_LOG_FILE, 'w').close()
-
     # 2. Main Logger Setup
     logger = logging.getLogger("BinanceTradingBot")
     logger.setLevel(logging.DEBUG)
     
-    # Avoid duplicate handlers if called multiple times
-    if logger.hasHandlers():
-        logger.handlers.clear()
+    # Idempotency: If already setup, don't redo it (prevents race conditions/duplicates)
+    if logger.hasHandlers() and any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        return logger, logging.getLogger("trade_logger")
+
+    # Clear any existing handlers just in case (e.g. StreamHandlers from basicConfig)
+    logger.handlers.clear()
 
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
 
-    fh = logging.FileHandler(config.TRADING_LOG_FILE)  # Main log file
+    from logging.handlers import RotatingFileHandler
+    
+    # Rotating File Handler (Max 5MB, Keep 5 backups)
+    fh = RotatingFileHandler(config.TRADING_LOG_FILE, maxBytes=5*1024*1024, backupCount=5, encoding='utf-8')
     fh.setLevel(logging.DEBUG)
     
     # List Handler for UI Errors (Only actual errors/warnings, not general info/trades)
@@ -214,9 +215,8 @@ def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
         trade_logger.handlers.clear()
     trade_logger.propagate = False  # Prevent bubbling up to root
 
-    # Ensure no duplicate handlers if called multiple times (though mainly for cleanup)
     if not trade_logger.handlers:
-        trade_fh = logging.FileHandler(config.TRADE_LOG_FILE)
+        trade_fh = RotatingFileHandler(config.TRADE_LOG_FILE, maxBytes=5*1024*1024, backupCount=5, encoding='utf-8')
         trade_fh.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
         trade_logger.addHandler(trade_fh)
         
@@ -226,7 +226,7 @@ def setup_logger(name="BinanceTradingBot", log_file=config.TRADING_LOG_FILE):
     tuning_logger.propagate = False
     
     if not tuning_logger.handlers:
-        tuning_fh = logging.FileHandler(config.TUNING_LOG_FILE)
+        tuning_fh = RotatingFileHandler(config.TUNING_LOG_FILE, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8')
         # CSV Header: Timestamp, Symbol, Action, Price, Qty, Profit, Volatility, RangeLow, RangeHigh, Step
         tuning_fh.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
         tuning_logger.addHandler(tuning_fh)
@@ -351,7 +351,6 @@ def log_trade_journal(entry):
 
 def get_trade_journal(limit=50):
     """Retrieve trade journal entries."""
-    import json
     
     # If in-memory is empty, load from file
     if not trade_journal:
@@ -417,6 +416,54 @@ def get_equity_history(limit=100):
         load_equity_history()
     return equity_history[-limit:]
 
+def load_trade_journal():
+    """Loads trade journal from file."""
+    global trade_journal
+    try:
+        import json
+        if os.path.exists(TRADE_JOURNAL_FILE):
+            with open(TRADE_JOURNAL_FILE, 'r', encoding='utf-8') as f:
+                trade_journal = json.load(f)
+    except Exception as e:
+        print(f"Error loading trade journal: {e}")
+
+def get_hourly_performance():
+    """
+    Analyzes trade journal to calculate P&L by hour of day.
+    Returns: dict {hour: avg_pnl_percent}
+    """
+    if not trade_journal:
+        load_trade_journal()
+        
+    hourly_stats = {} # hour -> [pnl_percents]
+    
+    # Analyze only SELLS (which have PnL)
+    for t in trade_journal:
+        if t.get('action') == 'SELL' and 'pnl_percent' in t:
+            try:
+                # Parse ISO timestamp: 2026-01-26T09:40:44.123
+                if 'timestamp' in t:
+                    import datetime
+                    dt = datetime.datetime.fromisoformat(t['timestamp'])
+                    hour = dt.hour
+                    pnl = float(t['pnl_percent'])
+                    
+                    if hour not in hourly_stats:
+                        hourly_stats[hour] = []
+                    hourly_stats[hour].append(pnl)
+            except:
+                continue
+                
+    result = {}
+    for hour in range(24):
+        pnl_list = hourly_stats.get(hour, [])
+        if pnl_list:
+            result[hour] = round(sum(pnl_list) / len(pnl_list), 2)
+        else:
+            result[hour] = 0.0
+            
+    return result
+
 def calculate_sharpe_ratio(risk_free_rate=0.02):
     """
     Calculate Sharpe Ratio from equity history.
@@ -477,17 +524,25 @@ def get_performance_summary():
     
     # Calculate max drawdown from balance history
     if equity_history:
-        balances = [e['balance'] for e in equity_history if e.get('balance')]
+        # Use safe balance (never < 0)
+        balances = [max(0.0, e['balance']) for e in equity_history if e.get('balance') is not None]
         if balances:
-            peak = balances[0]
+            # Initialization
+            peak = max(1e-9, balances[0])
             max_dd = 0
             for bal in balances:
                 if bal > peak:
                     peak = bal
-                dd = ((peak - bal) / peak) * 100 if peak > 0 else 0
+                
+                if peak > 0:
+                    dd = ((peak - bal) / peak) * 100
+                    # Standard DD is between 0 and 100%
+                    dd = max(0.0, min(100.0, dd))
+                else:
+                    dd = 0
+                    
                 if dd > max_dd:
                     max_dd = dd
-            summary['max_drawdown'] = round(max_dd, 2)
             summary['max_drawdown'] = round(max_dd, 2)
 
     # Calculate Streaks
@@ -508,6 +563,9 @@ def get_performance_summary():
             
     summary['max_win_streak'] = max_win_streak
     summary['max_loss_streak'] = max_loss_streak
+    
+    # NEW: Hourly Heat Map Data
+    summary['hourly_performance'] = get_hourly_performance()
     
     return summary
 

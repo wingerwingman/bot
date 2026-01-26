@@ -25,7 +25,16 @@ def send_telegram_message(message):
     try:
         response = requests.post(url, json=payload, timeout=5)
         if response.status_code != 200:
-            logger.error(f"Failed to send Telegram message: {response.text}")
+            # Fallback for HTML parsing errors (Error 400)
+            if response.status_code == 400 and "can't parse entities" in response.text:
+                logger.warning("Telegram HTML parsing failed, retrying in plain text...")
+                payload.pop("parse_mode", None)
+                response = requests.post(url, json=payload, timeout=5)
+            
+            if response.status_code != 200:
+                logger.error(f"Failed to send Telegram message: {response.text}")
+            else:
+                 logger.debug("Telegram message sent successfully (plain text fallback).")
         else:
             logger.debug("Telegram message sent successfully.")
     except Exception as e:

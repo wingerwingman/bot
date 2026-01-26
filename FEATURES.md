@@ -58,6 +58,11 @@ CryptoBot/
 | | P&L Tracking | `capital_manager.py` | Tracks profit per bot separately. |
 | | Auto-Compound | `capital_manager.py` | Toggle to reinvest profits automatically. |
 | | Binance Sync | `capital_manager.py` | Fetch real USDT+ETH balance. |
+| **Advanced** | Order Book | `trading_bot.py` | Checks bid/ask depth before buying. |
+| | ML Confirmation | `ml_predictor.py` | Predictive signal score (Random Forest). |
+| | S/R Awareness | `strategy.py` | Avoids buying at local resistance. |
+| **Dashboard** | P&L Thermometer | `ControlPanel.js` | Visual progress bar for session profit. |
+| | Settings Compare | `trading_bot.py` | current vs default parameter reporting. |
 | **Notifications** | Telegram Alerts | `notifier.py` | Real-time buy/sell/error notifications. |
 | **Security** | Env-based Auth | `config.py`, `server.py` | Admin credentials via environment variables. |
 | | CORS Lock | `server.py` | Restricted to `localhost:3000` only. |
@@ -66,9 +71,13 @@ CryptoBot/
 | **Analytics** | Sharpe Ratio | `trading_bot.py` | Risk-adjusted return calculation. |
 | | In-Memory Journal | `trading_bot.py` | Full trade history for Test/Paper sessions. |
 | **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, P&L display. |
-
-| | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history. |
+| | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history, **Manual Sell**. |
 | | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
+| **Resilience** | Panic Button | `server.py`, `App.js` | Global emergency shutdown & total liquidation. |
+| | IP Ban Recovery | `server.py`, `trading_bot.py` | Auto-detects Binance ban lifted time and restarts. |
+| | Heartbeat Monitor| `server.py`, `notifier.py` | Telegram alerts if bot thread stalls (>5 min). |
+| **Phase 3** | TTP (Trailing) | `strategy.py` | Fixed activation and callback percentages. |
+| | Recursive DCA | `trading_bot.py` | Geometric scaling for up to 5+ levels. |
 
 ---
 
@@ -144,14 +153,44 @@ Get real-time alerts for:
 
 ---
 
+## ⚡ Advanced Engine (New v1.3 Features)
+
+### 📈 Order Book Depth
+Before any buy signal is executed, the bot fetches the **Level 2 Order Book**.
+- Blocks trade if the **Spread** > 0.5%
+- Analyzes Market Depth to minimize slippage.
+
+### 🛡️ Support/Resistance Awareness
+The bot identifies local price wall patterns within the last 50 candles.
+- **Resistance**: Blocks buy if current price is within 0.5% of a major peak.
+- **Support**: Prioritizes dip-buys that occur near recent floor levels.
+
+### 🤖 ML Signal Filtration
+Uses a `Random Forest Classifier` to analyze 12+ features of a signal (RSI, Volatility, Volume, MACD) and predicts if it will be a winner.
+- **Self-Correcting**: Retrains on your local `trade_journal.json` every startup.
+- Requires `scikit-learn` dependency.
+
+---
+
+---
+
+## 📈 Phase 3: Advanced Trading
+
+### 🌊 Trailing Take-Profit (TTP)
+Formalized trailing mechanism to capture larger moves:
+- **TTP Activation**: Set a profit percentage (e.g., 1.5%) where trailing begins.
+- **TTP Callback**: Once active, sell only if price drops by X% (e.g., 0.5%) from the peak.
+- **Break-Even Lock**: TTP will not activate unless price is above total round-trip fee costs.
+
+### 🛡️ Recursive DCA Scaling
+Enhanced "Defense Mode" for handling major market crashes:
+- **Depth**: Configure up to 5+ levels of averaging down.
+- **Geometric Sizing**: Position size increases exponentially (e.g., 1.5x) for each deeper level, significantly reducing average entry.
+- **Safe Exposure**: Automatically caps DCA amount if quote balance is low.
+
+---
+
 ## 🛡️ DCA (Defense Mode)
-
-"Sniper" dollar-cost averaging triggers when:
-1. RSI < 30 (oversold)
-2. Price dropped > 2% from entry
-
-Calculates **Weighted Average Price** for multiple buys.
-Max 3 DCA buys per position. Toggle on/off in Control Panel.
 
 ---
 

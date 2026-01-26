@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import threading
 import time
+import re
 import os
 import glob
 import logging
@@ -23,10 +24,10 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Global bot instances (Dictionaries for Multi-Bot)
 spot_bots = {} # Key: symbol (e.g., 'ETHUSDT') -> BinanceTradingBot
-bot_lock = threading.Lock()
+bot_lock = threading.RLock()
 
 grid_bots = {} # Key: symbol -> GridBot
-grid_lock = threading.Lock()
+grid_lock = threading.RLock()
 cached_client = None
 
 def run_flask():
@@ -44,6 +45,10 @@ def start_server_standalone():
     # NEW: Start Daily Summary Scheduler
     scheduler_thread = threading.Thread(target=run_daily_summary_scheduler, daemon=True)
     scheduler_thread.start()
+    
+    # NEW: Start Health Monitor
+    health_thread = threading.Thread(target=run_health_monitor, daemon=True)
+    health_thread.start()
     
     print("API Server running at http://localhost:5050")
 
@@ -112,6 +117,69 @@ def run_daily_summary_scheduler():
                 
         time.sleep(50) # Check every 50s
 
+def run_health_monitor():
+    """Background monitor for bot stalls and auto-restart from IP bans."""
+    print("Health Monitor started.")
+    while True:
+        try:
+            current_time = time.time()
+            
+            # --- 1. Stall Detection (Heartbeats) ---
+            with bot_lock:
+                for symbol, bot in spot_bots.items():
+                    if bot.running and not bot.paused:
+                        diff = current_time - getattr(bot, 'last_active_timestamp', current_time)
+                        if diff > 300: # 5 Minutes
+                             if not getattr(bot, 'stall_alert_sent', False):
+                                 notifier.send_telegram_message(f"🚨 <b>STALL DETECTED ({symbol})</b>\nBot has not updated for {int(diff/60)} minutes!")
+                                 bot.stall_alert_sent = True
+                        else:
+                             bot.stall_alert_sent = False
+
+            with grid_lock:
+                for symbol, bot in grid_bots.items():
+                    if bot.running and not bot.paused:
+                        diff = current_time - getattr(bot, 'last_active_timestamp', current_time)
+                        if diff > 300: 
+                             if not getattr(bot, 'stall_alert_sent', False):
+                                 notifier.send_telegram_message(f"🚨 <b>STALL DETECTED (Grid: {symbol})</b>\nBot has not updated for {int(diff/60)} minutes!")
+                                 bot.stall_alert_sent = True
+                        else:
+                             bot.stall_alert_sent = False
+
+            # --- 2. Auto-Restart Banned Bots ---
+            # Spot Bots
+            with bot_lock:
+                for symbol, bot in spot_bots.items():
+                    # If bot stopped (running=False) AND has a ban_until timestamp
+                    if not bot.running and getattr(bot, 'ban_until', None) is not None:
+                        if current_time > bot.ban_until:
+                            try:
+                                print(f"Ban expired for {symbol}. Attempting auto-restart...")
+                                bot.ban_until = None # Reset
+                                bot.start()
+                                notifier.send_telegram_message(f"✅ <b>AUTO-RESTART: Ban Expired ({symbol})</b>\nBot has resumed trading.")
+                            except Exception as e:
+                                print(f"Auto-restart failed for {symbol}: {e}")
+
+            # Grid Bots
+            with grid_lock:
+                for symbol, bot in grid_bots.items():
+                    if not bot.running and getattr(bot, 'ban_until', None) is not None:
+                        if current_time > bot.ban_until:
+                            try:
+                                print(f"Ban expired for Grid {symbol}. Attempting auto-restart...")
+                                bot.ban_until = None
+                                bot.start()
+                                notifier.send_telegram_message(f"✅ <b>AUTO-RESTART: Grid Ban Expired ({symbol})</b>\nGrid bot has resumed.")
+                            except Exception as e:
+                                print(f"Auto-restart failed for Grid {symbol}: {e}")
+
+        except Exception as e:
+            print(f"Health Monitor error: {e}")
+            
+        time.sleep(30) # Run every 30 seconds
+
 # Admin Credentials
 # Admin Credentials (Loaded from Config/Env)
 ADMIN_USER = config.ADMIN_USER
@@ -146,6 +214,11 @@ def find_spot_bot(identifier):
         # Direct key lookup
         if identifier in spot_bots:
             return spot_bots[identifier], identifier
+            
+        # Common Issue: Identifier might be "spot_live_ETHUSDT" but key is "live_ETHUSDT"
+        if identifier.startswith("spot_") and identifier.replace("spot_", "") in spot_bots:
+             stripped = identifier.replace("spot_", "")
+             return spot_bots[stripped], stripped
         
         # Try mode prefixes
         for prefix in ['live_', 'test_']:
@@ -177,10 +250,16 @@ def login():
 def get_status():
     
     # Helper to get live prices and volatility
+    # Helper to get live prices and volatility
     def get_market_data():
         global cached_client
+        
+        # Simple lockout mechanism (using function attribute for persistence)
+        if hasattr(get_market_data, 'banned_until') and  time.time() < get_market_data.banned_until:
+            return 0.0, 0.0, 0.0
+
         try:
-            from binance import Client
+            from binance import Client, BinanceAPIException
             if cached_client is None:
                  cached_client = Client(config.API_KEY, config.API_SECRET, tld='us')
             
@@ -196,8 +275,32 @@ def get_status():
             volatility = atr / eth_price if eth_price else 0
             
             return eth_price, btc_price, volatility
+        except BinanceAPIException as e:
+            if e.code == -1003:
+                unban_str = ""
+                try:
+                     match = re.search(r'until\s+(\d+)', e.message)
+                     if match:
+                         ts = int(match.group(1)) / 1000.0
+                         # datetime import check needed? server.py imports time, need datetime for nice formatting or just use timestamp
+                         # server.py doesn't strictly import datetime yet. Let's just print simple message or use time.ctime
+                         dt = time.ctime(ts)
+                         unban_str = f" (Lifted: {dt})"
+                except:
+                     pass
+
+                print(f"🚨 SERVER IP BANNED. Pausing market data fetch for 5 mins.{unban_str}")
+                get_market_data.banned_until = time.time() + 300 # 5 mins
+            else:
+                print(f"Binance API Error in Status: {e}")
+            return None, None, None
         except Exception as e:
-            print(f"Error fetching market data: {e}")
+            err_str = str(e)
+            if "Read timed out" in err_str or "Network is unreachable" in err_str:
+                # Be quiet about network errors
+                return None, None, None
+                
+            print(f"Error fetching market status: {e}")
             return None, None, None
     
     # If specific symbol requested, return details for that bot
@@ -211,13 +314,28 @@ def get_status():
     with bot_lock:
         for bot_key, bot in spot_bots.items():
             net_profit = bot.gross_profit - bot.gross_loss
+            
+            # Extract advanced filters for UI indicators
+            strategy_flags = {}
+            if hasattr(bot, 'strategy'):
+                s = bot.strategy
+                strategy_flags = {
+                    "mtf": getattr(s, 'multi_timeframe_enabled', False),
+                    "vol": getattr(s, 'volume_confirmation_enabled', False),
+                    "sr": getattr(s, 'support_resistance_check_enabled', False),
+                    "ml": getattr(s, 'ml_confirmation_enabled', False),
+                    "ob": getattr(s, 'order_book_check_enabled', False),
+                    "missed": getattr(s, 'missed_trade_log_enabled', False)
+                }
+
             active_bots.append({
                 "id": f"spot_{bot_key}",  # bot_key is already mode_symbol
                 "symbol": bot.symbol,
                 "type": "spot",
                 "status": "running" if bot.running else "stopped",
                 "profit": net_profit,
-                "is_live": bot.is_live_trading
+                "is_live": bot.is_live_trading,
+                "strategy": strategy_flags
             })
 
     # Add Grid Bots
@@ -237,23 +355,33 @@ def get_status():
     eth_price, btc_price, vol = get_market_data()
     
     # If a specific bot status is requested (for Bot Panel details)
-    if req_symbol and req_type == 'spot':
-        bot = spot_bots.get(req_symbol)
-        if not bot:
-             # Fallback: Prefer live if ambiguous, then test
-             if f"live_{req_symbol}" in spot_bots:
-                 bot = spot_bots[f"live_{req_symbol}"]
-             elif f"test_{req_symbol}" in spot_bots:
-                 bot = spot_bots[f"test_{req_symbol}"]
-             else:
-                 # Generic search (symbol match in value)
-                 for key, b in spot_bots.items():
-                     if b.symbol == req_symbol:
-                         bot = b
-                         break
+    # Check for direct ID first (Strongest Match)
+    req_id = request.args.get('bot_id')
+    target_key = req_id if req_id else req_symbol
+    
+    if target_key and req_type == 'spot':
+        # Remove 'spot_' prefix if present (API cleanliness)
+        if target_key.startswith('spot_'):
+            target_key = target_key.replace('spot_', '')
+            
+        # Debug: Log exactly what we're looking for
+        # logging.getLogger("BinanceTradingBot").debug(f"get_status lookup: target_key='{target_key}'")
+        
+        # Use robust lookup helper (it has its own locking)
+        bot, actual_key = find_spot_bot(target_key)
+        
+        # logging.getLogger("BinanceTradingBot").debug(f"get_status lookup result: bot={bot is not None}, actual_key={actual_key}")
         
         if not bot:
-             return jsonify({"status": "idle", "running": False, "symbol": req_symbol})
+             # If still not found, return idle.
+             # Debug: Return available keys to help diagnose mismatch
+             return jsonify({
+                 "status": "idle", 
+                 "running": False, 
+                 "symbol": req_symbol,
+                 "target_key": target_key,
+                 "debug_available_keys": list(spot_bots.keys())
+             })
         
         # ... Reuse logic to extract detailed metrics for ONE bot ...
         # Calculate Realtime Metrics
@@ -277,6 +405,18 @@ def get_status():
                 "rsi_threshold": getattr(s, 'rsi_threshold_buy', 40),
                 "stop_loss_percent": getattr(s, 'stop_loss_percent', 0.02) * 100,
                 "trailing_stop_percent": getattr(s, 'sell_percent', 0.03) * 100,
+                # New Advanced Settings
+                "volume_confirmation_enabled": getattr(s, 'volume_confirmation_enabled', True),
+                "volume_multiplier": getattr(s, 'volume_multiplier', 1.2),
+                "multi_timeframe_enabled": getattr(s, 'multi_timeframe_enabled', True),
+                "cooldown_after_stoploss_minutes": getattr(s, 'cooldown_after_stoploss_minutes', 30),
+                "dca_enabled": getattr(s, 'dca_enabled', True),
+                "dca_rsi_threshold": getattr(s, 'dca_rsi_threshold', 30),
+                # Missing Manual Control Flags
+                "missed_trade_log_enabled": getattr(s, 'missed_trade_log_enabled', True),
+                "order_book_check_enabled": getattr(s, 'order_book_check_enabled', False),
+                "support_resistance_check_enabled": getattr(s, 'support_resistance_check_enabled', False),
+                "ml_confirmation_enabled": getattr(s, 'ml_confirmation_enabled', False)
             }
             volatility = getattr(s, 'current_volatility', None)
 
@@ -289,6 +429,30 @@ def get_status():
         except:
             current_price = bot.last_price
 
+        # Extract detailed strategy info for "Waiting..." status
+        strat_details = {}
+        if hasattr(bot, 'strategy'):
+             # We want to access current RSI if possible. 
+             # Strategy class doesn't store 'last_rsi' explicitly, but we can calc it easily or grab from history
+             # BUT strategies reuse price_history. 
+             try:
+                 hist = list(bot.strategy.price_history) or []
+                 if len(hist) > 14:
+                     last_rsi = indicators.calculate_rsi(hist)
+                 else:
+                     last_rsi = 50.0
+                 
+                 strat_details = {
+                     "current_rsi": last_rsi or 50.0,
+                     "target_rsi": getattr(bot.strategy, 'rsi_threshold_buy', 40),
+                     "current_vol": getattr(bot.strategy, 'current_volatility', 0),
+                     "last_rejection": getattr(bot.strategy, 'last_rejection_reason', 'Analyzing...'),
+                     "cooling_down": bot.strategy.is_in_cooldown(),
+                     "cooldown_remaining": bot.strategy.get_cooldown_remaining()
+                 }
+             except Exception as ex:
+                 print(f"Strat details error: {ex}")
+
         return jsonify({
             "status": "online",
             "running": bot.running,
@@ -298,6 +462,7 @@ def get_status():
             "symbol": bot.symbol,
             "current_price": current_price,
             "eth_price": eth_price,
+            "strategy_details": strat_details,
             "btc_price": btc_price,
             "volatility": volatility,
             "position_size_percent": getattr(bot, 'position_size_percent', 0.25) * 100,
@@ -581,18 +746,41 @@ def start_bot():
     
     with bot_lock:
         data = request.json or {}
-        quote_asset = data.get('quote_asset', 'USDT')  # Currency to buy with
-        base_asset = data.get('base_asset', 'ETH')     # Crypto to trade
+        quote_asset = data.get('quote_asset', 'USDT').upper()  # Currency to buy with
+        base_asset = data.get('base_asset', 'ETH').upper()     # Crypto to trade
         symbol = f"{base_asset}{quote_asset}"
         mode = data.get('mode', 'test')  # 'live' or 'test'
         
         # Use mode-prefixed key to allow live and test bots to run simultaneously
         bot_key = f"{mode}_{symbol}"
         
-        if bot_key in spot_bots and spot_bots[bot_key].running:
-            msg = f"Start failed: {mode.upper()} Bot for {symbol} is already active and running."
-            logging.getLogger("BinanceTradingBot").error(msg)
-            return jsonify({"error": msg}), 400
+        if bot_key in spot_bots:
+            existing_bot = spot_bots[bot_key]
+            
+            # Check if it's truly running (Running Flag + Thread Alive)
+            is_alive = False
+            if hasattr(existing_bot, 'thread') and existing_bot.thread.is_alive():
+                is_alive = True
+            
+            if existing_bot.running and is_alive:
+                msg = f"Start failed: {mode.upper()} Bot for {symbol} is already active and running."
+                logging.getLogger("BinanceTradingBot").error(msg)
+                return jsonify({"error": msg}), 400
+            
+            # If we are here, the bot is either:
+            # 1. Not running flags (Normal restart)
+            # 2. Running flag True but Thread Dead (Zombie -> Safe to overwrite)
+            # 3. Running flag False but Thread Alive (Stopping/Rogue -> Force Join)
+            
+            if is_alive:
+                logging.warning(f"Bot {bot_key} thread is still alive but marked as stopped. Forcing stop...")
+                existing_bot.stop()
+                existing_bot.thread.join(timeout=5) # Wait for it to die
+            elif existing_bot.running:
+                 logging.warning(f"Bot {bot_key} was marked running but thread is dead (Zombie). Cleanup up.")
+                 
+            # Cleanup reference
+            spot_bots.pop(bot_key, None)
         
         # If exists but stopped, we will overwrite it below.
         
@@ -616,6 +804,15 @@ def start_bot():
         is_live = (mode.lower() == 'live')
         is_paper = (mode.lower() == 'paper')
         
+        # Manual Control Flags (NEW)
+        missed_trade_log_enabled = data.get('missed_trade_log_enabled', True)
+        order_book_check_enabled = data.get('order_book_check_enabled', False)
+        support_resistance_check_enabled = data.get('support_resistance_check_enabled', False)
+        ml_confirmation_enabled = data.get('ml_confirmation_enabled', False)
+        
+        # Log payload for debugging
+        logging.getLogger("BinanceTradingBot").info(f"START_BOT Request Payload: {json.dumps(data)}")
+        
         # Filename required ONLY for backtest (test mode), not for paper trading
         if not is_live and not is_paper:
             if not filename:
@@ -636,6 +833,12 @@ def start_bot():
         config.VOLUME_MULTIPLIER_THRESHOLD = volume_multiplier
         config.STOP_LOSS_COOLDOWN_MINUTES = cooldown_minutes
         
+        # Update Manual Control Configs
+        config.MISSED_TRADE_LOG_ENABLED = missed_trade_log_enabled
+        config.ORDER_BOOK_CHECK_ENABLED = order_book_check_enabled
+        config.SUPPORT_RESISTANCE_CHECK_ENABLED = support_resistance_check_enabled
+        config.ML_CONFIRMATION_ENABLED = ml_confirmation_enabled
+        
         allocated_capital = 0.0
         if is_live:
             allocated_capital = capital_manager.get_available('signal')
@@ -654,8 +857,30 @@ def start_bot():
                 resume_state=resume_session,
                 dca_enabled=dca_enabled,
                 dca_rsi_threshold=dca_rsi_threshold,
-                allocated_capital=allocated_capital
+                allocated_capital=allocated_capital,
+                # Pass advanced filters explicitly
+                multi_timeframe_enabled=multi_timeframe_enabled,
+                volume_confirmation_enabled=volume_confirmation_enabled,
+                volume_multiplier=volume_multiplier,
+                cooldown_minutes=cooldown_minutes,
+                missed_trade_log_enabled=missed_trade_log_enabled,
+                order_book_check_enabled=order_book_check_enabled,
+                support_resistance_check_enabled=support_resistance_check_enabled,
+                ml_confirmation_enabled=ml_confirmation_enabled
             )
+            
+            # Sentiment (Phase 5)
+            # Checked separately as it might not be in init args for older generic bot if not updated
+            # But we assumed it is integrated into Strategy which is init by Bot.
+            # We need to set it on the strategy AFTER init or update Bot init.
+            # Bot init doesn't have sentiment args yet (I didn't add them to __init__ in trading_bot.py, I only added them to Strategy)
+            
+            sentiment_enabled = data.get('sentiment_enabled', False)
+            sentiment_threshold = float(data.get('sentiment_threshold', 0.0))
+            
+            bot.strategy.sentiment_enabled = sentiment_enabled
+            bot.strategy.sentiment_threshold = sentiment_threshold
+            
             bot.start()
             spot_bots[bot_key] = bot
             logger_setup.log_audit("START_BOT", f"Mode: {mode}, Symbol: {base_asset}", request.remote_addr)
@@ -709,6 +934,85 @@ def stop_bot():
         notifier.send_telegram_message(f"❌ <b>BOT STOP ERROR</b>\nFailed to stop: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/bot/update_settings', methods=['POST'])
+def update_bot_settings():
+    """Updates running bot settings on the fly."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
+    
+    global spot_bots
+    try:
+        with bot_lock:
+            # Find bot
+            bot = None
+            if symbol and symbol in spot_bots:
+                bot = spot_bots[symbol]
+            elif symbol:
+                 # Search by symbol
+                 for k, b in spot_bots.items():
+                     if b.symbol == symbol:
+                         bot = b
+                         break
+            
+            if not bot:
+                return jsonify({"error": "Bot not found"}), 404
+            
+            # Update Settings
+            if 'rsi_threshold' in data:
+                bot.strategy.rsi_threshold_buy = float(data['rsi_threshold'])
+            if 'stop_loss_percent' in data:
+                sl = float(data['stop_loss_percent']) / 100.0
+                bot.strategy.stop_loss_percent = sl
+                bot.strategy.fixed_stop_loss_percent = sl
+            if 'trailing_stop_percent' in data:
+                bot.strategy.sell_percent = float(data['trailing_stop_percent']) / 100.0
+            if 'dynamic_settings' in data:
+                bot.dynamic_settings = bool(data['dynamic_settings'])
+            if 'dca_enabled' in data:
+                bot.strategy.dca_enabled = bool(data['dca_enabled'])
+            if 'dca_rsi_threshold' in data:
+                bot.strategy.dca_rsi_threshold = float(data['dca_rsi_threshold'])
+            
+            # Advanced Settings
+            if 'volume_confirmation_enabled' in data:
+                bot.strategy.volume_confirmation_enabled = bool(data['volume_confirmation_enabled'])
+            if 'volume_multiplier' in data:
+                bot.strategy.volume_multiplier = float(data['volume_multiplier'])
+            if 'multi_timeframe_enabled' in data:
+                bot.strategy.multi_timeframe_enabled = bool(data['multi_timeframe_enabled'])
+            if 'cooldown_minutes' in data:
+                bot.strategy.cooldown_after_stoploss_minutes = int(data['cooldown_minutes'])
+            
+            # Sentiment (Phase 5)
+            if 'sentiment_enabled' in data:
+                bot.strategy.sentiment_enabled = bool(data['sentiment_enabled'])
+            if 'sentiment_threshold' in data:
+                bot.strategy.sentiment_threshold = float(data['sentiment_threshold'])
+            
+            # Save State immediately
+            if bot.is_live_trading:
+                bot.save_state()
+            
+            logger_setup.log_audit("UPDATE_SETTINGS", f"Settings updated for {bot.symbol}", request.remote_addr)
+            return jsonify({
+                "success": True, 
+                "message": "Settings updated successfully",
+                "settings": {
+                    "rsi": bot.strategy.rsi_threshold_buy,
+                    "sl": bot.strategy.stop_loss_percent * 100,
+                    "trail": bot.strategy.sell_percent * 100,
+                    "dynamic": bot.dynamic_settings,
+                    "dca_enabled": bot.strategy.dca_enabled,
+                    "volume_enabled": bot.strategy.volume_confirmation_enabled
+                }
+            })
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/delete', methods=['POST'])
 def delete_bot():
     """Permanently delete a bot instance and its state."""
@@ -751,81 +1055,7 @@ def delete_bot():
         logging.getLogger("BinanceTradingBot").error(f"Delete Bot Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/pause', methods=['POST'])
-def pause_bot():
-    """Pause or resume a running bot."""
-    if not check_auth():
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    data = request.json or {}
-    symbol = data.get('symbol')
-    action = data.get('action', 'toggle')  # 'pause', 'resume', or 'toggle'
-    bot_type = data.get('type', 'spot')
-    
-    try:
-        if bot_type == 'spot':
-            with bot_lock:
-                bot = None
-                # Find bot (same lookup logic as other endpoints)
-                if symbol:
-                    bot = spot_bots.get(symbol)
-                    if not bot:
-                        if f"live_{symbol}" in spot_bots:
-                            bot = spot_bots[f"live_{symbol}"]
-                        elif f"test_{symbol}" in spot_bots:
-                            bot = spot_bots[f"test_{symbol}"]
-                        else:
-                            for key, b in spot_bots.items():
-                                if b.symbol == symbol:
-                                    bot = b
-                                    break
-                elif len(spot_bots) == 1:
-                    bot = list(spot_bots.values())[0]
-                
-                if not bot:
-                    return jsonify({"error": "No bot found"}), 400
-                if not bot.running:
-                    return jsonify({"error": "Bot is not running"}), 400
-                
-                # Perform action
-                if action == 'pause':
-                    bot.pause()
-                elif action == 'resume':
-                    bot.resume()
-                else:  # toggle
-                    if bot.paused:
-                        bot.resume()
-                    else:
-                        bot.pause()
-                
-                logger_setup.log_audit("PAUSE_BOT", f"Bot {bot.symbol} {'paused' if bot.paused else 'resumed'}", request.remote_addr)
-                return jsonify({"success": True, "paused": bot.paused})
-        
-        elif bot_type == 'grid':
-            with grid_lock:
-                bot = grid_bots.get(symbol)
-                if not bot:
-                    return jsonify({"error": "No grid bot found"}), 400
-                
-                # Grid bot pause logic (add paused attribute if not exists)
-                if not hasattr(bot, 'paused'):
-                    bot.paused = False
-                
-                if action == 'pause':
-                    bot.paused = True
-                elif action == 'resume':
-                    bot.paused = False
-                else:
-                    bot.paused = not bot.paused
-                
-                logger_setup.log_audit("PAUSE_GRID", f"Grid {symbol} {'paused' if bot.paused else 'resumed'}", request.remote_addr)
-                return jsonify({"success": True, "paused": bot.paused})
-        
-        return jsonify({"error": "Unknown bot type"}), 400
-        
-    except Exception as e:
-        logging.getLogger("BinanceTradingBot").error(f"Pause Bot Error: {e}")
-        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/api/manual_sell', methods=['POST'])
 def manual_sell():
@@ -886,6 +1116,72 @@ def manual_sell():
     except Exception as e:
         logging.getLogger("BinanceTradingBot").error(f"Manual Sell Error: {e}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/grid/manual_sell', methods=['POST'])
+def manual_sell_grid():
+    """Immediately liquidates a Grid Bot's holdings and cancels its orders."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    symbol = data.get('symbol')
+    
+    global grid_bots
+    
+    try:
+        with grid_lock:
+            bot = grid_bots.get(symbol)
+            if not bot:
+                 return jsonify({"error": f"No grid bot found for {symbol}"}), 400
+            
+            bot.manual_sell(reason="DASHBOARD MANUAL SELL")
+            logger_setup.log_audit("MANUAL_SELL_GRID", f"Manual Sell triggered for Grid {symbol}", request.remote_addr)
+            return jsonify({"success": True, "message": f"Grid {symbol} liquidated and orders cancelled."})
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Grid Manual Sell Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/panic', methods=['POST'])
+def panic_button():
+    """🚨 EMERGENCY: Stop ALL bots and Liquidate ALL positions immediately."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+
+    results = {"spot": [], "grid": []}
+    
+    # 1. STOP & LIQUIDATE SPOT BOTS
+    with bot_lock:
+        for symbol, bot in spot_bots.items():
+            try:
+                if bot.running:
+                    bot.stop()
+                if bot.bought_price:
+                    # Fresh price check
+                    price = bot.last_price or 0
+                    try: price = bot.check_price()
+                    except: pass
+                    bot.sell_position(price, reason="🚨 EMERGENCY PANIC")
+                    results["spot"].append(f"{symbol}: Liquidated")
+                else:
+                    results["spot"].append(f"{symbol}: Stopped (No position)")
+            except Exception as e:
+                results["spot"].append(f"{symbol}: Error - {str(e)}")
+
+    # 2. STOP & LIQUIDATE GRID BOTS
+    with grid_lock:
+        for symbol, bot in grid_bots.items():
+            try:
+                if bot.running:
+                    bot.stop()
+                bot.manual_sell(reason="🚨 EMERGENCY PANIC")
+                results["grid"].append(f"{symbol}: Liquidated & Cancelled")
+            except Exception as e:
+                results["grid"].append(f"{symbol}: Error - {str(e)}")
+
+    logger_setup.log_audit("PANIC_BUTTON", "Global Emergency Shutdown Triggered!", request.remote_addr)
+    notifier.send_telegram_message("🆘 <b>GLOBAL PANIC BUTTON TRIGGERED</b>\nAll bots stopping and positions liquidating!")
+    
+    return jsonify({"success": True, "message": "Global liquidation in progress.", "details": results})
 
 
 @app.route('/api/data/download', methods=['POST'])
@@ -1254,6 +1550,46 @@ def update_config():
         if 'cooldown_minutes' in data:
             bot.strategy.cooldown_after_stoploss_minutes = int(data['cooldown_minutes'])
             logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] SL Cooldown: {bot.strategy.cooldown_after_stoploss_minutes}m", request.remote_addr)
+            
+        # 5. Manual Controls (NEW)
+        if 'missed_trade_log_enabled' in data:
+            val = bool(data['missed_trade_log_enabled'])
+            bot.strategy.missed_trade_log_enabled = val
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Missed Trade Log: {val}", request.remote_addr)
+
+        if 'order_book_check_enabled' in data:
+            val = bool(data['order_book_check_enabled'])
+            # Note: order_book_check is checked in bot, but logic might be in strategy or config? 
+            # Actually trading_bot uses config.ORDER_BOOK_CHECK_ENABLED.
+            # We need to make trading_bot use SELF instance variables or updated config.
+            # Best practice: Update valid instance variables.
+            # For now, update global config as fallback BUT also update instance if possible.
+            config.ORDER_BOOK_CHECK_ENABLED = val 
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Order Book Check: {val}", request.remote_addr)
+            
+        if 'support_resistance_check_enabled' in data:
+            val = bool(data['support_resistance_check_enabled'])
+            bot.strategy.support_resistance_check_enabled = val
+            config.SUPPORT_RESISTANCE_CHECK_ENABLED = val
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] S/R Check: {val}", request.remote_addr)
+
+        if 'ml_confirmation_enabled' in data:
+            val = bool(data['ml_confirmation_enabled'])
+            bot.strategy.ml_confirmation_enabled = val
+            config.ML_CONFIRMATION_ENABLED = val
+            
+            # If enabling ML on the fly, we might need to train it if not already?
+            if val and not bot.strategy.ml_predictor:
+                 # Attempt lazy load
+                 try:
+                     from .ml_predictor import TradePredictor
+                     pred = TradePredictor()
+                     if pred.train():
+                         bot.strategy.set_ml_predictor(pred)
+                 except:
+                     pass
+            
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] ML Confirmation: {val}", request.remote_addr)
             
         # Force state save if positioning changed
         bot.save_state()

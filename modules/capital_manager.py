@@ -71,33 +71,53 @@ class CapitalManager:
             cls._instance = None
     
     def _save_state(self):
-        """Persist state to file."""
+        """Persist state to Database (SQLAlchemy)."""
         try:
-            os.makedirs('data', exist_ok=True)
-            state = {
-                'total_capital': self.total_capital,
-                'allocations': self.allocations,
-                'pnl': self.pnl,
-                'auto_compound': self.auto_compound,
-                'last_updated': datetime.now().isoformat()
-            }
-            with open(self.state_file, 'w') as f:
-                json.dump(state, f, indent=2)
+            from .database import db_session
+            from .models import CapitalState
+            
+            session = db_session()
+            
+            # Singleton ID = 1
+            state = session.query(CapitalState).filter_by(id=1).first()
+            if not state:
+                state = CapitalState(id=1)
+                session.add(state)
+            
+            state.total_capital = self.total_capital
+            state.allocations = self.allocations
+            state.pnl = self.pnl
+            state.auto_compound = self.auto_compound
+            
+            if self.binance_balance:
+                state.binance_usdt = self.binance_balance.get('usdt', 0.0)
+                state.binance_total_usd = self.binance_balance.get('total_usd', 0.0)
+                
+            session.commit()
+            session.close()
+
         except Exception as e:
-            logger.error(f"Error saving capital state: {e}")
+            logger.error(f"Error saving capital state to DB: {e}")
     
     def _load_state(self):
-        """Load state from file."""
+        """Load state from Database (SQLAlchemy)."""
         try:
-            if os.path.exists(self.state_file):
-                with open(self.state_file, 'r') as f:
-                    state = json.load(f)
-                self.total_capital = state.get('total_capital', 0.0)
-                self.allocations = state.get('allocations', {})
-                self.pnl = state.get('pnl', {})
-                self.auto_compound = state.get('auto_compound', False)
+            from .database import db_session
+            from .models import CapitalState
+            
+            session = db_session()
+            state = session.query(CapitalState).filter_by(id=1).first()
+            
+            if state:
+                self.total_capital = state.total_capital or 0.0
+                self.allocations = state.allocations or {}
+                self.pnl = state.pnl or {}
+                self.auto_compound = state.auto_compound or False
+                
+            session.close()
+                
         except Exception as e:
-            logger.error(f"Error loading capital state: {e}")
+            logger.error(f"Error loading capital state from DB: {e}")
     
     def set_total_capital(self, amount):
         """Set the total capital pool."""

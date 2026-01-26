@@ -18,28 +18,35 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Bot Lifecycle** - Create, start, stop, pause, and delete bot instances
 - **Logs & Audit Trail** - Strategy decisions, errors, and user actions
 - **Backtest Mode** - Test strategies on historical data before going live
-- **Advanced Analytics** - Sharpe Ratio, Profit Factor, and In-Memory Trade Journal
+- **Advanced Analytics** - Sharpe Ratio, Profit Factor, and P&L Thermometer
+- **Missed Trade Log** - Explains why signals were rejected (RSI, Trend, etc.)
 - **Paper Trading Mode** - Simulate live trading execution without real funds (zero risk)
+- **Panic Button** - Global emergency shutdown across all bots directly from dashboard
+- **Heartbeat Monitoring** - Real-time thread health monitoring with Telegram stalls alerts
 
 
 ### 🎯 Spot Trading Strategy
 | Feature | Description |
 |---------|-------------|
 | **RSI-Based Entry** | Buys when RSI < 40 (configurable) with trend confirmation |
-| **Defense Mode (DCA)** | Averages down when price drops >2% AND RSI <30 |
-| **Trailing Stop** | Locks in profits by following price upward |
+| **Defense Mode (DCA)** | Recursive scaling (up to 5+ levels) with geometric position sizing |
+| **Trailing Take-Profit (TTP)** | Secure profits with trigger thresholds and callback distances |
 | **Dynamic Tuning** | Auto-adjusts SL/TP based on real-time volatility (ATR) |
 | **Fear & Greed Integration** | Modifies risk based on market sentiment |
 | **Multi-Timeframe Analysis** | Checks 4H trend before entry (blocks bearish) |
 | **Volume Confirmation** | Requires 1.2x average volume for entries |
 | **Stop-Loss Cooldown** | Waits 30 min after stop-loss before re-entry |
 | **Slippage Tracking** | Monitors expected vs actual fill prices |
+| **Order Book Check** | Verifies depth/spread < 0.5% before entry |
+| **S/R Awareness** | Identifies local Support/Resistance levels |
+| **ML Signal Filter** | Predicts signal quality using Random Forest |
 
 ### 🪜 Grid Trading Bot
 | Feature | Description |
 |---------|-------------|
 | **Range Trading** | Profits from sideways markets with buy-low/sell-high orders |
 | **Auto-Range** | Sets bounds based on volatility (ATR) |
+| **Manual Sell** | "Sell Now" button to liquidate grid position & cancel orders instantly |
 | **Capital-Aware** | Respects minimum order size ($11) and allocated capital |
 | **Dynamic Rebalancing** | Auto-centers grid if price exits range |
 | **Vol-Based Spacing** | Dynamically adjusting grid width based on market volatility |
@@ -54,6 +61,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 ### 📱 Notifications
 - **Telegram Alerts** - Trade executions, errors, hourly heartbeats
 - **Volatility Shifts** - Alerts when ATR changes >20%
+- **Stall Alerts** - Critical notification if a bot process hangs (>5 mins)
 - **Daily Summary** - 8:00 AM report with P&L and Streak stats
 - **Critical Errors** - Immediate notification if bot crashes
 
@@ -218,4 +226,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Last updated: 2026-01-23* (v1.2 - Dynamic Grid & Paper Trading Update)
+*Last updated: 2026-01-26* (v1.4 - Emergency Controls & Resilience Update)
