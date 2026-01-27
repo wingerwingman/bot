@@ -48,7 +48,13 @@ class SentimentAnalyzer:
         url = f"https://cryptopanic.com/api/v1/posts/?auth_token={self.api_key}&currencies={self.symbol}&kind=news&filter=hot"
         
         try:
+            start_time = time.perf_counter()
             response = requests.get(url, timeout=10)
+            latency = (time.perf_counter() - start_time) * 1000 # ms
+            
+            if latency > 2000: # Log latency if slow (>2s)
+                self.logger.warning(f"⚠️ Sentiment API Slow: {latency:.2f}ms")
+            
             data = response.json()
             
             if 'results' not in data:

@@ -3,6 +3,7 @@ import numpy as np
 import os
 import json
 import logging
+import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -107,9 +108,16 @@ class TradePredictor:
             return 0.5  # Neutral / Unknown
         
         try:
+            start_time = time.perf_counter()
+            
             # Arrange feature vector
             feat_vector = pd.DataFrame([features])[self.feature_columns]
             prob_win = self.model.predict_proba(feat_vector)[0][1] # Probability of class 1 (Win)
+            
+            elapsed = (time.perf_counter() - start_time) * 1000 # ms
+            if elapsed > 50: # Log if slow (>50ms)
+                logger.warning(f"⚠️ ML Prediction Slow: {elapsed:.2f}ms")
+            
             return prob_win
         except Exception as e:
             logger.error(f"Error predicting: {e}")
