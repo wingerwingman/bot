@@ -1,5 +1,12 @@
 # Recent Fixes (Session 2026-01-27)
 
+## 0. Paper Trading & Backtesting Price Status/Visibility
+- **Issue**: Bots in Paper or Backtest mode showed "$---" for market price and were hidden from the Spot Bot tab dropdown.
+- **Fix**: 
+    - **Backend**: Added `self.last_price` tracking in `trading_bot.py`. Updated `server.py` to prioritize live prices for Paper Trading and `last_price` for Backtesting.
+    - **Frontend**: Relaxed filtering in `App.js` to include Paper Trading bots in the Spot tab. Added **LIVE/PAPER/SIM** badges to Dashboard.
+- **Affected Files**: `modules/trading_bot.py`, `modules/server.py`, `botfrontend/src/App.js`, `botfrontend/src/components/LiveDashboard.js`, `botfrontend/src/components/BotStatusHeader.js`.
+
 ## 1. Spot Bot "Stopped" / "Looking for Entry" Discrepancy
 - **Issue**: API responses containing `NaN` (from RSI or Volatility) were invalid JSON. This caused the Frontend to receive raw strings instead of objects, breaking the dashboard status and "Protected" amount display.
 - **Fix**: 

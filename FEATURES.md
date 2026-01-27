@@ -47,13 +47,17 @@ CryptoBot/
 | Category | Feature | File(s) | Description |
 | :--- | :--- | :--- | :--- |
 | **Signal Bot** | Live Trading Loop | `trading_bot.py` | Main buy/sell loop with indicators. |
-| | Session Restoration | `trading_bot.py` | `load_state()`/`save_state()` for crash recovery. |
+| | Session Restoration | `trading_bot.py` | Atomic DB state saving (SQLAlchemy) for crash recovery. |
+| | **MTF Trend Filter** | `strategy.py` | 4H MA50 analysis to avoid buying in bearish macro trends. |
+| | **Volume Confirmation**| `strategy.py` | Requires current 15m volume > 1.2x average of last 20. |
+| | **Cooldown Period** | `strategy.py` | Prevents "revenge trading" for X mins after a Stop Loss. |
+| | **History Pre-fill** | `trading_bot.py` | Instant 200m price load on start to bypass warmup. |
 | | Dynamic Auto-Tuning | `trading_bot.py` | Adjusts RSI/SL/Trail based on ATR volatility. |
 | | DCA (Sniper Mode) | `strategy.py`, `trading_bot.py` | Dollar-cost averaging on RSI oversold + price drop. |
 | **Grid Bot** | Grid Trading | `grid_bot.py` | Limit orders at fixed intervals within a range. |
 | | Auto-Range | `grid_bot.py` | ±5% range calculation from current price. |
 | | Fee Simulation | `grid_bot.py` | 0.1% fee deducted in test mode for realistic P&L. |
-| | State Persistence | `grid_bot.py` | Saves fills/profit to `grid_state.json`. |
+| | State Persistence | `grid_bot.py` | Saves fills/profit to Database. |
 | **Capital Manager** | Allocation | `capital_manager.py` | Set % of capital per bot (Signal/Grid). |
 | | P&L Tracking | `capital_manager.py` | Tracks profit per bot separately. |
 | | Auto-Compound | `capital_manager.py` | Toggle to reinvest profits automatically. |
@@ -62,9 +66,13 @@ CryptoBot/
 | | ML Confirmation | `ml_predictor.py` | Predictive signal score (Random Forest). |
 | | S/R Awareness | `strategy.py` | Avoids buying at local resistance. |
 | **Dashboard** | P&L Thermometer | `ControlPanel.js` | Visual progress bar for session profit. |
+| | Rejection Reasons | `server.py` | UI shows exactly why trade was skipped (e.g. "RSI High"). |
 | | Settings Compare | `trading_bot.py` | current vs default parameter reporting. |
 | **Notifications** | Telegram Alerts | `notifier.py` | Real-time buy/sell/error notifications. |
-| **Security** | Env-based Auth | `config.py`, `server.py` | Admin credentials via environment variables. |
+| | IP Ban Recovery | `server.py` | Auto-restarts once Binance ban lifted time is reached. |
+| **Security** | Database (ACID) | `modules/models.py` | SQLAlchemy ORM with SQLite for crash-proof storage. |
+| | Logger Rotation | `logger_setup.py` | 5MB x 5 rotation to prevent disk overflow. |
+| | Env-based Auth | `config.py`, `server.py` | Admin credentials via environment variables. |
 | | CORS Lock | `server.py` | Restricted to `localhost:3000` only. |
 | **Logging** | Audit Trail | `logger_setup.py` | Logs all user actions (start/stop/config). |
 | | Trade Export | `server.py`, `LogsPage.js` | Download trade history as CSV. |
@@ -75,7 +83,6 @@ CryptoBot/
 | | **Grid Matrix** | `BotStatusHeader.js` | Real-time view of all open buy/sell orders in the grid. |
 | | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
 | **Resilience** | Panic Button | `server.py`, `App.js` | Global emergency shutdown & total liquidation. |
-| | IP Ban Recovery | `server.py`, `trading_bot.py` | Auto-detects Binance ban lifted time and restarts. |
 | | Heartbeat Monitor| `server.py`, `notifier.py` | Telegram alerts if bot thread stalls (>5 min). |
 | **Phase 3** | TTP (Trailing) | `strategy.py` | Fixed activation and callback percentages. |
 | | Recursive DCA | `trading_bot.py` | Geometric scaling for up to 5+ levels. |

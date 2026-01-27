@@ -135,10 +135,8 @@ class BinanceTradingBot:
         self.quote_asset = quote_asset or 'USDT' # Default
         self.base_asset = base_asset or 'ETH'   # Default
         
-        # Variables for test mode simulation (legacy, or could be unified)
-        self.balance_usdt = 0 
-        self.eth_bal = 0
-        self.btc_bal = 0
+        # Assets from constructor
+        self.last_price = 0.0
         
         # Health & Reliability (Phase 2)
         self.last_active_timestamp = time.time()
@@ -790,19 +788,54 @@ class BinanceTradingBot:
 
     def fetch_current_volume(self):
         """
-        Fetches the current candle's volume from Binance.
-        Returns volume in base asset units.
+        Fetches the current candle's volume AND previous average volume from Binance.
+        Returns Tuple (current_candle_volume, average_volume_of_past_20)
         """
         try:
-            # Get last 2 candles (current + previous for comparison)
-            klines = self.client.get_klines(symbol=self.symbol, interval='15m', limit=2)
-            if klines and len(klines) >= 1:
-                current_volume = float(klines[-1][5])  # Volume is index 5
-                return current_volume
-            return None
+            # Get last 21 candles (current + 20 previous for average)
+            # Interval is 15m as per fetch_current_volume requirement
+            klines = self.client.get_klines(symbol=self.symbol, interval='15m', limit=21)
+            if klines and len(klines) >= 2:
+                current_volume = float(klines[-1][5])  # Current (open) candle volume
+                
+                # Calculate average of previous 20 CLOSED candles
+                # This prevents the "auto-rejection" bug where we compared current volume against itself
+                previous_klines = klines[:-1]
+                past_volumes = [float(k[5]) for k in previous_klines]
+                avg_volume = sum(past_volumes) / len(past_volumes)
+                
+                return current_volume, avg_volume
+            return None, None
+            return None, None
         except Exception as e:
             self.logger.error(f"Error fetching volume: {e}")
-            return None
+            return None, None
+
+    def prefill_historical_data(self):
+        """
+        Fetches the last 200 minutes of 1m candle data to pre-fill the strategy buffer.
+        Eliminates the 'Warmup' phase for Trend Filters (200 MA).
+        """
+        try:
+            needed = self.strategy.ma_trend_period + 50 # Buffer
+            self.logger.info(f"⏳ Pre-filling history with {needed} candles...")
+            
+            # Fetch 1m candles
+            klines = self.client.get_klines(symbol=self.symbol, interval='1m', limit=needed)
+            
+            if klines:
+                count = 0
+                for k in klines:
+                    # Close price is index 4
+                    price = float(k[4])
+                    self.strategy.update_data(price)
+                    count += 1
+                self.logger.info(f"✅ History Pre-filled: {count} candles loaded. Bot ready to trade immediately.")
+            else:
+                self.logger.warning("⚠️ Failed to pre-fill history (No data returned).")
+                
+        except Exception as e:
+            self.logger.error(f"Error pre-filling history: {e}")
 
     def calculate_slippage(self, expected_price, actual_price, quantity):
         """
@@ -1529,6 +1562,9 @@ class BinanceTradingBot:
                 self.peak_balance = self.quote_balance
 
             if self.is_live_trading or self.filename is None:
+                # Pre-fill data to skip warmup (Paper & Live)
+                self.prefill_historical_data()
+
                 # Send startup notification
                 start_msg = (
                     f"🚀 <b>SPOT BOT STARTED</b>\n"
@@ -1720,101 +1756,102 @@ class BinanceTradingBot:
                     # --- EXECUTE STRATEGY ---
                     current_price = self.check_price()
                     if current_price is not None:
-                         # 1. Update Data
-                         self.strategy.update_data(current_price)
-                         
-                         # NEW: Fetch and update volume data periodically
-                         current_volume = None
-                         if self.strategy.volume_confirmation_enabled:
-                             current_volume = self.fetch_current_volume()
-                             if current_volume:
-                                 self.strategy.update_volume(current_volume)
-                         
-                         # Warmup Check (5 mins) to stabilize RSI
-                         if (time.time() - getattr(self, 'start_time', 0)) < 300:
-                             # Optionally log debug but don't spam
-                             time.sleep(1)
-                             continue
-                         
-                         # 2. Check Signals (SKIP IF PAUSED)
-                         if self.paused:
-                             # Still update data, just don't trade
-                             self.last_price = current_price
-                             time.sleep(1)
-                             continue
-                         
-                         if self.bought_price is None:
-                              # Buy Check (now with volume parameter)
-                              if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
-                                   # Final Check: Order Book (Imp 5)
-                                   sl_price = 0.0
-                                   if self.check_order_book():
-                                       # Dynamic Position Sizing (Risk Parity)
-                                       sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
-                                       invest_qty = self.calculate_position_size(current_price, sl_price)
-                                       
-                                       # Fallback if calc fails or return low
-                                       if invest_qty == 0:
-                                           invest_qty = (self.get_balance(self.quote_asset) * self.position_size_percent) / current_price
-                                       
-                                       invest_amount = invest_qty * current_price
-                                       self.buy(current_price, invest_amount)
-                                   else:
-                                       # Logged in check_order_book
-                                       if config.MISSED_TRADE_LOG_ENABLED:
-                                           logger_setup.log_strategy(f"📉 MISSED TRADE: Order Book Unsafe | Price: ${current_price:.2f}")
-                         else:
-                               # DCA Check (Sniper Mode)
-                              dca_triggered = False
-                              if self.dca_count < self.strategy.dca_max_levels:
-                                  # Cooldown Check (Prevent Spam Loops)
-                                  last_attempt = getattr(self, 'last_dca_attempt', 0)
-                                  if (time.time() - last_attempt) < 60:
-                                      pass # Wait for cooldown
-                                  elif self.strategy.check_dca_signal(current_price, self.bought_price):
-                                      # Calc trigger details for log
-                                      dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.price_history) > 14 else 0
-                                      drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100
-                                      
-                                      # RECURSIVE MULTIPLIER (Phase 3)
-                                      multiplier = self.strategy.dca_multiplier ** self.dca_count
-                                      invest_amount = (self.quote_balance * self.position_size_percent) * multiplier
-                                      
-                                      # Fund safety
-                                      available = self.get_balance(self.quote_asset)
-                                      if invest_amount > available * 0.98:
-                                          invest_amount = available * 0.98
-                                      
-                                      if invest_amount > 10: 
-                                           self.logger.info(f"🛡️ Recursive DCA! Level {self.dca_count+1}/{self.strategy.dca_max_levels} (Mult: {multiplier:.2f}x)")
-                                           logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | Level {self.dca_count+1} | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
-                                           self.buy(current_price, invest_amount, is_dca=True)
-                                           dca_triggered = True
-                                      else:
-                                           self.logger.warning(f"DCA Ignored: Amount ${invest_amount:.2f} too low or no funds.")
+                        # 1. Update Data
+                        self.strategy.update_data(current_price)
+                        
+                        # NEW: Fetch and update volume data periodically
+                        current_volume = None
+                        if self.strategy.volume_confirmation_enabled:
+                            # Returns (current_vol, avg_vol)
+                            current_volume = self.fetch_current_volume()
+                        
+                        # Warmup Check (1 min) to stabilize RSI - Reduced from 5m
+                        if (time.time() - getattr(self, 'start_time', 0)) < 60:
+                            # Optionally log debug but don't spam
+                            time.sleep(1)
+                            continue
+                        
+                        # 2. Check Signals (SKIP IF PAUSED)
+                        if self.paused:
+                            # Still update data, just don't trade
+                            self.last_price = current_price
+                            time.sleep(1)
+                            continue
+                        
+                        if self.bought_price is None:
+                            # Buy Check (now with volume parameter)
+                            # current_volume here is a tuple or None
+                            c_vol, avg_vol = current_volume if isinstance(current_volume, tuple) else (None, None)
+                            
+                            if self.strategy.check_buy_signal(current_price, self.last_price, c_vol, avg_vol):
+                                # Final Check: Order Book (Imp 5)
+                                sl_price = 0.0
+                                if self.check_order_book():
+                                    # Dynamic Position Sizing (Risk Parity)
+                                    sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                    invest_qty = self.calculate_position_size(current_price, sl_price)
+                                    
+                                    # Fallback if calc fails or return low
+                                    if invest_qty == 0:
+                                        invest_qty = (self.get_balance(self.quote_asset) * self.position_size_percent) / current_price
+                                    
+                                    invest_amount = invest_qty * current_price
+                                    self.buy(current_price, invest_amount)
+                                else:
+                                    # Logged in check_order_book
+                                    if config.MISSED_TRADE_LOG_ENABLED:
+                                        logger_setup.log_strategy(f"📉 MISSED TRADE: Order Book Unsafe | Price: ${current_price:.2f}")
+                            else:
+                                # Log why signal was rejected
+                                if self.strategy.last_rejection_reason:
+                                    self.strategy.log_missed_trade(current_price, self.strategy.last_rejection_reason)
+                        else:
+                            # DCA Check (Sniper Mode)
+                            dca_triggered = False
+                            if self.dca_count < self.strategy.dca_max_levels:
+                                # Cooldown Check (Prevent Spam Loops)
+                                last_attempt = getattr(self, 'last_dca_attempt', 0)
+                                if (time.time() - last_attempt) >= 60:
+                                    if self.strategy.check_dca_signal(current_price, self.bought_price):
+                                        # Calc trigger details for log
+                                        dca_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.price_history) > 14 else 0
+                                        drop_pct = ((self.bought_price - current_price) / self.bought_price) * 100
+                                        
+                                        # RECURSIVE MULTIPLIER (Phase 3)
+                                        multiplier = self.strategy.dca_multiplier ** self.dca_count
+                                        invest_amount = (self.quote_balance * self.position_size_percent) * multiplier
+                                        
+                                        # Fund safety
+                                        available = self.get_balance(self.quote_asset)
+                                        if invest_amount > available * 0.98:
+                                            invest_amount = available * 0.98
+                                        
+                                        if invest_amount > 10: 
+                                            self.logger.info(f"🛡️ Recursive DCA! Level {self.dca_count+1}/{self.strategy.dca_max_levels} (Mult: {multiplier:.2f}x)")
+                                            logger_setup.log_strategy(f"🛡️ DEFENSE TRIGGER: Price -{drop_pct:.2f}% | Level {self.dca_count+1} | RSI {dca_rsi:.1f} < {self.strategy.dca_rsi_threshold}")
+                                            self.buy(current_price, invest_amount, is_dca=True)
+                                            dca_triggered = True
+                                        else:
+                                            self.logger.warning(f"DCA Ignored: Amount ${invest_amount:.2f} too low or no funds.")
 
-                              if not dca_triggered:
-                                  # UPDATE UI REAL-TIME STATUS (Trail/SL)
-                                  if self.bought_price:
-                                      u_peak = self.strategy.peak_price_since_buy or current_price
-                                      u_trail = u_peak * (1 - self.strategy.sell_percent)
-                                      u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
-                                      
-                                      # Calculate Target to Lock (Break Even + Fee + Buffer)
-                                      # Buffer used to ensure we only 'lock' once we can actually clear fees
-                                      u_target = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
-                                           
-                                      self.current_trail_price = u_trail
-                                      self.current_hard_stop = u_sl
-                                      self.lock_profit_price = u_target
-                                  
-                                  # Sell Checks
-                                  action = self.strategy.check_sell_signal(current_price, self.bought_price)
-                                  if action == 'SELL' or action == 'STOP_LOSS':
-                                   reason = "Sell" if action == 'SELL' else "Stop-loss Sell"
-                                   
-                                   # --- LOG EXIT CONTEXT (Snapshot) ---
-                                   try:
+                            if not dca_triggered:
+                                # UPDATE UI REAL-TIME STATUS (Trail/SL)
+                                u_peak = self.strategy.peak_price_since_buy or current_price
+                                u_trail = u_peak * (1 - self.strategy.sell_percent)
+                                u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
+                                u_target = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
+                                     
+                                self.current_trail_price = u_trail
+                                self.current_hard_stop = u_sl
+                                self.lock_profit_price = u_target
+                                
+                                # Sell Checks
+                                action = self.strategy.check_sell_signal(current_price, self.bought_price)
+                                if action == 'SELL' or action == 'STOP_LOSS':
+                                    reason = "Sell" if action == 'SELL' else "Stop-loss Sell"
+                                    
+                                    # --- LOG EXIT CONTEXT (Snapshot) ---
+                                    try:
                                         # Calculate Indicators at Exit
                                         rsi_exit = indicators.calculate_rsi(self.strategy.price_history)
                                         macd, hist, signal = indicators.calculate_macd(self.strategy.price_history)
@@ -1830,20 +1867,20 @@ class BinanceTradingBot:
                                         self.logger.info(log_msg)
                                         logger_setup.log_strategy(log_msg)
                                         
-                                   except Exception as e:
+                                    except Exception as e:
                                         self.logger.error(f"Error logging exit snapshot: {e}")
 
-                                   self.sell_position(current_price, reason=reason)
-                                   
-                                   if action == 'STOP_LOSS':
-                                       self.consecutive_stop_losses += 1
-                                   if self.consecutive_stop_losses >= 3:
-                                        self.logger.info("Stopping bot due to 3 consecutive stop losses.")
-                                        self.stop()
-                                   else:
+                                    self.sell_position(current_price, reason=reason)
+                                    
+                                    if action == 'STOP_LOSS':
+                                        self.consecutive_stop_losses += 1
+                                        if self.consecutive_stop_losses >= 3:
+                                            self.logger.info("Stopping bot due to 3 consecutive stop losses.")
+                                            self.stop()
+                                    else:
                                         self.consecutive_stop_losses = 0
 
-                         self.last_price = current_price
+                        self.last_price = current_price
                     
                     time.sleep(1) # React faster (Safe: Weight 1x60 = 60/1200)
             else:
@@ -1978,6 +2015,9 @@ class BinanceTradingBot:
                 self.strategy.update_data(current_price)
                 if current_volume is not None:
                     self.strategy.update_volume(current_volume)
+                
+                # Update last_price for backtest status reporting
+                self.last_price = current_price
                 
                 if self.bought_price is None:
                      if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):

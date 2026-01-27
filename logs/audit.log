@@ -49,3 +49,16 @@
 {"timestamp": "2026-01-27 07:44:25", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
 {"timestamp": "2026-01-27 07:55:55", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
 {"timestamp": "2026-01-27 07:56:00", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
+{"timestamp": "2026-01-27 08:48:10", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: paper, Symbol: BTC"}
+{"timestamp": "2026-01-27 09:17:28", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-27 09:17:31", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
+{"timestamp": "2026-01-27 09:17:41", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: paper, Symbol: BTC"}
+{"timestamp": "2026-01-27 09:19:49", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-27 09:19:52", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
+{"timestamp": "2026-01-27 09:19:55", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: paper, Symbol: BTC"}
+{"timestamp": "2026-01-27 09:51:39", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-27 09:51:44", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
+{"timestamp": "2026-01-27 09:51:54", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: paper, Symbol: BTC"}
+{"timestamp": "2026-01-27 10:05:17", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: live, Symbol: ETH"}
+{"timestamp": "2026-01-27 10:05:23", "ip": "127.0.0.1", "action": "GRID_START", "details": "Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6"}
+{"timestamp": "2026-01-27 10:05:29", "ip": "127.0.0.1", "action": "START_BOT", "details": "Mode: paper, Symbol: BTC"}

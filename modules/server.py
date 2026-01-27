@@ -402,12 +402,13 @@ def get_status():
             volatility = getattr(s, 'current_volatility', None)
 
         try:
-            if bot.is_live_trading:
+            # Paper Trading (is_live=False, filename=None) should still use live prices
+            if bot.is_live_trading or not getattr(bot, 'filename', None):
                 current_price = market_data_manager.get_price(bot.symbol)
             else:
                 current_price = bot.last_price
         except:
-            current_price = bot.last_price
+            current_price = getattr(bot, 'last_price', 0.0)
 
         # Extract detailed strategy info for "Waiting..." status
         strat_details = {}
@@ -475,7 +476,8 @@ def get_status():
                 "trail_price": getattr(bot, 'current_trail_price', None),
                 "stop_loss_price": getattr(bot, 'current_hard_stop', None),
                 "lock_profit_price": getattr(bot, 'lock_profit_price', None),
-                "current_price": current_price
+                "current_price": current_price,
+                "is_live": bot.is_live_trading
             },
             "performance": bot.get_performance_summary() if hasattr(bot, 'get_performance_summary') else {}
         }

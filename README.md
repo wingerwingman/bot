@@ -21,6 +21,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Advanced Analytics** - Sharpe Ratio, Profit Factor, and P&L Thermometer
 - **Missed Trade Log** - Explains why signals were rejected (RSI, Trend, etc.)
 - **Paper Trading Mode** - Simulate live trading execution without real funds (zero risk)
+- **Instant Readiness** - History pre-fill (200m) on startup eliminates the 3+ hour bot warmup phase
 - **Panic Button** - Global emergency shutdown across all bots directly from dashboard
 - **Heartbeat Monitoring** - Real-time thread health monitoring with Telegram stalls alerts
 

@@ -3,6 +3,12 @@
 do not delete this section.
 set bot to start backup after the ban has been lifted if ban error happened.also need to get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
 Updated: 2026-01-27
+- [x] **Fix Paper Trading & Backtesting Status/Visibility (CRITICAL)**
+    - Fixed "$---" market price display by ensuring `last_price` updates in all modes.
+    - Resolved filtering in `App.js` to show Paper Trading bots in the Spot Bot tab.
+    - Added mode badges (LIVE/PAPER/SIM) to Dashboard for visual clarity.
+    - Fixed "not finding entry" bug by correcting Volume Confirmation logic.
+    - Enabled Strategy Rejection Logs to show why trades are skipped in UI.
 - [x] **Fix Spot Bot "Stopped" Status Discrepancy (CRITICAL)**
     - Fixed `NaN` (Not a Number) values in API response causing JSON parsing failures.
     - Implemented recursive JSON parsing in Frontend as a failsafe.
@@ -35,7 +41,17 @@ Updated: 2026-01-27
 - [ ] Fix manual_sell on Grid Bot (currently only Spot)
 - [ ] Add "Sell Now" button to Grid Bot Panel
 - [ ] Implement "Daily Loss Limit" (Risk Management)
-- [ ] Sentiment Analysis (Future)
+- [ ] Multi-Asset Portfolio (Trade multiple pairs simultaneously)
+- [ ] Time-of-Day Filter (Restrict trading to high-volume hours)
+
+## 🔮 FUTURE ROADMAP (Moved from Improvements)
+- [ ] **Asymmetric Grid**: More buy levels below, fewer sells (Accumulation Mode).
+- [ ] **Command Interface**: Control bots via Telegram commands (/status, /stop, /sell).
+- [ ] **Sentiment Analysis**: Integrate Twitter/News sentiment for trade filtration.
+- [ ] **Max Position Size**: Enforce absolute max $ risk per trade (e.g. max $500).
+- [ ] **Correlation Check**: Alert if Grid + Spot bots are concentrated in the same direction.
+- [ ] **Monte Carlo Backtest**: Randomized slippage/delay simulations to find "edge".
+- [ ] **Multi-Strategy Portfolio Manager**: Centrally manage risk across total equity.
 
 ## 📁 FILES MODIFIED THIS SESSION
 - `modules/indicators.py` - Fixed ATR Calculation

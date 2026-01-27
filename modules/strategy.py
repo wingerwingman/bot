@@ -177,7 +177,7 @@ class Strategy:
         remaining = self.cooldown_after_stoploss_minutes - elapsed_minutes
         return max(0, remaining)
     
-    def check_volume_confirmation(self, current_volume):
+    def check_volume_confirmation(self, current_volume, avg_volume_override=None):
         """
         Checks if current volume confirms a strong signal.
         Returns True if volume is above average (or feature disabled).
@@ -185,7 +185,7 @@ class Strategy:
         if not self.volume_confirmation_enabled:
             return True
         
-        avg_volume = indicators.calculate_average_volume(self.volume_history)
+        avg_volume = avg_volume_override if avg_volume_override is not None else indicators.calculate_average_volume(self.volume_history)
         return indicators.is_volume_confirmed(current_volume, avg_volume, self.volume_multiplier)
     
     def check_higher_timeframe_trend(self):
@@ -207,7 +207,7 @@ class Strategy:
         self.peak_price_since_buy = None
         self.ttp_active = False
 
-    def check_buy_signal(self, current_price, last_price, current_volume=None):
+    def check_buy_signal(self, current_price, last_price, current_volume=None, avg_volume_override=None):
         """
         Determines if a buy signal is generated based on:
         - COOLDOWN: Skip if recently stopped out
@@ -252,11 +252,11 @@ class Strategy:
             return False
         
         # ===== NEW FILTER #3: VOLUME CONFIRMATION =====
-        if current_volume is not None and not self.check_volume_confirmation(current_volume):
+        if current_volume is not None and not self.check_volume_confirmation(current_volume, avg_volume_override):
             avg_vol = indicators.calculate_average_volume(self.volume_history)
             if avg_vol:
                 needed = avg_vol * self.volume_multiplier
-                # logger_setup.log_strategy(f"📉 BUY REJECTED: Low volume ({current_volume:.0f} < {needed:.0f} required)")
+                self.last_rejection_reason = f"Low Volume ({current_volume:.0f} < {needed:.0f})"
             return False
             
         # ===== NEW FILTER #4: SENTIMENT ANALYSIS =====
