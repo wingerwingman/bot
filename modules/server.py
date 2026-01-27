@@ -10,6 +10,7 @@ import json
 from . import config
 from .trading_bot import BinanceTradingBot
 from . import indicators
+from .market_data_manager import market_data_manager
 from . import logger_setup
 from . import notifier
 from .grid_bot import GridBot, calculate_auto_range
@@ -220,13 +221,22 @@ def find_spot_bot(identifier):
              stripped = identifier.replace("spot_", "")
              return spot_bots[stripped], stripped
         
-        # Try mode prefixes
+        # Try Mode Prefixes (Case-Insensitive)
+        ident_lower = identifier.lower()
         for prefix in ['live_', 'test_']:
-            key = f"{prefix}{identifier}"
-            if key in spot_bots:
-                return spot_bots[key], key
+            key = f"{prefix}{ident_lower}"
+            # Case-insensitive search in keys
+            for actual_key in list(spot_bots.keys()):
+                if actual_key.lower() == key:
+                    return spot_bots[actual_key], actual_key
         
-        # Search by symbol value
+        # Search by symbol value (Exact or Normalized)
+        symbol_norm = identifier.replace('_', '').replace('-', '').upper()
+        for k, b in spot_bots.items():
+            if b.symbol.replace('_', '').replace('-', '').upper() == symbol_norm:
+                return b, k
+            if k.lower() == ident_lower:
+                return b, k
         for key, bot in spot_bots.items():
             if bot.symbol == identifier:
                 return bot, key
@@ -252,56 +262,15 @@ def get_status():
     # Helper to get live prices and volatility
     # Helper to get live prices and volatility
     def get_market_data():
-        global cached_client
+        # Use MarketDataManager (centralized rest caching & websets)
+        status = market_data_manager.get_market_status("ETHUSDT")
+        if not status:
+             return None, None, None
         
-        # Simple lockout mechanism (using function attribute for persistence)
-        if hasattr(get_market_data, 'banned_until') and  time.time() < get_market_data.banned_until:
-            return 0.0, 0.0, 0.0
-
-        try:
-            from binance import Client, BinanceAPIException
-            if cached_client is None:
-                 cached_client = Client(config.API_KEY, config.API_SECRET, tld='us')
-            
-            eth_ticker = cached_client.get_symbol_ticker(symbol='ETHUSDT')
-            eth_price = float(eth_ticker['price'])
-            
-            btc_ticker = cached_client.get_symbol_ticker(symbol='BTCUSDT')
-            btc_price = float(btc_ticker['price'])
-            
-            # Calculate Volatility (14-day ATR)
-            klines = cached_client.get_historical_klines("ETHUSDT", Client.KLINE_INTERVAL_1DAY, "14 day ago UTC")
-            atr = indicators.calculate_volatility_from_klines(klines, 14)
-            volatility = atr / eth_price if eth_price else 0
-            
-            return eth_price, btc_price, volatility
-        except BinanceAPIException as e:
-            if e.code == -1003:
-                unban_str = ""
-                try:
-                     match = re.search(r'until\s+(\d+)', e.message)
-                     if match:
-                         ts = int(match.group(1)) / 1000.0
-                         # datetime import check needed? server.py imports time, need datetime for nice formatting or just use timestamp
-                         # server.py doesn't strictly import datetime yet. Let's just print simple message or use time.ctime
-                         dt = time.ctime(ts)
-                         unban_str = f" (Lifted: {dt})"
-                except:
-                     pass
-
-                print(f"🚨 SERVER IP BANNED. Pausing market data fetch for 5 mins.{unban_str}")
-                get_market_data.banned_until = time.time() + 300 # 5 mins
-            else:
-                print(f"Binance API Error in Status: {e}")
-            return None, None, None
-        except Exception as e:
-            err_str = str(e)
-            if "Read timed out" in err_str or "Network is unreachable" in err_str:
-                # Be quiet about network errors
-                return None, None, None
-                
-            print(f"Error fetching market status: {e}")
-            return None, None, None
+        # We also need BTC for the dashboard top-bar
+        btc_price = market_data_manager.get_price("BTCUSDT")
+        
+        return status['price'], btc_price, status['volatility']
     
     # If specific symbol requested, return details for that bot
     req_symbol = request.args.get('symbol')
@@ -328,15 +297,20 @@ def get_status():
                     "missed": getattr(s, 'missed_trade_log_enabled', False)
                 }
 
+            status_str = "running" if bot.running else "stopped"
             active_bots.append({
                 "id": f"spot_{bot_key}",  # bot_key is already mode_symbol
                 "symbol": bot.symbol,
                 "type": "spot",
-                "status": "running" if bot.running else "stopped",
+                "status": status_str,
                 "profit": net_profit,
                 "is_live": bot.is_live_trading,
-                "strategy": strategy_flags
+                "strategy": strategy_flags,
+                "ban_until": bot.ban_until,
+                "paused": getattr(bot, 'paused', False)
             })
+
+
 
     # Add Grid Bots
     with grid_lock:
@@ -348,7 +322,9 @@ def get_status():
                 "type": "grid",
                 "status": "running" if bot.running else "stopped",
                 "profit": s.get('total_profit', 0),
-                "is_live": bot.is_live
+                "is_live": bot.is_live,
+                "ban_until": getattr(bot, 'ban_until', None),
+                "paused": getattr(bot, 'paused', False)
             })
 
     # Basic market prices (ETH/BTC) for dashboard header
@@ -375,13 +351,18 @@ def get_status():
         if not bot:
              # If still not found, return idle.
              # Debug: Return available keys to help diagnose mismatch
+             debug_keys = list(spot_bots.keys())
+             logging.getLogger("BinanceTradingBot").warning(f"get_status: Bot not found for key='{target_key}'. Available: {debug_keys}")
              return jsonify({
                  "status": "idle", 
                  "running": False, 
                  "symbol": req_symbol,
                  "target_key": target_key,
-                 "debug_available_keys": list(spot_bots.keys())
+                 "debug_available_keys": debug_keys
              })
+        
+        # logging.getLogger("BinanceTradingBot").debug(f"get_status: Found bot {actual_key}, running={bot.running}")
+
         
         # ... Reuse logic to extract detailed metrics for ONE bot ...
         # Calculate Realtime Metrics
@@ -422,8 +403,7 @@ def get_status():
 
         try:
             if bot.is_live_trading:
-                ticker = bot.client.get_symbol_ticker(symbol=bot.symbol)
-                current_price = float(ticker['price'])
+                current_price = market_data_manager.get_price(bot.symbol)
             else:
                 current_price = bot.last_price
         except:
@@ -442,19 +422,31 @@ def get_status():
                  else:
                      last_rsi = 50.0
                  
+                 # Sanitize NaN values for JSON safety
+                 safe_rsi = 50.0
+                 if last_rsi is not None and str(last_rsi).lower() != 'nan':
+                     safe_rsi = last_rsi
+                 
+                 cur_vol_raw = getattr(bot.strategy, 'current_volatility', 0)
+                 cur_vol = 0.0
+                 if cur_vol_raw is not None and str(cur_vol_raw).lower() != 'nan':
+                     cur_vol = cur_vol_raw
+
                  strat_details = {
-                     "current_rsi": last_rsi or 50.0,
+                     "current_rsi": safe_rsi,
                      "target_rsi": getattr(bot.strategy, 'rsi_threshold_buy', 40),
-                     "current_vol": getattr(bot.strategy, 'current_volatility', 0),
+                     "current_vol": cur_vol,
                      "last_rejection": getattr(bot.strategy, 'last_rejection_reason', 'Analyzing...'),
                      "cooling_down": bot.strategy.is_in_cooldown(),
-                     "cooldown_remaining": bot.strategy.get_cooldown_remaining()
+                     "cooldown_remaining": bot.strategy.get_cooldown_remaining(),
+                     "ban_until": bot.ban_until,
+                     "consecutive_stop_losses": getattr(bot, 'consecutive_stop_losses', 0)
                  }
              except Exception as ex:
                  print(f"Strat details error: {ex}")
 
-        return jsonify({
-            "status": "online",
+        response_data = {
+            "status": "running" if bot.running else "stopped",
             "running": bot.running,
             "mode": "Live" if bot.is_live_trading else "Test",
             "is_paper": (not bot.is_live_trading and not bot.filename),
@@ -485,10 +477,11 @@ def get_status():
                 "lock_profit_price": getattr(bot, 'lock_profit_price', None),
                 "current_price": current_price
             },
-            # Also include the full list for the generic updater? 
-            # Ideally the frontend polls /status for the list and /status?symbol=X for details.
-            # But the frontend expects 'active_bots' in the main response potentially.
-        })
+            "performance": bot.get_performance_summary() if hasattr(bot, 'get_performance_summary') else {}
+        }
+        
+        # Debug: Log what we are sending
+        return jsonify(response_data)
 
     # Default / Main Dashboard Response: Return List of Bots + Market Data
     return jsonify({
@@ -627,30 +620,12 @@ def get_market_status():
     symbol = request.args.get('symbol', 'ETH')
     base_pair = f"{symbol}USDT"
     
-    try:
-        from binance import Client
-        client = Client(config.API_KEY, config.API_SECRET, tld='us')
-        try:
-           price = float(client.get_symbol_ticker(symbol=base_pair)['price'])
-        except Exception:
-           # Fallback or error if symbol invalid
-           return jsonify({"error": f"Invalid symbol: {symbol}", "symbol": symbol}), 400
+    # Use centralized manager
+    status = market_data_manager.get_market_status(base_pair)
+    if not status:
+        return jsonify({"error": f"Failed to fetch status for {symbol}", "symbol": symbol, "price": None, "volatility": None})
         
-        # Calculate Volatility (14-day ATR)
-        klines = client.get_historical_klines(base_pair, Client.KLINE_INTERVAL_1DAY, "14 day ago UTC")
-        atr = indicators.calculate_volatility_from_klines(klines, 14)
-        
-        # Normalize to percentage
-        volatility = atr / price if price else 0
-        
-        return jsonify({
-            "symbol": symbol,
-            "price": price,
-            "volatility": volatility
-        })
-    except Exception as e:
-        print(f"Error fetching market status for {symbol}: {e}")
-        return jsonify({"error": str(e), "symbol": symbol, "price": None, "volatility": None})
+    return jsonify(status)
 
 @app.route('/api/datafiles', methods=['GET'])
 def get_datafiles():
@@ -693,12 +668,16 @@ def get_symbols():
 def get_balances():
     """Returns all balances from Binance account with USD values."""
     try:
-        from binance import Client
-        client = Client(config.API_KEY, config.API_SECRET, tld='us')
-        account_info = client.get_account()
-        
-        # Fetch all prices for USD conversion
-        all_prices = {p['symbol']: float(p['price']) for p in client.get_all_tickers()}
+        # Use centralized caching (Weight 20)
+        account_info = market_data_manager.get_account_info()
+        if not account_info:
+             return jsonify({"error": "Failed to fetch balances"}), 500
+             
+        # Fetch prices for conversion (using shared prices dictionary)
+        # Priming the cache with all prices if empty
+        all_prices = market_data_manager.prices
+        if not all_prices:
+            all_prices = market_data_manager.get_all_prices()
         
         important = ['USDT', 'USD', 'ETH', 'BTC', 'BNB', 'SOL']
         balances = []
@@ -709,7 +688,6 @@ def get_balances():
             total = free + locked
             
             if total > 0 or b['asset'] in important:
-                # Calculate USD value
                 asset = b['asset']
                 usd_value = 0.0
                 
@@ -719,8 +697,6 @@ def get_balances():
                     usd_value = total * all_prices[f"{asset}USDT"]
                 elif f"{asset}USD" in all_prices:
                     usd_value = total * all_prices[f"{asset}USD"]
-                elif f"{asset}BTC" in all_prices and 'BTCUSDT' in all_prices:
-                    usd_value = total * all_prices[f"{asset}BTC"] * all_prices['BTCUSDT']
                 
                 balances.append({
                     'asset': asset,
@@ -1861,6 +1837,8 @@ def delete_grid_bot():
             logging.getLogger("BinanceTradingBot").error(f"Delete Grid Bot Code Error: {e}")
             return jsonify({"error": str(e)}), 500
 
+
+
 @app.route('/api/grid/status', methods=['GET'])
 def grid_status():
     """Get Grid Bot status."""
@@ -1962,8 +1940,52 @@ def clear_grid():
 
 @app.route('/api/capital/status', methods=['GET'])
 def capital_status():
-    """Get capital allocation status."""
-    return jsonify(capital_manager.get_status())
+    """Get capital allocation status with real-time utilization."""
+    status = capital_manager.get_status()
+    
+    # --- Inject Real-Time Utilization (Protected Amount) ---
+    signal_protected = 0.0
+    grid_protected = 0.0
+    
+    # 1. Calculate Spot Bot Utilization (Value of held positions)
+    with bot_lock:
+        for bot in spot_bots.values():
+            # Only count if bot holds base asset (Position Open)
+            if bot.base_balance > 0:
+                # Use current price if available
+                price = bot.last_price
+                try:
+                    # Try to get fresher price from market manager if possible
+                    p = market_data_manager.get_price(bot.symbol)
+                    if p: price = p
+                except: pass
+                
+                val = bot.base_balance * price
+                signal_protected += val
+
+    # 2. Calculate Grid Bot Utilization (Value of Active Orders)
+    with grid_lock:
+        for bot in grid_bots.values():
+            if bot.running:
+                # Sum up active orders
+                for o in bot.active_orders:
+                    if o['side'] == 'BUY':
+                        # Limit Buy: Money locked in Quote
+                        grid_protected += float(o['price']) * float(o['qty'])
+                    elif o['side'] == 'SELL':
+                        # Limit Sell: Money locked in Base (convert to USD)
+                        # We need current price to estimate USD value of Base
+                        price = bot.get_current_price() or 0
+                        grid_protected += float(o['qty']) * price
+    
+    # Inject into response
+    if 'signal' in status['bots']:
+        status['bots']['signal']['protected'] = signal_protected
+    
+    if 'grid' in status['bots']:
+        status['bots']['grid']['protected'] = grid_protected
+
+    return jsonify(status)
 
 @app.route('/api/capital/set', methods=['POST'])
 def set_capital():

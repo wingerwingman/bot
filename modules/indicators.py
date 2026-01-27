@@ -191,3 +191,19 @@ def calculate_support_resistance(klines, window=50):
         print(f"Error calculating S/R: {e}")
         return {'support': None, 'resistance': None}
 
+
+def calculate_slope(series, period=5):
+    """Calculates the slope of a series (e.g., Moving Average) over a period."""
+    if len(series) < period:
+        return 0.0
+    
+    # Simple linear approximation: (y2 - y1) / x_dist
+    y_values = list(series)[-period:]
+    return (y_values[-1] - y_values[0]) / period
+
+def calculate_volume_ratio(volume_history, current_volume, period=20):
+    """Calculates the ratio of current volume to average volume."""
+    avg_vol = calculate_average_volume(volume_history, period)
+    if not avg_vol:
+        return 1.0
+    return current_volume / avg_vol

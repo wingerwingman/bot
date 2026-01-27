@@ -1,4 +1,25 @@
-# Recent Fixes (Session 2026-01-23)
+# Recent Fixes (Session 2026-01-27)
+
+## 1. Spot Bot "Stopped" / "Looking for Entry" Discrepancy
+- **Issue**: API responses containing `NaN` (from RSI or Volatility) were invalid JSON. This caused the Frontend to receive raw strings instead of objects, breaking the dashboard status and "Protected" amount display.
+- **Fix**: 
+    - **Backend**: Sanitized `NaN` values in `server.py` (defaulting to 0.0 or 50.0).
+    - **Frontend**: Implemented recursive `JSON.parse` in `LiveDashboard.js` to handle any level of string nesting.
+- **Affected Files**: `modules/server.py`, `botfrontend/src/components/LiveDashboard.js`.
+
+## 2. Heartbeat Crash (`UnboundLocalError`)
+- **Issue**: Log message in heartbeat loop referenced `sl_price` before it was assigned.
+- **Fix**: Replaced with `self.current_hard_stop`.
+- **Affected Files**: `modules/trading_bot.py`.
+
+## 3. Server Startup Syntax Error
+- **Issue**: Duplicate `})` closing brace in `server.py` prevented startup.
+- **Fix**: Removed extra brace.
+- **Affected Files**: `modules/server.py`.
+
+---
+
+# Previous Fixes (Session 2026-01-23)
 
 ## 1. Backtest Performance Metrics (Sharpe, Profit Factor)
 - **Issue**: Metrics like Sharpe Ratio, Profit Factor, and detailed Trade Journal were missing or limited for backtesting/paper trading modes, making it hard to evaluate strategy performance.

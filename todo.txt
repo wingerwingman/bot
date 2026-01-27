@@ -2,12 +2,15 @@
 -------------------------------
 do not delete this section.
 set bot to start backup after the ban has been lifted if ban error happened.also need to get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
-still need to fix the spot bot saying stopped when it is running for a long time before it updates and shows the bot running again.
---------------------------------
-
-
-Updated: 2026-01-23
-- [x] **Add "Amount Bought ($)" to Trade Journal**
+Updated: 2026-01-27
+- [x] **Fix Spot Bot "Stopped" Status Discrepancy (CRITICAL)**
+    - Fixed `NaN` (Not a Number) values in API response causing JSON parsing failures.
+    - Implemented recursive JSON parsing in Frontend as a failsafe.
+    - Standardized API status strings ("running"/"stopped").
+- [x] **Add "Active Grid Matrix" to Dashboard**
+    - Displays real-time Open Buy/Sell orders with price/qty for Grid Bots.
+- [x] **Fix Bot Crash in Heartbeat Log**
+    - Fixed `UnboundLocalError` related to `sl_price`.
     - Added `Value ($)` column to Control Panel Trade Journal table.
     - Shows Cost Basis (`entry_value`) for Sells to indicate original investment size.
 

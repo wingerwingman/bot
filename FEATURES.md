@@ -72,6 +72,7 @@ CryptoBot/
 | | In-Memory Journal | `trading_bot.py` | Full trade history for Test/Paper sessions. |
 | **Frontend** | Capital Panel | `CapitalPanel.js` | Sliders for allocation, **Privacy Toggle**. |
 | | Grid Panel | `GridBotPanel.js` | Grid settings, status, reset history, **Manual Sell**. |
+| | **Grid Matrix** | `BotStatusHeader.js` | Real-time view of all open buy/sell orders in the grid. |
 | | DCA Toggle | `ControlPanel.js` | Enable/disable Defense Mode. |
 | **Resilience** | Panic Button | `server.py`, `App.js` | Global emergency shutdown & total liquidation. |
 | | IP Ban Recovery | `server.py`, `trading_bot.py` | Auto-detects Binance ban lifted time and restarts. |

@@ -26,6 +26,8 @@ except ImportError:
     ML_AVAILABLE = False
     print("⚠️  ML Module (scikit-learn) not found. ML features will be disabled.")
 
+from .market_data_manager import market_data_manager
+
 class BinanceTradingBot:
     """
     Main Trading Bot Class.
@@ -232,7 +234,10 @@ class BinanceTradingBot:
                      print("WARNING: Balances appear low. Ensure you have enough to trade.")
 
         else:
-             self.symbol = 'ETHUSDT' # Test default
+             # Standardize symbol for non-live modes (Paper/Backtest)
+             self.symbol = f"{self.base_asset}{self.quote_asset}"
+             self.quote_balance = allocated_capital if allocated_capital > 0 else 1000.0
+             self.base_balance = 0
 
         # Now that self.symbol is defined, fetch filters
         if self.is_live_trading:
@@ -331,6 +336,9 @@ class BinanceTradingBot:
                         self.logger.debug(f"Deleted previous state file: {state_file}")
                     except Exception as e:
                         self.logger.error(f"Failed to delete state file: {e}")
+
+            # Start MarketData stream for this symbol
+            market_data_manager.start_symbol(self.symbol)
 
         self.logger.debug("__init__ completed")
 
@@ -546,6 +554,11 @@ class BinanceTradingBot:
                 self.strategy.peak_price_since_buy = float(state.peak_price)
                 self.logger.debug(f"Restored Peak Price: ${self.strategy.peak_price_since_buy}")
 
+            # Restore Stop Loss (Protected Amount)
+            if state.stop_loss_price:
+                self.current_hard_stop = float(state.stop_loss_price)
+                self.logger.debug(f"Restored Stop Loss: ${self.current_hard_stop}")
+
             # Log restoration
             updated_at = state.updated_at.strftime("%Y-%m-%d %H:%M:%S") if state.updated_at else "Unknown"
             log_msg = (
@@ -642,8 +655,9 @@ class BinanceTradingBot:
     def check_price(self):
         self.last_active_timestamp = time.time()
         try:
-            ticker = self.client.get_symbol_ticker(symbol=self.symbol)
-            return float(ticker['price'])
+            # Use MarketDataManager (WebSocket / Cached REST)
+            price = market_data_manager.get_price(self.symbol)
+            return price
         except BinanceAPIException as e:
             if e.code == -1003:
                 unban_str = ""
@@ -684,10 +698,13 @@ class BinanceTradingBot:
     def get_balance(self, asset):
         try:
             if self.is_live_trading:
-                account_info = self.client.get_account()
-                for balance in account_info['balances']:
-                    if balance['asset'] == asset:
-                        free = float(balance['free'])
+                # Use MarketDataManager cached account info (Saves weight 20)
+                account = market_data_manager.get_account_info()
+                if not account:
+                     return 0.0
+                for b in account['balances']:
+                    if b['asset'] == asset:
+                        free = float(b['free'])
                         # Grid Bot Awareness: If Grid Bot is running, its funds are LOCKED. 
                         # This FREE balance is safe to use.
                         if hasattr(self, 'symbol') and self.symbol and asset == self.base_asset and os.path.exists(f"data/grid_state_{self.symbol}.json"):
@@ -1286,6 +1303,8 @@ class BinanceTradingBot:
                                 'rsi': round(rsi_val, 2) if rsi_val else None,
                                 'macd_hist': round(hist, 4) if hist else None,
                                 'volatility': round(self.last_volatility * 100, 2) if self.last_volatility else None,
+                                'volume_ratio': round(indicators.calculate_volume_ratio(self.strategy.volume_history, self.last_volume), 2) if hasattr(self, 'last_volume') and self.last_volume else 1.0,
+                                'fast_ma_slope': round(indicators.calculate_slope([indicators.calculate_ma(list(self.strategy.price_history)[:i], self.strategy.ma_fast_period) for i in range(-5, 0)]), 4) if len(self.strategy.price_history) >= 25 else 0.0,
                                 'fear_greed': self.fear_greed_index
                             },
                             'balance_after': self.quote_balance
@@ -1353,6 +1372,15 @@ class BinanceTradingBot:
                      self.update_metrics(profit_amount, self.quote_balance)
                      
                      net_pnl = self.gross_profit - self.gross_loss
+                     
+                     # --- SYNC WITH CAPITAL MANAGER ---
+                     try:
+                         from .capital_manager import capital_manager
+                         # 'signal' is the generic ID for the Spot Bot in Capital Manager
+                         capital_manager.record_trade('signal', profit_amount, profit_amount > 0)
+                     except Exception as e:
+                         self.logger.error(f"Capital Manager Sync Error: {e}")
+                     
                      win_rate = (self.winning_trades / self.total_trades * 100) if self.total_trades > 0 else 0
                      
                      # NEW: Record trade duration
@@ -1430,6 +1458,8 @@ class BinanceTradingBot:
                                  'rsi': round(rsi_val, 2) if rsi_val else None,
                                  'macd_hist': round(hist, 4) if hist else None,
                                  'volatility': round(self.last_volatility * 100, 2) if self.last_volatility else None,
+                                 'volume_ratio': round(indicators.calculate_volume_ratio(self.strategy.volume_history, self.last_volume), 2) if hasattr(self, 'last_volume') and self.last_volume else 1.0,
+                                 'fast_ma_slope': round(indicators.calculate_slope([indicators.calculate_ma(list(self.strategy.price_history)[:i], self.strategy.ma_fast_period) for i in range(-5, 0)]), 4) if len(self.strategy.price_history) >= 25 else 0.0,
                                  'fear_greed': self.fear_greed_index
                              },
                              'session_stats': {
@@ -1479,7 +1509,10 @@ class BinanceTradingBot:
         self.logger.debug("Starting run method...")
         try:
             if self.is_live_trading:
-                # Re-check resume logic
+                # 0. Load State from DB (Priority)
+                self.load_state()
+                
+                # Re-check resume logic (CSV Backup)
                 self.check_trade_log_and_resume()
                 
             # FREQUENCY UPDATE: Check every 5 minutes (User Preference)
@@ -1522,28 +1555,9 @@ class BinanceTradingBot:
                              profit_pct = ((current_price - self.bought_price) / self.bought_price) * 100
                              peak = self.strategy.peak_price_since_buy or current_price
                              
-                             # Calculate Trail Price (Potential Profit Sell)
-                             trail_dist = self.strategy.sell_percent
-                             trail_price = peak * (1 - trail_dist)
-                             
-                             # Calculate Break Even
-                             sl_price = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
-                             break_even = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
-                             
-                             # EXPOSE FOR UI
-                             self.current_trail_price = trail_price
-                             self.current_hard_stop = sl_price
-                             
-                             # Determine status
-                             if peak > break_even:
-                                 trail_profit_pct = ((trail_price - self.bought_price) / self.bought_price) * 100
-                                 sell_trigger_msg = f"Trail Stop: {trail_price:.2f} (Profit: {trail_profit_pct:.2f}%)"
-                             else:
-                                 # Show Shadow Trail even if inactive
-                                 dist_to_activate = ((break_even - peak) / peak) * 100
-                                 sell_trigger_msg = f"Trail Stop: {trail_price:.2f} (Inactive - Need +{dist_to_activate:.2f}%)"
-                                 
-                             self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | {sell_trigger_msg} | SL < {sl_price:.2f}")
+                             # Heartbeat - Simple log (Logic moved to main loop)
+                             sl_display = self.current_hard_stop if getattr(self, 'current_hard_stop', None) else 0.0
+                             self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | SL < {sl_display:.2f}")
                              
                          else:
                              # BUY STATUS (RSI Scanner)
@@ -1733,6 +1747,7 @@ class BinanceTradingBot:
                               # Buy Check (now with volume parameter)
                               if self.strategy.check_buy_signal(current_price, self.last_price, current_volume):
                                    # Final Check: Order Book (Imp 5)
+                                   sl_price = 0.0
                                    if self.check_order_book():
                                        # Dynamic Position Sizing (Risk Parity)
                                        sl_price = current_price * (1 - self.strategy.fixed_stop_loss_percent)
@@ -1785,10 +1800,9 @@ class BinanceTradingBot:
                                       u_trail = u_peak * (1 - self.strategy.sell_percent)
                                       u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
                                       
-                                      if self.strategy.sell_percent < 1:
-                                           u_target = self.bought_price / (1 - self.strategy.sell_percent)
-                                      else:
-                                           u_target = 0
+                                      # Calculate Target to Lock (Break Even + Fee + Buffer)
+                                      # Buffer used to ensure we only 'lock' once we can actually clear fees
+                                      u_target = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
                                            
                                       self.current_trail_price = u_trail
                                       self.current_hard_stop = u_sl
@@ -1843,24 +1857,26 @@ class BinanceTradingBot:
             self.shutdown_bot()
         finally:
             self.running = False
-            self.logger.info("Bot execution loop ended. Status set to Stopped.")
+            self.logger.info(f"Bot execution loop ended. Status set to Stopped. (Running flag: {self.running})")
+            print("DEBUG: Bot execution loop ended.")
 
     def test(self):
         try:
             historical_data = pd.read_csv(self.filename)
             historical_data['Timestamp'] = pd.to_datetime(historical_data['Timestamp'])
 
-            # Pre-calculate Volatility for dynamic settings backtesting
             # Use 24h window (assuming 15m default i.e. 96 periods) or fallback to 50
             # rolling std / rolling mean
             vol_window = 96
-            historical_data['RollingVol'] = historical_data['Price'].rolling(window=vol_window).std() / historical_data['Price'].rolling(window=vol_window).mean()
+            # Use 'Close' if 'Price' not found
+            price_col = 'Close' if 'Close' in historical_data.columns else 'Price'
+            historical_data['RollingVol'] = historical_data[price_col].rolling(window=vol_window).std() / historical_data[price_col].rolling(window=vol_window).mean()
             
             # --- BACKTEST CONFIGURATION ---
-            initial_balance = 1000.0
+            initial_balance = self.allocated_capital if self.allocated_capital > 0 else 1000.0
             self.quote_balance = initial_balance
             self.base_balance = 0
-            self.quote_asset = 'USDT'
+            # Asset configuration is already set in __init__
             
             # Reset Metrics for Test
             self.total_trades = 0
@@ -1873,16 +1889,7 @@ class BinanceTradingBot:
             self.trade_journal.clear()
 
             
-            # Detect Asset from Filename
-            fname = os.path.basename(self.filename).lower()
-            if 'btc' in fname: self.base_asset = 'BTC'; self.symbol = 'BTCUSDT'
-            elif 'sol' in fname: self.base_asset = 'SOL'; self.symbol = 'SOLUSDT'
-            elif 'bnb' in fname: self.base_asset = 'BNB'; self.symbol = 'BNBUSDT'
-            elif 'xrp' in fname: self.base_asset = 'XRP'; self.symbol = 'XRPUSDT'
-            elif 'zec' in fname: self.base_asset = 'ZEC'; self.symbol = 'ZECUSDT'
-            else: self.base_asset = 'ETH'; self.symbol = 'ETHUSDT'
-            
-            
+            # Asset from constructor is already standard. 
             self.last_price = None
             
             # Initial Volatility
@@ -1910,7 +1917,8 @@ class BinanceTradingBot:
             last_tuning_index = 0
             
             for index, row in historical_data.iterrows():
-                current_price = row['Price']
+                # Data Downloader uses 'Close' vs 'Price'
+                current_price = row['Close'] if 'Close' in row else row['Price']
                 
                 # Update Volatility from Historical Data
                 if 'RollingVol' in row and not pd.isna(row['RollingVol']):

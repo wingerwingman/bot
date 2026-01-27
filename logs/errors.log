@@ -1,10 +1,40 @@
-2026-01-26 12:40:33,803 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:42:26,223 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:42:57,107 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:43:13,126 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x76e9c595d870>: Failed to resolve 'api.binance.us' ([Errno -3] Temporary failure in name resolution)"))
-2026-01-26 12:43:36,777 - WARNING - Network Error (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Max retries exceeded with url: /api/v3/ticker/price?symbol=ETHUSDT (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x76e9c590ae00>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
-2026-01-26 12:44:13,094 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:44:53,205 - ERROR - Error fetching volume: HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:47:52,109 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:48:13,567 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
-2026-01-26 12:50:47,327 - WARNING - Connection unstable (Retrying in 5s): HTTPSConnectionPool(host='api.binance.us', port=443): Read timed out. (read timeout=10)
+2026-01-26 16:59:07,746 - ERROR - An error occurred in run: local variable 'sl_price' referenced before assignment
+Traceback (most recent call last):
+  File "/home/wingerwingman/Projects/CryptoBot/modules/trading_bot.py", line 1551, in run
+    self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | SL < {sl_price:.2f}")
+UnboundLocalError: local variable 'sl_price' referenced before assignment
+2026-01-26 17:23:48,524 - ERROR - Telegram connection error: HTTPSConnectionPool(host='api.telegram.org', port=443): Max retries exceeded with url: /bot8041314417:AAG6SYaSR1IsLdE7jArlKPQHzY5PkjBWiWM/sendMessage (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7357c8c88640>: Failed to resolve 'api.telegram.org' ([Errno -3] Temporary failure in name resolution)"))
+2026-01-26 18:23:28,341 - ERROR - An error occurred in run: local variable 'sl_price' referenced before assignment
+Traceback (most recent call last):
+  File "/home/wingerwingman/Projects/CryptoBot/modules/trading_bot.py", line 1551, in run
+    self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | SL < {sl_price:.2f}")
+UnboundLocalError: local variable 'sl_price' referenced before assignment
+2026-01-27 06:33:14,412 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:33:14,914 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:33:15,269 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:33:15,656 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:33:16,723 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:33:18,714 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:57:24,093 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:57:24,444 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:57:25,022 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 06:57:26,323 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:08:12,445 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:13:31,715 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:13:32,088 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:13:32,659 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:13:33,009 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:13:34,549 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:23:55,048 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:23:59,831 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:24:00,994 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:24:01,304 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:24:03,070 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:44:13,130 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:44:13,451 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:44:13,766 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:44:15,280 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:55:50,986 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:55:51,306 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:55:51,925 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 07:55:53,578 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []

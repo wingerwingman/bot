@@ -319,10 +319,24 @@ class Strategy:
         # Build extra confirmation string
         extra_conf = ""
         if self.ml_confirmation_enabled and self.ml_predictor:
-             # Just re-predict for log (cheap) or store it
-             pass 
-             # For now just verify it passed
-             extra_conf += " | ML: PASS "
+             # Calculate features for ML
+             # Use current RSI, Volatility, and the new slope/ratio indicators
+             ma_fast_list = [indicators.calculate_ma(list(self.price_history)[:i], self.ma_fast_period) for i in range(-5, 0)]
+             ma_fast_list = [m for m in ma_fast_list if m is not None]
+             
+             features = {
+                 'rsi': rsi,
+                 'volatility': self.current_volatility or 0.0,
+                 'volume_ratio': indicators.calculate_volume_ratio(self.volume_history, current_volume) if current_volume else 1.0,
+                 'fast_ma_slope': indicators.calculate_slope(ma_fast_list) if len(ma_fast_list) >= 2 else 0.0
+             }
+             
+             win_prob = self.ml_predictor.predict_quality(features)
+             if win_prob < 0.5:
+                 self.last_rejection_reason = f"ML Rejected (Win Prob: {win_prob:.2f} < 0.5)"
+                 return False
+                 
+             extra_conf += f" | ML: PASS ({win_prob:.2f}) "
         if self.support_resistance_check_enabled:
              extra_conf += " | S/R: Safe "
 

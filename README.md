@@ -47,6 +47,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 | **Range Trading** | Profits from sideways markets with buy-low/sell-high orders |
 | **Auto-Range** | Sets bounds based on volatility (ATR) |
 | **Manual Sell** | "Sell Now" button to liquidate grid position & cancel orders instantly |
+| **Grid Matrix** | Real-time dashboard view of all open buy/sell orders in the grid |
 | **Capital-Aware** | Respects minimum order size ($11) and allocated capital |
 | **Dynamic Rebalancing** | Auto-centers grid if price exits range |
 | **Vol-Based Spacing** | Dynamically adjusting grid width based on market volatility |
@@ -69,6 +70,7 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 ### 🛡️ Security & Logging
 - **Log Rotation** - Automatic rotation (Max 25MB) to prevent disk overflow
 - **Idempotent Safety** - Race-condition proof logging setup
+- **JSON Robustness** - Recursive parsing & NaN sanitation to prevent dashboard data drops
 - **Audit Trail** - Tracks every user action (Start, Stop, Config Change)
 
 ---
@@ -232,4 +234,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Last updated: 2026-01-26* (v1.4 - Emergency Controls & Resilience Update)
+*Last updated: 2026-01-27* (v1.5 - Dashboard Clarity & Robustness Update)

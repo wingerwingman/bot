@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score
 logger = logging.getLogger("ML_Predictor")
 
 class TradePredictor:
-    def __init__(self, data_dir='data'):
+    def __init__(self, data_dir='logs'):
         self.data_dir = data_dir
         self.model = None
         self.is_trained = False
@@ -55,9 +55,9 @@ class TradePredictor:
             # This implementation assumes future trades will have 'entry_features' dict.
             # For past trades without features, we might have to skip or approximate.
             
-            # Extract features from 'entry_features' column if it exists
-            if 'entry_features' in df.columns:
-                features_df = pd.json_normalize(df['entry_features'])
+            # Extract features from 'indicators' column if it exists
+            if 'indicators' in df.columns:
+                features_df = pd.json_normalize(df['indicators'])
                 data = pd.concat([features_df, df['target']], axis=1)
                 
                 # Drop rows with NaNs
