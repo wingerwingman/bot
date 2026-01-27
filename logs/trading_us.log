@@ -37161,3 +37161,812 @@ UnboundLocalError: local variable 'sl_price' referenced before assignment
 2026-01-27 11:20:30,679 - DEBUG - 4H Trend: BEARISH (MA50: $2974.64)
 2026-01-27 11:20:42,319 - DEBUG - 🔄 TUNING: Vol 50.00% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0%
 2026-01-27 11:20:42,440 - DEBUG - 4H Trend: BEARISH (MA50: $89277.45)
+2026-01-27 11:25:42,984 - DEBUG - 4H Trend: BEARISH (MA50: $89283.03)
+2026-01-27 11:30:43,925 - DEBUG - 4H Trend: BEARISH (MA50: $89282.79)
+2026-01-27 11:35:33,083 - DEBUG - 🔄 TUNING: Vol 4.12% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:35:33,208 - DEBUG - 4H Trend: BEARISH (MA50: $2974.55)
+2026-01-27 11:35:44,573 - DEBUG - 🔄 TUNING: Vol 50.00% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0%
+2026-01-27 11:35:44,694 - DEBUG - 4H Trend: BEARISH (MA50: $89282.20)
+2026-01-27 11:37:21,349 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:21,371 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:37:22,115 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:22,255 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:37:22,597 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:22,613 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:37:44,483 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 30, "missed_trade_log_enabled": true, "order_book_check_enabled": false, "support_resistance_check_enabled": false, "ml_confirmation_enabled": false}
+2026-01-27 11:37:44,484 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:37:44,484 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:37:44,716 - DEBUG - Fetching account balances...
+2026-01-27 11:37:44,767 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 11:37:44,768 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 11:37:44,943 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 11:37:45,050 - DEBUG - __init__: Initial Volatility Calculated: 0.04189996528479938
+2026-01-27 11:37:45,050 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:37:45,054 - INFO - Restored strategy settings from DB.
+2026-01-27 11:37:45,054 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:37:45,054 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:37:45,054 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:37:45,054 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 17:10:18)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:37:45,055 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 11:37:45,055 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 11:37:45,055 - INFO - Applying OVERRIDE: order_book_check_enabled = False
+2026-01-27 11:37:45,055 - INFO - Applying OVERRIDE: support_resistance_check_enabled = False
+2026-01-27 11:37:45,055 - INFO - Applying OVERRIDE: ml_confirmation_enabled = False
+2026-01-27 11:37:45,055 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 11:37:45,055 - DEBUG - __init__ completed
+2026-01-27 11:37:45,056 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 11:37:45,056 - DEBUG - Starting run method...
+2026-01-27 11:37:45,056 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 11:37:45,057 - INFO - Restored strategy settings from DB.
+2026-01-27 11:37:45,057 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:37:45,058 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:37:45,058 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:37:45,058 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 17:10:18)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:37:45,058 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 11:37:45,058 - DEBUG - Entering main trading loop...
+2026-01-27 11:37:45,058 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:37:45,115 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:37:45,665 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:37:46,007 - DEBUG - 🔄 TUNING: Vol 4.19% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:37:46,117 - DEBUG - 4H Trend: BEARISH (MA50: $2974.56)
+2026-01-27 11:37:55,159 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2690.9-$3158.88, Levels: 6
+2026-01-27 11:37:55,159 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2690.9 - $3158.88
+   • Levels: 6
+   • Capital: $75.49737987
+2026-01-27 11:37:55,712 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:38:07,657 - INFO - START_BOT Request Payload: {"mode": "paper", "filename": null, "quote_asset": "USD", "base_asset": "BTC", "position_size_percent": 25, "rsi_threshold": 46, "stop_loss_percent": 5, "trailing_stop_percent": 7.5, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:38:07,658 - DEBUG - __init__: is_live_trading = False, filename = None
+2026-01-27 11:38:07,658 - DEBUG - Strategy Config: RSI=46, SL=5.0%, Trailing=7.5%
+2026-01-27 11:38:07,851 - INFO - Initializing ML Predictor...
+2026-01-27 11:38:07,851 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:38:07,851 - DEBUG - __init__ completed
+2026-01-27 11:38:07,903 - DEBUG - Starting run method...
+2026-01-27 11:38:07,904 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: paper, Symbol: BTC
+2026-01-27 11:38:07,904 - DEBUG - Entering main trading loop...
+2026-01-27 11:38:07,904 - INFO - Initializing PAPER TRADING (Live Market / Simulated Orders)
+2026-01-27 11:38:07,905 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:38:08,035 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:38:08,617 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:38:08,857 - DEBUG - 🔄 TUNING: Vol 50.00% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0%
+2026-01-27 11:38:08,968 - DEBUG - 4H Trend: BEARISH (MA50: $89281.86)
+2026-01-27 11:38:55,282 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:38:55,282 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-27 11:38:55,767 - INFO - Bot execution loop ended. Status set to Stopped. (Running flag: False)
+2026-01-27 11:40:30,412 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:40:30,413 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:40:30,413 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:40:30,649 - INFO - Initializing ML Predictor...
+2026-01-27 11:40:30,649 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:40:30,649 - DEBUG - Fetching account balances...
+2026-01-27 11:40:30,703 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 11:40:30,703 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 11:40:30,806 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 11:40:30,913 - DEBUG - __init__: Initial Volatility Calculated: 0.04182585565112844
+2026-01-27 11:40:30,913 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:40:30,916 - INFO - Restored strategy settings from DB.
+2026-01-27 11:40:30,916 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:40:30,916 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:40:30,916 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:40:30,916 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:37:45)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:40:30,917 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 11:40:30,917 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 11:40:30,917 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 11:40:30,917 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 11:40:30,917 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 11:40:30,917 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 11:40:30,917 - DEBUG - __init__ completed
+2026-01-27 11:40:30,917 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 11:40:30,918 - DEBUG - Starting run method...
+2026-01-27 11:40:30,918 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 11:40:30,919 - INFO - Restored strategy settings from DB.
+2026-01-27 11:40:30,919 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:40:30,920 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:40:30,920 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:40:30,920 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:37:45)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:40:30,920 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 11:40:30,920 - DEBUG - Entering main trading loop...
+2026-01-27 11:40:30,920 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:40:31,047 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:40:31,590 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:40:31,927 - DEBUG - 🔄 TUNING: Vol 4.18% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:40:39,333 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2800-$3200, Levels: 10
+2026-01-27 11:40:39,333 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2800 - $3200
+   • Levels: 10
+   • Capital: $75.49737987
+2026-01-27 11:40:40,048 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:40:57,981 - INFO - START_BOT Request Payload: {"mode": "paper", "filename": null, "quote_asset": "USD", "base_asset": "BTC", "position_size_percent": 25, "rsi_threshold": 46, "stop_loss_percent": 5, "trailing_stop_percent": 7.5, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:40:57,981 - DEBUG - __init__: is_live_trading = False, filename = None
+2026-01-27 11:40:57,981 - DEBUG - Strategy Config: RSI=46, SL=5.0%, Trailing=7.5%
+2026-01-27 11:40:58,200 - INFO - Initializing ML Predictor...
+2026-01-27 11:40:58,201 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:40:58,201 - DEBUG - __init__ completed
+2026-01-27 11:40:58,253 - DEBUG - Starting run method...
+2026-01-27 11:40:58,253 - DEBUG - Entering main trading loop...
+2026-01-27 11:40:58,253 - INFO - Initializing PAPER TRADING (Live Market / Simulated Orders)
+2026-01-27 11:40:58,253 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: paper, Symbol: BTC
+2026-01-27 11:40:58,253 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:40:58,318 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:40:59,021 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:40:59,234 - DEBUG - 🔄 TUNING: Vol 50.00% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0%
+2026-01-27 11:40:59,347 - DEBUG - 4H Trend: BEARISH (MA50: $89281.12)
+2026-01-27 11:42:26,558 - INFO - Bot execution loop ended. Status set to Stopped. (Running flag: False)
+2026-01-27 11:42:27,262 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:42:27,262 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-27 11:42:42,497 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:42:42,500 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:42:42,500 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:42:42,707 - INFO - Initializing ML Predictor...
+2026-01-27 11:42:42,708 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:42:42,708 - DEBUG - Fetching account balances...
+2026-01-27 11:42:42,763 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 11:42:42,763 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 11:42:42,941 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 11:42:43,048 - DEBUG - __init__: Initial Volatility Calculated: 0.04182585565112844
+2026-01-27 11:42:43,049 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:42:43,050 - INFO - Restored strategy settings from DB.
+2026-01-27 11:42:43,050 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:42:43,050 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:42:43,050 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:42:43,050 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:40:31)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:42:43,051 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 11:42:43,051 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 11:42:43,051 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 11:42:43,051 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 11:42:43,051 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 11:42:43,051 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 11:42:43,051 - DEBUG - __init__ completed
+2026-01-27 11:42:43,051 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 11:42:43,052 - DEBUG - Starting run method...
+2026-01-27 11:42:43,052 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 11:42:43,053 - INFO - Restored strategy settings from DB.
+2026-01-27 11:42:43,053 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:42:43,053 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:42:43,054 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:42:43,055 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:40:31)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:42:43,059 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 11:42:43,059 - DEBUG - Entering main trading loop...
+2026-01-27 11:42:43,060 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:42:43,117 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:42:43,719 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:42:44,092 - DEBUG - 🔄 TUNING: Vol 4.18% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:45:59,950 - DEBUG - 4H Trend: BEARISH (MA50: $89283.63)
+2026-01-27 11:46:07,810 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:07,828 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:08,448 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:08,451 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,109 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,121 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:09,416 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,431 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:19,201 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:46:19,202 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:46:19,203 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:46:19,342 - INFO - Initializing ML Predictor...
+2026-01-27 11:46:19,342 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:46:19,342 - DEBUG - Fetching account balances...
+2026-01-27 11:46:19,399 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 11:46:19,400 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 11:46:19,583 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 11:46:19,706 - DEBUG - __init__: Initial Volatility Calculated: 0.04176899371211879
+2026-01-27 11:46:19,707 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:46:19,712 - INFO - Restored strategy settings from DB.
+2026-01-27 11:46:19,712 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:46:19,712 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:46:19,712 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:46:19,712 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:40:31)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:46:19,712 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 11:46:19,713 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 11:46:19,713 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 11:46:19,713 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 11:46:19,713 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 11:46:19,713 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 11:46:19,713 - DEBUG - __init__ completed
+2026-01-27 11:46:19,713 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 11:46:19,713 - DEBUG - Starting run method...
+2026-01-27 11:46:19,714 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 11:46:19,715 - INFO - Restored strategy settings from DB.
+2026-01-27 11:46:19,715 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:46:19,716 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:46:19,716 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:46:19,716 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:40:31)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:46:19,717 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 11:46:19,717 - DEBUG - Entering main trading loop...
+2026-01-27 11:46:19,717 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:46:19,786 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:46:20,486 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:46:20,903 - DEBUG - 🔄 TUNING: Vol 4.18% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:46:27,434 - INFO - Bot execution loop ended. Status set to Stopped. (Running flag: False)
+2026-01-27 11:46:27,602 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:46:27,603 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-27 11:48:47,984 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:48:47,985 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:48:47,985 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:48:48,197 - INFO - Initializing ML Predictor...
+2026-01-27 11:48:48,197 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:48:48,197 - DEBUG - Fetching account balances...
+2026-01-27 11:48:48,250 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 11:48:48,250 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 11:48:48,425 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 11:48:48,529 - DEBUG - __init__: Initial Volatility Calculated: 0.041727261216656944
+2026-01-27 11:48:48,530 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:48:48,532 - INFO - Restored strategy settings from DB.
+2026-01-27 11:48:48,532 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:48:48,532 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:48:48,532 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:48:48,533 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:46:20)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:48:48,533 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 11:48:48,533 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 11:48:48,533 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 11:48:48,533 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 11:48:48,533 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 11:48:48,533 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 11:48:48,533 - DEBUG - __init__ completed
+2026-01-27 11:48:48,533 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 11:48:48,534 - DEBUG - Starting run method...
+2026-01-27 11:48:48,534 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 11:48:48,535 - INFO - Restored strategy settings from DB.
+2026-01-27 11:48:48,535 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 11:48:48,536 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 11:48:48,536 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 11:48:48,536 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:46:20)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 11:48:48,537 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 11:48:48,537 - DEBUG - Entering main trading loop...
+2026-01-27 11:48:48,537 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 11:48:48,597 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 11:48:49,148 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:48:49,498 - DEBUG - 🔄 TUNING: Vol 4.17% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 11:55:40,296 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:55:40,297 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:55:40,297 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:55:41,002 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:55:58,475 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:55:58,476 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:55:58,476 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:55:59,209 - DEBUG - Telegram message sent successfully.
+2026-01-27 11:58:02,136 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 11:58:02,137 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 11:58:02,137 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 11:58:02,931 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:04:26,609 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:04:26,610 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:04:26,611 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:04:27,387 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:05:44,430 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:05:44,432 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:05:44,432 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:05:45,210 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:06:00,713 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:06:00,713 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:06:00,713 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:06:01,489 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:07:31,299 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:07:31,301 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:07:31,301 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:07:31,485 - INFO - Initializing ML Predictor...
+2026-01-27 12:07:31,485 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:07:31,486 - DEBUG - Fetching account balances...
+2026-01-27 12:07:31,536 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:07:31,536 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:07:31,714 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:07:31,826 - DEBUG - __init__: Initial Volatility Calculated: 0.041515925921221775
+2026-01-27 12:07:31,826 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:07:31,830 - INFO - Restored strategy settings from DB.
+2026-01-27 12:07:31,830 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:07:31,830 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 12:07:31,830 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:07:31,830 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:48:49)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:07:31,830 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:07:31,830 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:07:31,830 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:07:31,830 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:07:31,830 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:07:31,831 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:07:31,831 - DEBUG - __init__ completed
+2026-01-27 12:07:31,831 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:07:31,831 - DEBUG - Starting run method...
+2026-01-27 12:07:31,831 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:07:31,833 - INFO - Restored strategy settings from DB.
+2026-01-27 12:07:31,834 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:07:31,834 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 12:07:31,834 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:07:31,834 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 18:48:49)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:07:31,835 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:07:31,835 - DEBUG - Entering main trading loop...
+2026-01-27 12:07:31,835 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:07:31,891 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:07:32,441 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:07:32,782 - DEBUG - 🔄 TUNING: Vol 4.15% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 12:12:32,090 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:12:32,594 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:12:45,750 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:12:46,373 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:19:09,054 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true}
+2026-01-27 12:19:09,056 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:19:09,056 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:19:09,264 - INFO - Initializing ML Predictor...
+2026-01-27 12:19:09,264 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:19:09,264 - DEBUG - Fetching account balances...
+2026-01-27 12:19:09,320 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:19:09,320 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:19:09,428 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:19:09,535 - DEBUG - __init__: Initial Volatility Calculated: 0.041419342525735814
+2026-01-27 12:19:09,535 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:19:09,539 - INFO - Restored strategy settings from DB.
+2026-01-27 12:19:09,539 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:19:09,539 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 12:19:09,539 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:19:09,539 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:07:32)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:19:09,539 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:19:09,540 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:19:09,540 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:19:09,540 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:19:09,540 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:19:09,540 - INFO - Applying OVERRIDE: sentiment_enabled = False
+2026-01-27 12:19:09,540 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:19:09,540 - DEBUG - __init__ completed
+2026-01-27 12:19:09,540 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:19:09,540 - DEBUG - Starting run method...
+2026-01-27 12:19:09,540 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:19:09,543 - INFO - Restored strategy settings from DB.
+2026-01-27 12:19:09,544 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:19:09,545 - DEBUG - Restored Peak Price: $2992.7
+2026-01-27 12:19:09,545 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:19:09,546 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:07:32)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:19:09,547 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:19:09,547 - DEBUG - Entering main trading loop...
+2026-01-27 12:19:09,548 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:19:09,608 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:19:10,163 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:19:10,534 - DEBUG - 🔄 TUNING: Vol 4.14% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.06
+2026-01-27 12:26:02,809 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:26:03,138 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:27:06,791 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": false, "sentiment_threshold": 0}
+2026-01-27 12:27:06,792 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:27:06,793 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:27:07,020 - INFO - Initializing ML Predictor...
+2026-01-27 12:27:07,021 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:27:07,022 - DEBUG - Fetching account balances...
+2026-01-27 12:27:07,148 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:27:07,148 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:27:07,248 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:27:07,351 - DEBUG - __init__: Initial Volatility Calculated: 0.04143424728198023
+2026-01-27 12:27:07,352 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:27:07,362 - INFO - Restored strategy settings from DB.
+2026-01-27 12:27:07,362 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:27:07,362 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:27:07,362 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:27:07,362 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:24:11)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:27:07,363 - INFO - Applying OVERRIDE: sentiment_enabled = False
+2026-01-27 12:27:07,364 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:27:07,364 - DEBUG - __init__ completed
+2026-01-27 12:27:07,364 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:27:07,364 - DEBUG - Starting run method...
+2026-01-27 12:27:07,364 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:27:07,366 - INFO - Restored strategy settings from DB.
+2026-01-27 12:27:07,366 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:27:07,366 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:27:07,367 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:27:07,367 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:24:11)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:27:07,368 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:27:07,368 - DEBUG - Entering main trading loop...
+2026-01-27 12:27:07,368 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:27:07,430 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:27:08,016 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:27:08,398 - DEBUG - 🔄 TUNING: Vol 4.14% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2825.80
+2026-01-27 12:31:40,922 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:41,235 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:41,561 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:47,836 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 11, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 30, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 12:31:47,837 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:31:47,837 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:31:48,020 - INFO - Initializing ML Predictor...
+2026-01-27 12:31:48,020 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:31:48,020 - DEBUG - Fetching account balances...
+2026-01-27 12:31:48,070 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:31:48,070 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:31:48,190 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:31:48,298 - DEBUG - __init__: Initial Volatility Calculated: 0.04147344080355375
+2026-01-27 12:31:48,298 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:31:48,301 - INFO - Restored strategy settings from DB.
+2026-01-27 12:31:48,301 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:31:48,301 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:31:48,302 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:31:48,302 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:27:08)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:31:48,302 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:31:48,302 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:31:48,302 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:31:48,302 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:31:48,303 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:31:48,303 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 12:31:48,303 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:31:48,303 - DEBUG - __init__ completed
+2026-01-27 12:31:48,303 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:31:48,303 - DEBUG - Starting run method...
+2026-01-27 12:31:48,304 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:31:48,305 - INFO - Restored strategy settings from DB.
+2026-01-27 12:31:48,305 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:31:48,306 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:31:48,309 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:31:48,310 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:27:08)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:31:48,311 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:31:48,311 - DEBUG - Entering main trading loop...
+2026-01-27 12:31:48,311 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:31:48,371 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:31:48,965 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:31:49,444 - DEBUG - 🔄 TUNING: Vol 4.15% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2825.80
+2026-01-27 12:42:42,739 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:42:43,055 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:42:43,441 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:43:07,157 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 12:43:07,159 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:43:07,159 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:43:07,364 - INFO - Initializing ML Predictor...
+2026-01-27 12:43:07,364 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:43:07,364 - DEBUG - Fetching account balances...
+2026-01-27 12:43:07,499 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:43:07,499 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:43:07,607 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:43:07,726 - DEBUG - __init__: Initial Volatility Calculated: 0.04135205661702875
+2026-01-27 12:43:07,727 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:43:07,738 - INFO - Restored strategy settings from DB.
+2026-01-27 12:43:07,739 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:43:07,740 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:43:07,741 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:43:07,741 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:31:49)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:43:07,742 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 12:43:07,743 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:43:07,743 - DEBUG - __init__ completed
+2026-01-27 12:43:07,743 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:43:07,743 - DEBUG - Starting run method...
+2026-01-27 12:43:07,743 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:43:07,745 - INFO - Restored strategy settings from DB.
+2026-01-27 12:43:07,745 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:43:07,748 - DEBUG - Restored Peak Price: $2974.53
+2026-01-27 12:43:07,748 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:43:07,748 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:31:49)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:43:07,749 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:43:07,749 - DEBUG - Entering main trading loop...
+2026-01-27 12:43:07,749 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:43:07,821 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:43:08,481 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:43:08,862 - DEBUG - 🔄 TUNING: Vol 4.14% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2825.80
+2026-01-27 12:57:58,706 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:57:59,608 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:01,615 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:03,932 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:05,712 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:06,635 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:18,868 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 12:58:18,869 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 12:58:18,869 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:58:19,095 - INFO - Initializing ML Predictor...
+2026-01-27 12:58:19,095 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:58:19,096 - DEBUG - Fetching account balances...
+2026-01-27 12:58:19,145 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 12:58:19,146 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 12:58:19,318 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 12:58:19,425 - DEBUG - __init__: Initial Volatility Calculated: 0.04135983057767261
+2026-01-27 12:58:19,425 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 12:58:19,433 - INFO - Restored strategy settings from DB.
+2026-01-27 12:58:19,433 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:58:19,434 - DEBUG - Restored Peak Price: $2979.37
+2026-01-27 12:58:19,434 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:58:19,434 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:48:09)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:58:19,435 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 12:58:19,436 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 12:58:19,436 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 12:58:19,436 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 12:58:19,436 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 12:58:19,436 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 12:58:19,437 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 12:58:19,437 - DEBUG - __init__ completed
+2026-01-27 12:58:19,437 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 12:58:19,437 - DEBUG - Starting run method...
+2026-01-27 12:58:19,438 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 12:58:19,441 - INFO - Restored strategy settings from DB.
+2026-01-27 12:58:19,442 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 12:58:19,443 - DEBUG - Restored Peak Price: $2979.37
+2026-01-27 12:58:19,444 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 12:58:19,444 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 19:48:09)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 12:58:19,445 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 12:58:19,445 - DEBUG - Entering main trading loop...
+2026-01-27 12:58:19,445 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 12:58:19,504 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 12:58:20,067 - DEBUG - Telegram message sent successfully.
+2026-01-27 12:58:20,449 - DEBUG - 🔄 TUNING: Vol 4.14% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2830.40
+2026-01-27 13:03:51,247 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:03:51,554 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:04:24,066 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 13:04:24,067 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 13:04:24,067 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:04:24,276 - INFO - Initializing ML Predictor...
+2026-01-27 13:04:24,277 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:04:24,277 - DEBUG - Fetching account balances...
+2026-01-27 13:04:24,455 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 13:04:24,455 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 13:04:24,567 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 13:04:24,676 - DEBUG - __init__: Initial Volatility Calculated: 0.04127212690965146
+2026-01-27 13:04:24,677 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:04:24,682 - INFO - Restored strategy settings from DB.
+2026-01-27 13:04:24,682 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:04:24,683 - DEBUG - Restored Peak Price: $2978.81
+2026-01-27 13:04:24,683 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:04:24,683 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:03:21)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:04:24,683 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 13:04:24,683 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 13:04:24,683 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 13:04:24,683 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 13:04:24,684 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 13:04:24,684 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 13:04:24,684 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 13:04:24,684 - DEBUG - __init__ completed
+2026-01-27 13:04:24,684 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 13:04:24,684 - DEBUG - Starting run method...
+2026-01-27 13:04:24,686 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 13:04:24,688 - INFO - Restored strategy settings from DB.
+2026-01-27 13:04:24,691 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:04:24,692 - DEBUG - Restored Peak Price: $2978.81
+2026-01-27 13:04:24,692 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:04:24,693 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:03:21)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:04:24,694 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 13:04:24,694 - DEBUG - Entering main trading loop...
+2026-01-27 13:04:24,694 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 13:04:24,753 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 13:04:25,325 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:04:25,691 - DEBUG - 🔄 TUNING: Vol 4.13% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2829.87
+2026-01-27 13:14:50,561 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:15:06,191 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 13:15:06,193 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 13:15:06,193 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:15:06,308 - INFO - Initializing ML Predictor...
+2026-01-27 13:15:06,308 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:15:06,309 - DEBUG - Fetching account balances...
+2026-01-27 13:15:06,429 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 13:15:06,429 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 13:15:06,536 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 13:15:06,647 - DEBUG - __init__: Initial Volatility Calculated: 0.0411636035038563
+2026-01-27 13:15:06,648 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:15:06,653 - INFO - Restored strategy settings from DB.
+2026-01-27 13:15:06,654 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:15:06,654 - DEBUG - Restored Peak Price: $2985.14
+2026-01-27 13:15:06,654 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:15:06,654 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:09:26)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:15:06,654 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 13:15:06,654 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 13:15:06,655 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 13:15:06,655 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 13:15:06,655 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 13:15:06,655 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 13:15:06,655 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 13:15:06,655 - DEBUG - __init__ completed
+2026-01-27 13:15:06,655 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 13:15:06,655 - DEBUG - Starting run method...
+2026-01-27 13:15:06,655 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 13:15:06,657 - INFO - Restored strategy settings from DB.
+2026-01-27 13:15:06,657 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:15:06,658 - DEBUG - Restored Peak Price: $2985.14
+2026-01-27 13:15:06,658 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:15:06,658 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:09:26)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:15:06,659 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 13:15:06,659 - DEBUG - Entering main trading loop...
+2026-01-27 13:15:06,659 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 13:15:06,728 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 13:15:07,344 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:15:07,690 - DEBUG - 🔄 TUNING: Vol 4.12% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2835.88
+2026-01-27 13:20:08,224 - DEBUG - 4H Trend: BULLISH (MA50: $2971.14)
+2026-01-27 13:25:09,580 - DEBUG - 4H Trend: BULLISH (MA50: $2971.20)
+2026-01-27 13:27:07,997 - INFO - Bot execution loop ended. Status set to Stopped. (Running flag: False)
+2026-01-27 13:27:08,115 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:27:08,115 - INFO - AUDIT WARN: User Action [STOP_BOT] via 127.0.0.1: Bot live_ETHUSDT stopped by user
+2026-01-27 13:27:12,637 - INFO - DEBUG: update_config called with payload: {'ml_confirmation_enabled': True, 'symbol': 'ETHUSDT'}
+2026-01-27 13:27:12,642 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:27:12,644 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] ML Confirmation: True
+2026-01-27 13:27:12,932 - INFO - DEBUG: update_config called with payload: {'support_resistance_check_enabled': True, 'symbol': 'ETHUSDT'}
+2026-01-27 13:27:12,933 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:27:12,933 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] S/R Check: True
+2026-01-27 13:27:13,270 - INFO - DEBUG: update_config called with payload: {'order_book_check_enabled': True, 'symbol': 'ETHUSDT'}
+2026-01-27 13:27:13,270 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:27:13,270 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] Order Book Check: True
+2026-01-27 13:27:16,191 - INFO - START_BOT Request Payload: {"mode": "live", "filename": null, "quote_asset": "USDT", "base_asset": "ETH", "position_size_percent": 25, "rsi_threshold": 45, "stop_loss_percent": 8, "trailing_stop_percent": 10, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.3, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": true, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 13:27:16,191 - DEBUG - __init__: is_live_trading = True, filename = None
+2026-01-27 13:27:16,191 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:27:16,367 - INFO - Initializing ML Predictor...
+2026-01-27 13:27:16,368 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:27:16,369 - DEBUG - Fetching account balances...
+2026-01-27 13:27:16,423 - DEBUG - Trading Pair Configured: ETHUSDT
+2026-01-27 13:27:16,424 - DEBUG - Starting Balances: USDT=69.13134474, ETH=0.0078128
+2026-01-27 13:27:16,528 - DEBUG - Exchange Filters Fetched: tick_size=0.01, step_size=0.0001
+2026-01-27 13:27:16,701 - DEBUG - __init__: Initial Volatility Calculated: 0.041723626305702546
+2026-01-27 13:27:16,701 - DEBUG - Strategy Config: RSI=45, SL=8.0%, Trailing=10.0%
+2026-01-27 13:27:16,702 - INFO - Restored strategy settings from DB.
+2026-01-27 13:27:16,702 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:27:16,702 - DEBUG - Restored Peak Price: $2993.01
+2026-01-27 13:27:16,702 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:27:16,703 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:27:13)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:27:16,703 - INFO - Applying OVERRIDE: multi_timeframe_enabled = True
+2026-01-27 13:27:16,703 - INFO - Applying OVERRIDE: volume_confirmation_enabled = True
+2026-01-27 13:27:16,703 - INFO - Applying OVERRIDE: order_book_check_enabled = True
+2026-01-27 13:27:16,704 - INFO - Applying OVERRIDE: support_resistance_check_enabled = True
+2026-01-27 13:27:16,704 - INFO - Applying OVERRIDE: ml_confirmation_enabled = True
+2026-01-27 13:27:16,704 - INFO - Applying OVERRIDE: sentiment_enabled = True
+2026-01-27 13:27:16,704 - DEBUG - Applied startup overrides to resumed state.
+2026-01-27 13:27:16,704 - DEBUG - __init__ completed
+2026-01-27 13:27:16,704 - DEBUG - Grid Bot active. Using free ETH: 0.0078128 (Grid funds locked)
+2026-01-27 13:27:16,704 - DEBUG - Starting run method...
+2026-01-27 13:27:16,705 - INFO - Restored strategy settings from DB.
+2026-01-27 13:27:16,705 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: live, Symbol: ETH
+2026-01-27 13:27:16,706 - DEBUG - Restored position: bought_price=2927.7200000000003, base_balance=0.0078128
+2026-01-27 13:27:16,706 - DEBUG - Restored Peak Price: $2993.01
+2026-01-27 13:27:16,706 - DEBUG - Restored Stop Loss: $2693.5024000000003
+2026-01-27 13:27:16,706 - DEBUG - ♻️ SESSION RESTORED from DB (2026-01-27 20:27:13)
+   • Symbol: ETHUSDT
+   • Position: OPEN @ 2927.7200000000003
+   • Metrics: Net Profit $-7.79 (6 trades)
+   • Peak Balance: $91.96 (Max Drawdown: 2723.58%)
+2026-01-27 13:27:16,709 - DEBUG - Resume Check: Log indicates buy, and we are holding. State is consistent.
+2026-01-27 13:27:16,709 - DEBUG - Entering main trading loop...
+2026-01-27 13:27:16,709 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 13:27:16,764 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 13:27:17,318 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:27:17,751 - DEBUG - 🔄 TUNING: Vol 4.17% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0% | Trail Sell < $2843.36
+2026-01-27 13:27:17,865 - DEBUG - 4H Trend: BULLISH (MA50: $2971.25)
+2026-01-27 13:32:20,427 - DEBUG - 4H Trend: BULLISH (MA50: $2971.19)
+2026-01-27 13:36:02,522 - INFO - DEBUG: update_config called with payload: {'cooldown_minutes': 5, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:02,523 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:02,523 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] SL Cooldown: 5m
+2026-01-27 13:36:03,835 - INFO - DEBUG: update_config called with payload: {'cooldown_minutes': 10, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:03,835 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:03,835 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] SL Cooldown: 10m
+2026-01-27 13:36:06,521 - INFO - DEBUG: update_config called with payload: {'cooldown_minutes': 10, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:06,521 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:06,521 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] SL Cooldown: 10m
+2026-01-27 13:36:07,278 - INFO - DEBUG: update_config called with payload: {'cooldown_minutes': 5, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:07,279 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:07,279 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] SL Cooldown: 5m
+2026-01-27 13:36:27,937 - INFO - AUDIT WARN: User Action [GRID_START] via 127.0.0.1: Symbol: ETHUSDT, Range: $2771.11-$3253.05, Levels: 6
+2026-01-27 13:36:27,937 - INFO - Grid Bot STARTED | Symbol: ETHUSDT | Mode: LIVE 💰
+   • Range: $2771.11 - $3253.05
+   • Levels: 6
+   • Capital: $75.49737987
+2026-01-27 13:36:28,511 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:36:37,337 - INFO - DEBUG: update_config called with payload: {'support_resistance_check_enabled': False, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:37,337 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:37,338 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] S/R Check: False
+2026-01-27 13:36:41,303 - INFO - START_BOT Request Payload: {"mode": "paper", "filename": null, "quote_asset": "USDT", "base_asset": "BTC", "position_size_percent": 25, "rsi_threshold": 47, "stop_loss_percent": 5, "trailing_stop_percent": 7.5, "dynamic_settings": true, "dca_enabled": true, "dca_rsi_threshold": 30, "resumeSession": true, "multi_timeframe_enabled": true, "volume_confirmation_enabled": true, "volume_multiplier": 1.2, "cooldown_minutes": 5, "missed_trade_log_enabled": true, "order_book_check_enabled": false, "support_resistance_check_enabled": true, "ml_confirmation_enabled": true, "sentiment_enabled": true, "sentiment_threshold": 0}
+2026-01-27 13:36:41,303 - DEBUG - __init__: is_live_trading = False, filename = None
+2026-01-27 13:36:41,303 - DEBUG - Strategy Config: RSI=47, SL=5.0%, Trailing=7.5%
+2026-01-27 13:36:41,526 - INFO - Initializing ML Predictor...
+2026-01-27 13:36:41,527 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:36:41,528 - DEBUG - __init__ completed
+2026-01-27 13:36:41,528 - DEBUG - Starting run method...
+2026-01-27 13:36:41,528 - INFO - AUDIT WARN: User Action [START_BOT] via 127.0.0.1: Mode: paper, Symbol: BTC
+2026-01-27 13:36:41,529 - DEBUG - Entering main trading loop...
+2026-01-27 13:36:41,529 - INFO - Initializing PAPER TRADING (Live Market / Simulated Orders)
+2026-01-27 13:36:41,530 - INFO - ⏳ Pre-filling history with 250 candles...
+2026-01-27 13:36:41,655 - INFO - ✅ History Pre-filled: 250 candles loaded. Bot ready to trade immediately.
+2026-01-27 13:36:42,204 - DEBUG - Telegram message sent successfully.
+2026-01-27 13:36:42,407 - DEBUG - 🔄 TUNING: Vol 50.00% -> RSI Buy < 27 (-3 Fear, 1.3x Vol) | SL 8.0% | Trail 5.0%
+2026-01-27 13:36:48,370 - INFO - DEBUG: update_config called with payload: {'support_resistance_check_enabled': True, 'symbol': 'ETHUSDT'}
+2026-01-27 13:36:48,370 - INFO - DEBUG: find_spot_bot('ETHUSDT') returned: live_ETHUSDT
+2026-01-27 13:36:48,370 - INFO - AUDIT WARN: User Action [CONFIG_CHANGE] via 127.0.0.1: [ETHUSDT] S/R Check: True
+2026-01-27 13:37:21,361 - DEBUG - 4H Trend: BULLISH (MA50: $2971.21)

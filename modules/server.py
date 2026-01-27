@@ -817,6 +817,10 @@ def start_bot():
         config.SUPPORT_RESISTANCE_CHECK_ENABLED = support_resistance_check_enabled
         config.ML_CONFIRMATION_ENABLED = ml_confirmation_enabled
         
+        # Sentiment extraction (Fix for NameError)
+        sentiment_enabled = data.get('sentiment_enabled', False)
+        sentiment_threshold = float(data.get('sentiment_threshold', 0.0))
+        
         allocated_capital = 0.0
         if is_live:
             allocated_capital = capital_manager.get_available('signal')
@@ -844,20 +848,12 @@ def start_bot():
                 missed_trade_log_enabled=missed_trade_log_enabled,
                 order_book_check_enabled=order_book_check_enabled,
                 support_resistance_check_enabled=support_resistance_check_enabled,
-                ml_confirmation_enabled=ml_confirmation_enabled
+                ml_confirmation_enabled=ml_confirmation_enabled,
+                sentiment_enabled=sentiment_enabled,
+                sentiment_threshold=sentiment_threshold
             )
             
-            # Sentiment (Phase 5)
-            # Checked separately as it might not be in init args for older generic bot if not updated
-            # But we assumed it is integrated into Strategy which is init by Bot.
-            # We need to set it on the strategy AFTER init or update Bot init.
-            # Bot init doesn't have sentiment args yet (I didn't add them to __init__ in trading_bot.py, I only added them to Strategy)
-            
-            sentiment_enabled = data.get('sentiment_enabled', False)
-            sentiment_threshold = float(data.get('sentiment_threshold', 0.0))
-            
-            bot.strategy.sentiment_enabled = sentiment_enabled
-            bot.strategy.sentiment_threshold = sentiment_threshold
+            # Sentiment (Phase 5) args are now passed to init above
             
             bot.start()
             spot_bots[bot_key] = bot
@@ -1454,23 +1450,52 @@ def fetch_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+def find_spot_bot(symbol):
+    """
+    Helper to find a spot bot by key or symbol suffix.
+    Returns (bot, key) or (None, None).
+    """
+    global spot_bots
+    
+    # 1. Exact match (e.g. "live_ETHUSDT" or "test_ETHUSDT")
+    if symbol in spot_bots:
+        return spot_bots[symbol], symbol
+        
+    # 2. Suffix match (e.g. "ETHUSDT" matches "live_ETHUSDT")
+    for key, b in spot_bots.items():
+        if b.symbol == symbol:
+            return b, key
+            
+    # 3. Key Suffix match
+    for key, b in spot_bots.items():
+        if key.endswith(f"_{symbol}"):
+            return b, key
+            
+    return None, None
+
 @app.route('/api/config/update', methods=['POST'])
 def update_config():
     """Updates configuration of any running bot (Spot)."""
     data = request.json
     symbol = data.get('symbol')
     
+    logging.getLogger("BinanceTradingBot").info(f"DEBUG: update_config called with payload: {data}")
+
     global spot_bots
     
     # Identify bot: prefer explicit symbol, else if only one exists use it
     bot = None
     if symbol:
         bot, actual_key = find_spot_bot(symbol)
+        logging.getLogger("BinanceTradingBot").info(f"DEBUG: find_spot_bot('{symbol}') returned: {actual_key}")
     elif len(spot_bots) == 1:
         bot = list(spot_bots.values())[0]
         symbol = bot.symbol
+        logging.getLogger("BinanceTradingBot").info(f"DEBUG: defaulted to single bot: {symbol}")
 
     if not bot:
+        logging.getLogger("BinanceTradingBot").error(f"DEBUG: Bot not found for symbol: {symbol}. Available: {list(spot_bots.keys())}")
         return jsonify({"error": f"Bot for {symbol or 'selected pair'} is not running"}), 400
         
     try:
@@ -1537,11 +1562,7 @@ def update_config():
 
         if 'order_book_check_enabled' in data:
             val = bool(data['order_book_check_enabled'])
-            # Note: order_book_check is checked in bot, but logic might be in strategy or config? 
-            # Actually trading_bot uses config.ORDER_BOOK_CHECK_ENABLED.
-            # We need to make trading_bot use SELF instance variables or updated config.
-            # Best practice: Update valid instance variables.
-            # For now, update global config as fallback BUT also update instance if possible.
+            bot.strategy.order_book_check_enabled = val
             config.ORDER_BOOK_CHECK_ENABLED = val 
             logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Order Book Check: {val}", request.remote_addr)
             
@@ -1568,6 +1589,18 @@ def update_config():
                      pass
             
             logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] ML Confirmation: {val}", request.remote_addr)
+            
+        if 'sentiment_enabled' in data:
+            val = bool(data['sentiment_enabled'])
+            bot.strategy.sentiment_enabled = val
+            config.SENTIMENT_ENABLED = val
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Sentiment Enabled: {val}", request.remote_addr)
+
+        if 'sentiment_threshold' in data:
+            val = float(data['sentiment_threshold'])
+            bot.strategy.sentiment_threshold = val
+            config.SENTIMENT_THRESHOLD = val
+            logger_setup.log_audit("CONFIG_CHANGE", f"[{symbol}] Sentiment Threshold: {val}", request.remote_addr)
             
         # Force state save if positioning changed
         bot.save_state()
@@ -1630,8 +1663,40 @@ def update_grid_config_endpoint():
             else:
                 return jsonify({"error": "GridBot class does not support dynamic updates yet"}), 500
                 
+
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+@app.route('/api/grid/manual_sell', methods=['POST'])
+def grid_manual_sell():
+    """Triggers emergency liquidation for a Grid Bot."""
+    if not check_auth():
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    data = request.json
+    symbol = data.get('symbol')
+    
+    global grid_bots
+    with grid_lock:
+        if not symbol or symbol not in grid_bots:
+            # Try removing 'grid_' prefix if passed
+            if symbol and symbol.startswith('grid_'):
+                 symbol = symbol.replace('grid_', '')
+            
+            if not symbol or symbol not in grid_bots:
+                return jsonify({"error": f"Grid Bot for {symbol} is not running"}), 400
+        
+        bot = grid_bots[symbol]
+        try:
+            bot.manual_sell()
+            
+            # Remove from active bots list since it stops itself
+            if symbol in grid_bots:
+                 del grid_bots[symbol]
+                 
+            return jsonify({"success": True, "message": "Grid Bot liquidated and stopped."})
+        except Exception as e:
+            return jsonify({"error": f"Liquidation failed: {str(e)}"}), 500
 
 # ==================== GRID BOT ENDPOINTS ====================
 

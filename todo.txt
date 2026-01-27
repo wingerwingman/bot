@@ -1,7 +1,8 @@
 # CryptoBot TODO List
 -------------------------------
 do not delete this section.
-set bot to start backup after the ban has been lifted if ban error happened.also need to get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
+ get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
+ state for spot bot and backtest do not hold for 
 Updated: 2026-01-27
 - [x] **Fix Paper Trading & Backtesting Status/Visibility (CRITICAL)**
     - Fixed "$---" market price display by ensuring `last_price` updates in all modes.
@@ -31,18 +32,7 @@ Updated: 2026-01-27
     - **Detailed Waiting Status**: Spot Bot now displays exact strategy rejection reason (e.g. "RSI too high: 45 > 30") instead of generic "Waiting...".
 
 
-
-- [x] **Max win/loss streak stats not updating**
-    - Logic for streak calculation refined in `trading_bot.py`.
-- [x] **Backtest Bot Name Fix**
-    - Correctly displays selected pair (e.g. SOLUSDT) instead of default ETHUSDT when starting backtest.
-
-- [ ] Time-of-Day Filter (Restrict trading to high-volume hours)
-
 ## 🔵 TESTING & VERIFICATION
-- [ ] **ML Signal Confirmation**: Verify accuracy and decision logic with real paper trading data.
-- [ ] **Sentiment Analysis**: Verify CryptoPanic API integration and score impact on entries.
-- [ ] **History Pre-fill**: Confirm bot starts trading immediately without 200m delay.
 
 ## 🔮 FUTURE ROADMAP (Moved from Improvements)
 - [ ] **Asymmetric Grid**: More buy levels below, fewer sells (Accumulation Mode).

@@ -1,0 +1,49 @@
+2026-01-27 11:37:21,349 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:21,371 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:37:22,115 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:22,255 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:37:22,597 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:37:22,613 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:38:07,851 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:40:30,649 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:40:58,201 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:42:42,708 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:46:07,810 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:07,828 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:08,448 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:08,451 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,109 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,121 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:09,416 - WARNING - get_status: Bot not found for key='paper_BTCUSD'. Available: []
+2026-01-27 11:46:09,431 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 11:46:19,342 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 11:48:48,197 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:07:31,485 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:12:32,090 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:12:32,594 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:19:09,264 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:26:02,809 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:26:03,138 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:27:07,021 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:31:40,922 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:41,235 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:41,561 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:31:48,020 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:42:42,739 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:42:43,055 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:42:43,441 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:43:07,364 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 12:57:58,706 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:57:59,608 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:01,615 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:03,932 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:05,712 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:06,635 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 12:58:19,095 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:03:51,247 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:03:51,554 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:04:24,277 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:14:50,561 - WARNING - get_status: Bot not found for key='live_ETHUSDT'. Available: []
+2026-01-27 13:15:06,308 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:27:16,368 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.
+2026-01-27 13:36:41,527 - WARNING - ML Predictor failed to train (not enough data?). Confirmation disabled.

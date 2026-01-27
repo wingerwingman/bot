@@ -1030,6 +1030,70 @@ class GridBot:
         notifier.send_telegram_message(stop_msg)
 
 
+
+    def manual_sell(self):
+        """
+        EMERGENCY: Cancel all orders and sell remaining base asset to USDT.
+        """
+        self.logger.warning(f"🚨 MANUAL SELL TRIGGERED for {self.symbol}")
+        
+        # 1. Stop the loop (but don't call stop() yet, as we need to act)
+        self.running = False
+        
+        # 2. Cancel all grid orders to free up locked assets
+        self.cancel_all_orders()
+        time.sleep(1) # Give API a moment
+        
+        # 3. Check Balance
+        if self.is_live:
+            try:
+                base_asset = self.symbol.replace('USDT', '')
+                balance = 0.0
+                account = self.client.get_account()
+                for b in account['balances']:
+                    if b['asset'] == base_asset:
+                        balance = float(b['free']) # Should be all free now
+                        break
+                
+                # Check min notional (approx $5 but Binance rules vary)
+                ticker = self.client.get_symbol_ticker(symbol=self.symbol)
+                price = float(ticker['price'])
+                value = balance * price
+                
+                if value > 6.0: # Safe buffer over $5 min
+                    self.logger.info(f"Selling {balance:.4f} {base_asset} (Value: ${value:.2f})")
+                    order = self.client.create_order(
+                        symbol=self.symbol,
+                        side=Client.SIDE_SELL,
+                        type=Client.ORDER_TYPE_MARKET,
+                        quantity=self.round_qty(balance)
+                    )
+                    self.logger.info(f"✅ Market Sell Complete: {order['orderId']}")
+                    notifier.send_telegram_message(
+                        f"🔥 <b>MANUAL LIQUIDATION ({self.symbol})</b>\n"
+                        f"Sold {balance:.4f} {base_asset} @ Market\n"
+                        f"Est. Value: ${value:.2f}"
+                    )
+                else:
+                    self.logger.warning(f"Balance {balance:.4f} ({base_asset}) too low to sell (<$6). Skipping.")
+                    notifier.send_telegram_message(
+                        f"⚠️ <b>Manual Sell Skipped ({self.symbol})</b>\n"
+                        f"Balance value ${value:.2f} is below exchange minimum."
+                    )
+                    
+            except Exception as e:
+                self.logger.error(f"Manual Sell Failed: {e}")
+                notifier.send_telegram_message(f"❌ <b>Manual Sell Failed ({self.symbol})</b>\nError: {e}")
+        else:
+             # Simulation
+             self.logger.info("[SIM] Manual Sell Triggered - Closing all positions.")
+             notifier.send_telegram_message(f"🔥 <b>[SIM] MANUAL LIQUIDATION ({self.symbol})</b>\nClosed all virtual positions.")
+
+        # 4. Final Cleanup
+        self._save_state()
+        self.logger.info("Grid Bot Stopped via Manual Sell.")
+
+
 def calculate_auto_range(symbol='ETHUSDT', use_volatility=True, capital=100.0):
     """
     Auto-calculate grid range based on market volatility and available capital.

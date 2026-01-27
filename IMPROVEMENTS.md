@@ -17,6 +17,9 @@ Updated: 2026-01-27
 ### 4. Asymmetric Grid Logic
 **Suggestion:** Implement more buy levels below price and fewer sells above. Ideal for long-term accumulation of an asset.
 
+### 5. Time-of-Day Filter
+**Suggestion:** Restrict trading to high-volume hours (e.g. NY/London overlap) to avoid chop.
+
 ---
 
 ## 🛠️ INFRASTRUCTURE & TUNING

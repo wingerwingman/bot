@@ -55,3 +55,7 @@ SUPPORT_RESISTANCE_CHECK_ENABLED = False # Avoid buying at resistance (Imp 6) - 
 SUPPORT_RESISTANCE_WINDOW = 50        # Lookback period for finding peaks
 ML_CONFIRMATION_ENABLED = False       # Use ML model to confirm signals (Imp 15) - Default OFF
 HEATMAP_CALCULATION_ENABLED = True    # Calculate profitability by hour (Imp 8)
+
+# Sentiment Config
+SENTIMENT_ENABLED = False             # Use News Sentiment to confirm signals
+SENTIMENT_THRESHOLD = 0.0             # Minimum compound score (-1 to 1) to allow trade

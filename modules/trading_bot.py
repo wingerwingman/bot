@@ -66,7 +66,9 @@ class BinanceTradingBot:
                  missed_trade_log_enabled=None,
                  order_book_check_enabled=None,
                  support_resistance_check_enabled=None,
-                 ml_confirmation_enabled=None):
+                 ml_confirmation_enabled=None,
+                 sentiment_enabled=None,
+                 sentiment_threshold=None):
         
         # Store for overrides (to prevent load_state from overwriting NEW settings)
         self._arg_multi_timeframe = multi_timeframe_enabled
@@ -77,6 +79,8 @@ class BinanceTradingBot:
         self._arg_order_book = order_book_check_enabled
         self._arg_sr_check = support_resistance_check_enabled
         self._arg_ml_check = ml_confirmation_enabled
+        self._arg_sentiment = sentiment_enabled
+        self._arg_sentiment_threshold = sentiment_threshold
         
         self.slippage = slippage
         self.position_size_percent = position_size_percent
@@ -126,7 +130,9 @@ class BinanceTradingBot:
             missed_trade_log_enabled=missed_trade_log_enabled if missed_trade_log_enabled is not None else config.MISSED_TRADE_LOG_ENABLED,
             support_resistance_check_enabled=support_resistance_check_enabled if support_resistance_check_enabled is not None else config.SUPPORT_RESISTANCE_CHECK_ENABLED,
             ml_confirmation_enabled=ml_confirmation_enabled if ml_confirmation_enabled is not None else config.ML_CONFIRMATION_ENABLED,
-            order_book_check_enabled=order_book_check_enabled if order_book_check_enabled is not None else config.ORDER_BOOK_CHECK_ENABLED
+            order_book_check_enabled=order_book_check_enabled if order_book_check_enabled is not None else config.ORDER_BOOK_CHECK_ENABLED,
+            sentiment_enabled=sentiment_enabled if sentiment_enabled is not None else config.SENTIMENT_ENABLED,
+            sentiment_threshold=sentiment_threshold if sentiment_threshold is not None else config.SENTIMENT_THRESHOLD
         )
         
         # New: Generic balance variables
@@ -322,6 +328,14 @@ class BinanceTradingBot:
                 if self._arg_ml_check is not None:
                     self.logger.info(f"Applying OVERRIDE: ml_confirmation_enabled = {self._arg_ml_check}")
                     self.strategy.ml_confirmation_enabled = self._arg_ml_check
+                    
+                # Applying Sentiment Overrides
+                if self._arg_sentiment is not None:
+                    self.logger.info(f"Applying OVERRIDE: sentiment_enabled = {self._arg_sentiment}")
+                    self.strategy.sentiment_enabled = self._arg_sentiment
+                if self._arg_sentiment_threshold is not None:
+                    self.strategy.sentiment_threshold = self._arg_sentiment_threshold
+
                     
                 self.logger.debug("Applied startup overrides to resumed state.")
             else:

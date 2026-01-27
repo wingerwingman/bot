@@ -46,7 +46,9 @@ class Strategy:
                  ttp_activation_pct=0.015,
                  ttp_callback_pct=0.005,
                  dca_max_levels=5,
-                 dca_multiplier=1.5):
+                 dca_multiplier=1.5,
+                 sentiment_enabled=False,
+                 sentiment_threshold=0.0):
                  
         self.stop_loss_percent = stop_loss_percent
         self.sell_percent = sell_percent  # Also used as trailing stop distance
@@ -98,6 +100,10 @@ class Strategy:
         
         # NEW: State for cooldown tracking
         self.last_stoploss_time = None
+        
+        # Sentiment Settings
+        self.sentiment_enabled = sentiment_enabled
+        self.sentiment_threshold = sentiment_threshold
         
         # NEW: Higher timeframe trend cache
         self.higher_tf_trend = None
