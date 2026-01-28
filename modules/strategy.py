@@ -231,15 +231,14 @@ class Strategy:
         # Calculate indicators early
         rsi = indicators.calculate_rsi(self.price_history)
         
-        # Define "Deep Dip" condition (RSI < 30) to bypass trend filters
+        # Define "Deep Dip" condition (RSI < 25) to bypass trend filters
         # This allows catching "major dips" even if the 4H trend is bearish
-        is_deep_dip = rsi is not None and rsi < 30
+        is_deep_dip = rsi is not None and rsi < 25
 
         # ===== NEW FILTER #1: COOLDOWN AFTER STOP-LOSS =====
         if self.is_in_cooldown():
             remaining = self.get_cooldown_remaining()
-            # Only log occasionally to avoid spam
-            # logger_setup.log_strategy(f"⏳ COOLDOWN: {remaining:.1f} min remaining after stop-loss")
+            self.last_rejection_reason = f"⏳ COOLDOWN: {remaining:.1f} min remaining after stop-loss"
             return False
         
         # ===== NEW FILTER #2: MULTI-TIMEFRAME TREND =====
@@ -284,14 +283,26 @@ class Strategy:
 
         # Ensure we have enough data for all indicators
         if rsi is None or ma_fast is None or ma_slow is None:
+            missing = []
+            if rsi is None: missing.append("RSI")
+            if ma_fast is None: missing.append(f"MA{self.ma_fast_period}")
+            if ma_slow is None: missing.append(f"MA{self.ma_slow_period}")
+            self.last_rejection_reason = f"Waiting for Data ({', '.join(missing)} | History: {len(self.price_history)} candles)"
             return False
+        
+        # TEMP DEBUG: Log indicator values periodically
+        import logging
+        debug_logger = logging.getLogger(__name__)
+        if not hasattr(self, '_last_debug_log') or (time.time() - self._last_debug_log) > 30:
+            debug_logger.info(f"[STRATEGY DEBUG] RSI={rsi:.1f}, MA7={ma_fast:.2f}, MA25={ma_slow:.2f}, DeepDip={rsi < 25}, History={len(self.price_history)}")
+            self._last_debug_log = time.time()
 
         # 1. TREND FILTER: Only buy in uptrends OR deep oversold bounces
         # If we don't have enough data for 200 MA, skip trend filter
         trend_is_bullish = True
         
-        # EXCEPTION: If RSI is extremely low (e.g. < 33), buy for a bounce even in downtrend
-        is_deep_dip = rsi < 33
+        # EXCEPTION: If RSI is extremely low (e.g. < 25), buy for a bounce even in downtrend
+        is_deep_dip = rsi < 25
             
         if ma_trend is not None:
             trend_is_bullish = current_price > ma_trend
@@ -313,7 +324,8 @@ class Strategy:
                  return False
 
         # 4. MA CROSS: Short-term bullish momentum
-        if ma_fast <= ma_slow:
+        # EXCEPTION: If deep dip (RSI < 25), allow buying even with bearish MA cross
+        if ma_fast <= ma_slow and not is_deep_dip:
             self.last_rejection_reason = f"MA Cross Bearish (Fast ${ma_fast:.2f} <= Slow ${ma_slow:.2f})"
             return False
 
@@ -442,3 +454,36 @@ class Strategy:
             return True
             
         return False
+
+    def get_trailing_stop_price(self, current_price, bought_price):
+        """
+        Calculates and returns the current trailing stop price (for UI display only).
+        Does NOT trigger any actions.
+        """
+        if bought_price is None or current_price is None:
+            return None
+            
+        peak = self.peak_price_since_buy
+        if peak is None or current_price > peak:
+            peak = current_price
+            
+        break_even_price = bought_price * (1 + 2 * self.trading_fee_percentage)
+        
+        # 1. TTP Logic
+        profit_pct = ((current_price - bought_price) / bought_price)
+        
+        # Check if TTP would be active
+        is_ttp_active = self.ttp_active
+        if not is_ttp_active and current_price > break_even_price:
+             if profit_pct >= self.ttp_activation_pct:
+                 is_ttp_active = True
+        
+        if is_ttp_active:
+             return peak * (1 - self.ttp_callback_pct)
+             
+        # 2. Legacy Trailing Stop
+        elif self.use_trailing_stop and current_price > break_even_price:
+             return peak * (1 - self.sell_percent)
+             
+        # 3. Hard Stop Loss (Always active as floor)
+        return bought_price * (1 - self.fixed_stop_loss_percent)

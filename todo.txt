@@ -2,7 +2,17 @@
 -------------------------------
 do not delete this section.
  get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
- state for spot bot and backtest do not hold for 
+spot bot did not update amount of eth after purchase.
+missing binance totals section on the dashboard.
+manual control overerrides not staying on page load for some like new sentiment ml signal supoort resistance and others.
+main page need to move all paper bots to the bottom of the list and not in the middle of the live bots.
+update balance by Force-refresh the balance from Binance immediately after every trade (Buy/Sell), bypassing the cache.
+telagram reports also need weekly monthly and yearly reports.
+check the spot bot for buy signals. seems like it bought high and didnt wait for a dip after the 5 minute wait.
+
+- [ ] **Fix UI Price Refresh Issues (Tomorrow Morning)**
+    - **Protected Price**: Update backend (`update_config` / `get_status`) to expose the internal `trailing_stop_price` (calculated in Strategy) so the dashboard "Protected" value updates dynamically instead of checking the static `stop_loss_price`.
+    - **Market Price**: Investigate WebSocket stability in `BotStatusHeader.js` / `MarketDataManager`. Ensure price feed is not stale. 
 Updated: 2026-01-27
 - [x] **Fix Paper Trading & Backtesting Status/Visibility (CRITICAL)**
     - Fixed "$---" market price display by ensuring `last_price` updates in all modes.

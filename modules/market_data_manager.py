@@ -92,33 +92,62 @@ class MarketDataManager:
             if msg['e'] == '24hrTicker':
                 symbol = msg['s']
                 price = float(msg['c'])
-                self.prices[symbol] = price
+                self.prices[symbol] = {
+                    "price": price,
+                    "timestamp": time.time()
+                }
         except Exception as e:
             logger.error(f"Error handling socket message: {e}")
 
     def get_price(self, symbol):
-        """Get the latest price for a symbol (preferring WebSocket cache)."""
-        if symbol in self.prices:
-            return self.prices[symbol]
-        
-        # Check REST cache for this symbol (save weight during startup)
+        """
+        Get the latest price for a symbol.
+        Checks for stale WebSocket data (>15s old) and falls back to REST.
+        """
         now = time.time()
+        
+        # 1. Check WebSocket Cache
+        if symbol in self.prices:
+            data = self.prices[symbol]
+            # Handle legacy format if price was just a float (during upgrade)
+            if isinstance(data, dict):
+                price = data['price']
+                ts = data['timestamp']
+            else:
+                price = data
+                ts = 0 # Force refresh if old format
+            
+            # If data is fresh (less than 15 seconds old), return it
+            if now - ts < 15:
+                return price
+            else:
+                # Log usage of stale data fallback
+                # logger.debug(f"Stale WebSocket price for {symbol} ({now - ts:.1f}s old). Falling back to REST.")
+                pass 
+        
+        # 2. Check REST Cache (short-term)
         if symbol in self.prices_rest_cache:
             entry = self.prices_rest_cache[symbol]
             if now - entry['timestamp'] < self.prices_rest_ttl:
                 return entry['price']
         
-        # Fallback to REST if stream hasn't started or reached us yet
-        self.start_symbol(symbol)
+        # 3. Fallback to REST (Socket dead or stale)
+        self.start_symbol(symbol) # Ensure stream is requested
         try:
             self._add_weight(1)
             ticker = self.client.get_symbol_ticker(symbol=symbol)
             price = float(ticker['price'])
-            self.prices[symbol] = price
+            
+            # Update caches
+            self.prices[symbol] = {"price": price, "timestamp": now}
             self.prices_rest_cache[symbol] = {"price": price, "timestamp": now}
+            
             return price
         except Exception as e:
             logger.error(f"REST fallback price fetch failed for {symbol}: {e}")
+            # Last ditch: return stale data if available
+            if symbol in self.prices and isinstance(self.prices[symbol], dict):
+                 return self.prices[symbol]['price']
             return None
 
     def get_all_prices(self):
@@ -126,8 +155,12 @@ class MarketDataManager:
         try:
             self._add_weight(40)
             tickers = self.client.get_all_tickers()
+            now = time.time()
             for t in tickers:
-                self.prices[t['symbol']] = float(t['price'])
+                self.prices[t['symbol']] = {
+                    "price": float(t['price']),
+                    "timestamp": now
+                }
             return self.prices
         except Exception as e:
             logger.error(f"Error fetching all tickers: {e}")

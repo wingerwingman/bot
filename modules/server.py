@@ -54,69 +54,85 @@ def start_server_standalone():
     print("API Server running at http://localhost:5050")
 
 def run_daily_summary_scheduler():
-    """Background loop to send summary at 08:00 AM everyday."""
+    """Background loop to send summary at 08:00 AM everyday, plus weekly/monthly/yearly reports."""
     import time
-    from datetime import datetime
+    from datetime import datetime, timedelta
     
     while True:
         now = datetime.now()
-        # Wait until 8 AM
         target_hour = 8
         
-        # If past 8 AM, wait until next day check
-        # Simple loop: check every minute
+        # Check if it's 8 AM
         if now.hour == target_hour and now.minute == 0:
             try:
-                # Aggregate stats from all running bots
-                total_stats = {
-                    'total_trades': 0,
-                    'win_rate': 0,
-                    'net_pnl': 0.0,
-                    'top_winner': 0.0,
-                    'total_fees': 0.0,
-                    'max_drawdown': 0.0
-                }
-                
-                # ... Calculation logic ...
-                # (Simpler implementation: just send what we have in logger history)
-                # Better: Use logger_setup.get_performance_summary() assuming it captures global state,
-                # BUT logger history is per session or shared? 
-                # 'get_performance_summary' reads from 'equity_history.json' which is shared app-wide.
-                # So it's perfect.
-                
                 summary = logger_setup.get_performance_summary()
+                journal = logger_setup.get_trade_journal(limit=10000)
                 
-                # Map keys
-                # summary = {'sharpe', 'total_snapshots', 'avg_return', 'max_drawdown'} - Missing absolute PnL
-                # We need absolute info.
-                # Let's pull from trade journal for today.
-                
-                journal = logger_setup.get_trade_journal(limit=1000)
+                # === DAILY REPORT (Every day) ===
                 today_str = now.strftime('%Y-%m-%d')
                 days_trades = [t for t in journal if t.get('timestamp', '').startswith(today_str)]
                 
                 if days_trades:
-                    wins = [t for t in days_trades if t.get('pnl_amount', 0) > 0]
-                    losses = [t for t in days_trades if t.get('pnl_amount', 0) <= 0]
-                    total_pnl = sum(t.get('pnl_amount', 0) for t in days_trades)
-                    total_fees = sum(t.get('fee', 0) for t in days_trades)
-                    top_win = max([t.get('pnl_amount', 0) for t in wins]) if wins else 0
-                    
-                    stats = {
-                        'total_trades': len(days_trades),
-                        'win_rate': round(len(wins) / len(days_trades) * 100, 1),
-                        'net_pnl': total_pnl,
-                        'total_fees': total_fees,
-                        'top_winner': top_win,
-                        'max_drawdown': summary.get('max_drawdown', 0)
-                    }
-                    
+                    stats = _calculate_stats(days_trades, summary)
                     notifier.send_daily_summary(stats)
-                    time.sleep(65) # Sleep > 1 min to avoid double send
-            except Exception as e:
-                print(f"Error in daily scheduler: {e}")
                 
-        time.sleep(50) # Check every 50s
+                # === WEEKLY REPORT (Sunday) ===
+                if now.weekday() == 6:  # Sunday
+                    week_ago = (now - timedelta(days=7)).strftime('%Y-%m-%d')
+                    week_trades = [t for t in journal if t.get('timestamp', '') >= week_ago]
+                    if week_trades:
+                        stats = _calculate_stats(week_trades, summary)
+                        notifier.send_weekly_summary(stats)
+                
+                # === MONTHLY REPORT (1st of month) ===
+                if now.day == 1:
+                    month_start = now.replace(day=1) - timedelta(days=1)
+                    prev_month_start = month_start.replace(day=1).strftime('%Y-%m-%d')
+                    month_trades = [t for t in journal if t.get('timestamp', '') >= prev_month_start]
+                    if month_trades:
+                        stats = _calculate_stats(month_trades, summary)
+                        notifier.send_monthly_summary(stats)
+                
+                # === YEARLY REPORT (Jan 1) ===
+                if now.month == 1 and now.day == 1:
+                    year_start = f"{now.year - 1}-01-01"
+                    year_trades = [t for t in journal if t.get('timestamp', '') >= year_start]
+                    if year_trades:
+                        stats = _calculate_stats(year_trades, summary)
+                        notifier.send_yearly_summary(stats)
+                
+                time.sleep(65)  # Sleep > 1 min to avoid double send
+            except Exception as e:
+                print(f"Error in summary scheduler: {e}")
+                
+        time.sleep(50)  # Check every 50s
+
+def _calculate_stats(trades, summary):
+    """Helper to calculate stats from a list of trades."""
+    sells = [t for t in trades if t.get('action') == 'SELL']
+    wins = [t for t in sells if t.get('pnl_amount', 0) > 0]
+    losses = [t for t in sells if t.get('pnl_amount', 0) < 0]
+    
+    total_pnl = sum(t.get('pnl_amount', 0) for t in sells)
+    total_fees = sum(t.get('fee', 0) for t in trades)
+    top_win = max([t.get('pnl_amount', 0) for t in wins]) if wins else 0
+    worst_loss = min([t.get('pnl_amount', 0) for t in losses]) if losses else 0
+    
+    gross_profit = sum(t.get('pnl_amount', 0) for t in wins)
+    gross_loss = abs(sum(t.get('pnl_amount', 0) for t in losses))
+    profit_factor = round(gross_profit / gross_loss, 2) if gross_loss > 0 else 999.0
+    
+    return {
+        'total_trades': len(sells),
+        'win_rate': round(len(wins) / len(sells) * 100, 1) if sells else 0,
+        'net_pnl': total_pnl,
+        'total_fees': total_fees,
+        'top_winner': top_win,
+        'worst_loss': worst_loss,
+        'max_drawdown': summary.get('max_drawdown', 0),
+        'profit_factor': profit_factor,
+        'avg_trade_pnl': round(total_pnl / len(sells), 2) if sells else 0
+    }
 
 def run_health_monitor():
     """Background monitor for bot stalls and auto-restart from IP bans."""
@@ -393,11 +409,14 @@ def get_status():
                 "cooldown_after_stoploss_minutes": getattr(s, 'cooldown_after_stoploss_minutes', 30),
                 "dca_enabled": getattr(s, 'dca_enabled', True),
                 "dca_rsi_threshold": getattr(s, 'dca_rsi_threshold', 30),
-                # Missing Manual Control Flags
+                # Manual Control Flags
                 "missed_trade_log_enabled": getattr(s, 'missed_trade_log_enabled', True),
                 "order_book_check_enabled": getattr(s, 'order_book_check_enabled', False),
                 "support_resistance_check_enabled": getattr(s, 'support_resistance_check_enabled', False),
-                "ml_confirmation_enabled": getattr(s, 'ml_confirmation_enabled', False)
+                "ml_confirmation_enabled": getattr(s, 'ml_confirmation_enabled', False),
+                # Sentiment Settings (NEW)
+                "sentiment_enabled": getattr(s, 'sentiment_enabled', False),
+                "sentiment_threshold": getattr(s, 'sentiment_threshold', 0.2)
             }
             volatility = getattr(s, 'current_volatility', None)
 
@@ -586,35 +605,7 @@ def export_trades():
     except Exception as e:
         return str(e), 500
 
-@app.route('/api/logs/audit/clear', methods=['POST'])
-def clear_audit_logs():
-    """Clears the audit logs."""
-    if not check_auth():
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    logger_setup.clear_audit_logs()
-    logger_setup.log_audit("CLEAR_LOGS", "Audit logs cleared by user", request.remote_addr)
-    return jsonify({"success": True})
 
-@app.route('/api/logs/activity/clear', methods=['POST'])
-def clear_activity_logs():
-    """Clears the activity logs."""
-    if not check_auth():
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    logger_setup.clear_activity_logs()
-    logger_setup.log_audit("CLEAR_LOGS", "Activity logs cleared by user", request.remote_addr)
-    return jsonify({"success": True})
-
-@app.route('/api/logs/strategy/clear', methods=['POST'])
-def clear_strategy_logs():
-    """Clears the strategy logs."""
-    if not check_auth():
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    logger_setup.clear_strategy_logs()
-    logger_setup.log_audit("CLEAR_LOGS", "Strategy logs cleared by user", request.remote_addr)
-    return jsonify({"success": True})
 
 @app.route('/api/market-status', methods=['GET'])
 def get_market_status():
@@ -629,42 +620,7 @@ def get_market_status():
         
     return jsonify(status)
 
-@app.route('/api/datafiles', methods=['GET'])
-def get_datafiles():
-    """Returns available CSV files for backtesting."""
-    data_dir = os.path.join(os.getcwd(), 'data')
-    if not os.path.exists(data_dir):
-        return jsonify([])
-    
-    files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
-    return jsonify(files)
 
-@app.route('/api/symbols', methods=['GET'])
-def get_symbols():
-    """Returns all available USDT trading pairs from Binance."""
-    try:
-        from binance import Client
-        client = Client(config.API_KEY, config.API_SECRET, tld='us')
-        
-        exchange_info = client.get_exchange_info()
-        
-        # Filter for USDT pairs that are actively trading
-        usdt_symbols = []
-        for s in exchange_info['symbols']:
-            if s['quoteAsset'] == 'USDT' and s['status'] == 'TRADING':
-                usdt_symbols.append({
-                    'symbol': s['symbol'],
-                    'baseAsset': s['baseAsset'],
-                    'quoteAsset': s['quoteAsset']
-                })
-        
-        # Sort alphabetically by base asset
-        usdt_symbols.sort(key=lambda x: x['baseAsset'])
-        
-        return jsonify(usdt_symbols)
-    except Exception as e:
-        logging.getLogger("BinanceTradingBot").error(f"Error fetching symbols: {e}")
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/balances', methods=['GET'])
 def get_balances():
@@ -681,7 +637,7 @@ def get_balances():
         if not all_prices:
             all_prices = market_data_manager.get_all_prices()
         
-        important = ['USDT', 'USD', 'ETH', 'BTC', 'BNB', 'SOL']
+        important = ['USDT', 'USD', 'ETH', 'BTC', 'BNB', 'SOL', 'ZEC']
         balances = []
         
         for b in account_info['balances']:
@@ -695,10 +651,23 @@ def get_balances():
                 
                 if asset in ['USDT', 'USD', 'BUSD', 'USDC']:
                     usd_value = total
-                elif f"{asset}USDT" in all_prices:
-                    usd_value = total * all_prices[f"{asset}USDT"]
-                elif f"{asset}USD" in all_prices:
-                    usd_value = total * all_prices[f"{asset}USD"]
+                else:
+                    # Handle new dict format {price, timestamp} or legacy float
+                    def get_price_val(sym):
+                        if sym in all_prices:
+                            val = all_prices[sym]
+                            if isinstance(val, dict):
+                                return val.get('price', 0)
+                            return val
+                        return None
+                    
+                    usdt_price = get_price_val(f"{asset}USDT")
+                    usd_price = get_price_val(f"{asset}USD")
+                    
+                    if usdt_price:
+                        usd_value = total * usdt_price
+                    elif usd_price:
+                        usd_value = total * usd_price
                 
                 balances.append({
                     'asset': asset,
@@ -2120,6 +2089,68 @@ def set_auto_compound():
     capital_manager.set_auto_compound(enabled)
     logger_setup.log_audit("AUTO_COMPOUND", f"Enabled: {enabled}", request.remote_addr)
     return jsonify({"success": True, "auto_compound": capital_manager.auto_compound})
+
+@app.route('/api/symbols', methods=['GET'])
+def get_symbols():
+    """Fetch all available trading pairs from Binance."""
+    try:
+        # Check cache or fetch fresh
+        # Normally get_exchange_info is weight 20, so fine to call occasionally
+        if not market_data_manager.client:
+             return jsonify([])
+        
+        info = market_data_manager.client.get_exchange_info()
+        symbols = []
+        for s in info['symbols']:
+            # Minimal filtering: Must be TRADING
+            if s['status'] == 'TRADING':
+                 symbols.append({
+                     'symbol': s['symbol'],
+                     'baseAsset': s['baseAsset'],
+                     'quoteAsset': s['quoteAsset']
+                 })
+                 
+        # Sort by base asset for UI niceness
+        symbols.sort(key=lambda x: x['baseAsset'])
+        return jsonify(symbols)
+    except Exception as e:
+        logging.getLogger("BinanceTradingBot").error(f"Error fetching symbols: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/debug_zec', methods=['GET'])
+def debug_zec():
+    """Debug ZEC prices directly from server."""
+    try:
+        from binance import Client
+        import modules.config as config
+        client = Client(config.API_KEY, config.API_SECRET, tld='us')
+        
+        results = {}
+        
+        # Check ZECUSD
+        try:
+            klines = client.get_klines(symbol="ZECUSD", interval='1m', limit=1)
+            results['ZECUSD'] = float(klines[-1][4]) if klines else None
+        except Exception as e:
+            results['ZECUSD_ERROR'] = str(e)
+            
+        # Check ZECUSDT
+        try:
+            klines = client.get_klines(symbol="ZECUSDT", interval='1m', limit=1)
+            results['ZECUSDT'] = float(klines[-1][4]) if klines else None
+        except Exception as e:
+            results['ZECUSDT_ERROR'] = str(e)
+
+        # Check BTCUSD (for comparison)
+        try:
+            klines = client.get_klines(symbol="BTCUSD", interval='1m', limit=1)
+            results['BTCUSD'] = float(klines[-1][4]) if klines else None
+        except Exception as e:
+            results['BTCUSD_ERROR'] = str(e)
+            
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     run_flask()

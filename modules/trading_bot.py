@@ -83,6 +83,7 @@ class BinanceTradingBot:
         self._arg_sentiment_threshold = sentiment_threshold
         
         self.slippage = slippage
+        self.trading_fee_percentage = trading_fee_percentage
         self.position_size_percent = position_size_percent
         self.dynamic_settings = dynamic_settings
         self.resume_state = resume_state
@@ -147,7 +148,52 @@ class BinanceTradingBot:
         # Health & Reliability (Phase 2)
         self.last_active_timestamp = time.time()
         self.ban_until = None
+        
+        # Initialize early to prevent AttributeErrors on setup failure
+        # Initialize early to prevent AttributeErrors on setup failure
+        self.running = False 
+        
+        # Sanitize Inputs (Remove LIVE_ or PAPER_ prefixes if passed accidentally)
+        base = (base_asset or 'ETH').replace('LIVE_', '').replace('PAPER_', '')
+        quote = (quote_asset or 'USDT').replace('LIVE_', '').replace('PAPER_', '')
+        
+        self.symbol = f"{base}{quote}" # Default fallback
+        self.equity_history = [] 
+        self.trade_journal = deque(maxlen=200)
+
         self.consecutive_stop_losses = 0
+        self.trade_durations = []
+        self.entry_time = None
+        self.total_hold_time_minutes = 0
+        self.total_slippage = 0.0
+        self.slippage_events = []
+        self.max_win_streak = 0
+        self.max_loss_streak = 0
+        self.gross_profit = 0.0
+        self.gross_loss = 0.0
+        self.total_trades = 0
+        self.winning_trades = 0
+        self.peak_balance = 0.0
+        self.max_drawdown = 0.0
+        self.total_fees = 0.0
+        
+        # More Safe Defaults
+        self.bought_price = None
+        self.last_volatility = None
+        self.last_volatility_check_time = None
+        self.dca_count = 0
+        self.finished_data = False
+        self.paused = False
+        
+
+
+    @property
+    def current_trail_price(self):
+        """Exposes the internal trailing stop price from the strategy."""
+        if not hasattr(self, 'strategy'):
+            return None
+        # Using self.last_price instead of check_price() to avoid API spam
+        return self.strategy.get_trailing_stop_price(self.last_price, self.bought_price)
         
         # Initialize ML Predictor (Imp 15)
         # Check either the argument or the strategy's internal state
@@ -627,7 +673,13 @@ class BinanceTradingBot:
         Imp 5: Order Book Depth
         Returns: True if safe to trade (liquid enough), False otherwise.
         """
-        if not config.ORDER_BOOK_CHECK_ENABLED:
+        # Check strategy setting first, then fall back to global config
+        check_enabled = getattr(self.strategy, 'order_book_check_enabled', False) or getattr(config, 'ORDER_BOOK_CHECK_ENABLED', False)
+        if not check_enabled:
+            return True
+        
+        # Skip order book check for paper trading (simulation doesn't need liquidity check)
+        if not self.is_live_trading:
             return True
             
         try:
@@ -688,8 +740,8 @@ class BinanceTradingBot:
                 self.running = False
                 try:
                     notifier.send_telegram_message(f"🚨 <b>CRITICAL: IP BANNED</b>\nBot stopped to prevent extending ban.{unban_str}")
-                except:
-                    pass
+                except Exception as tg_err:
+                    self.logger.error(f"Failed to send Telegram ban notification: {tg_err}")
                 return None
             self.logger.error(f"Binance API Error: {e}")
             return None
@@ -707,11 +759,11 @@ class BinanceTradingBot:
             self.logger.error(f"An unexpected error occurred: {e}")
             return None
 
-    def get_balance(self, asset):
+    def get_balance(self, asset, force=False):
         try:
             if self.is_live_trading:
                 # Use MarketDataManager cached account info (Saves weight 20)
-                account = market_data_manager.get_account_info()
+                account = market_data_manager.get_account_info(force=force)
                 if not account:
                      return 0.0
                 for b in account['balances']:
@@ -842,6 +894,8 @@ class BinanceTradingBot:
                 for k in klines:
                     # Close price is index 4
                     price = float(k[4])
+                    if count == 0:
+                        self.logger.info(f"DEBUG: prefill_historical_data CHECK | Symbol: {self.symbol} | First Price: {price}")
                     self.strategy.update_data(price)
                     count += 1
                 self.logger.info(f"✅ History Pre-filled: {count} candles loaded. Bot ready to trade immediately.")
@@ -1296,8 +1350,8 @@ class BinanceTradingBot:
                     else:
                         self.bought_price = float(order['fills'][0]['price']) # Fallback
                     
-                    self.quote_balance = self.get_balance(self.quote_asset)
-                    self.base_balance = self.get_balance(self.base_asset)
+                    self.quote_balance = self.get_balance(self.quote_asset, force=True)
+                    self.base_balance = self.get_balance(self.base_asset, force=True)
                     
                     total_val = self.quote_balance + (self.base_balance * self.bought_price)
                     
@@ -1598,24 +1652,35 @@ class BinanceTradingBot:
                     # Heartbeat (every hour)
                     if time.time() - last_heartbeat_time > 3600:
                          last_heartbeat_time = time.time()
-                         current_price = self.check_price()
+                    
+                    # Periodic Balance Sync (Every 60s) to catch external deposits/withdrawals or cache drift
+                    # Use a modulo check or separate timer. 
+                    # Simpler: just check every ~60 iterations if sleep is 1s, but sleep is in inner loop.
+                    # Let's add a robust timer check.
+                    if not hasattr(self, 'last_balance_sync'): self.last_balance_sync = 0
+                    if time.time() - self.last_balance_sync > 60:
+                        self.quote_balance = self.get_balance(self.quote_asset, force=True)
+                        self.base_balance = self.get_balance(self.base_asset, force=True)
+                        self.last_balance_sync = time.time()
+
+                    current_price = self.check_price()
                          
-                         if self.bought_price:
-                             # HOLDING STATUS
-                             profit_pct = ((current_price - self.bought_price) / self.bought_price) * 100
-                             peak = self.strategy.peak_price_since_buy or current_price
-                             
-                             # Heartbeat - Simple log (Logic moved to main loop)
-                             sl_display = self.current_hard_stop if getattr(self, 'current_hard_stop', None) else 0.0
-                             self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | SL < {sl_display:.2f}")
-                             
-                         else:
-                             # BUY STATUS (RSI Scanner)
-                             hb_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
-                             target_rsi = self.strategy.rsi_threshold_buy
-                             self.logger.debug(f"Heartbeat - Price: {current_price} {self.quote_asset} | RSI: {hb_rsi:.1f} (Buy < {target_rsi})")
-                             
-                         last_heartbeat_time = time.time()
+                    if self.bought_price:
+                        # HOLDING STATUS
+                        profit_pct = ((current_price - self.bought_price) / self.bought_price) * 100
+                        peak = self.strategy.peak_price_since_buy or current_price
+                        
+                        # Heartbeat - Simple log (Logic moved to main loop)
+                        sl_display = self.current_hard_stop if getattr(self, 'current_hard_stop', None) else 0.0
+                        self.logger.debug(f"Heartbeat - Holding {self.symbol} | Price: {current_price} | PnL: {profit_pct:.2f}% | SL < {sl_display:.2f}")
+                        
+                    else:
+                        # BUY STATUS (RSI Scanner)
+                        hb_rsi = indicators.calculate_rsi(self.strategy.price_history) if len(self.strategy.price_history) > 14 else 0
+                        target_rsi = self.strategy.rsi_threshold_buy
+                        self.logger.debug(f"Heartbeat - Price: {current_price} {self.quote_asset} | RSI: {hb_rsi:.1f} (Buy < {target_rsi})")
+                        
+                        last_heartbeat_time = time.time()
 
                     # Volatility Check & Dynamic Auto-Tuning
                     if self.last_volatility_check_time is None or (datetime.datetime.now() - self.last_volatility_check_time).total_seconds() >= volatility_check_interval:
@@ -1819,6 +1884,10 @@ class BinanceTradingBot:
                                 # Log why signal was rejected
                                 if self.strategy.last_rejection_reason:
                                     self.strategy.log_missed_trade(current_price, self.strategy.last_rejection_reason)
+                                    # Debug: Log rejection reason periodically
+                                    if not hasattr(self, '_last_rejection_log_time') or (time.time() - self._last_rejection_log_time) > 60:
+                                        self.logger.debug(f"Buy Rejected: {self.strategy.last_rejection_reason}")
+                                        self._last_rejection_log_time = time.time()
                         else:
                             # DCA Check (Sniper Mode)
                             dca_triggered = False
@@ -1855,7 +1924,6 @@ class BinanceTradingBot:
                                 u_sl = self.bought_price * (1 - self.strategy.fixed_stop_loss_percent)
                                 u_target = self.bought_price * (1 + 2 * self.strategy.trading_fee_percentage)
                                      
-                                self.current_trail_price = u_trail
                                 self.current_hard_stop = u_sl
                                 self.lock_profit_price = u_target
                                 

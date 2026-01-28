@@ -70,3 +70,90 @@ def send_daily_summary(stats):
     )
     
     send_telegram_message(msg)
+
+def send_weekly_summary(stats):
+    """
+    Sends a weekly summary report via Telegram.
+    
+    Args:
+        stats: Dictionary containing weekly performance metrics
+    """
+    if not config.TELEGRAM_TOKEN:
+        return
+
+    emoji = "🚀" if stats.get('net_pnl', 0) >= 0 else "📉"
+    
+    msg = (
+        f"📊 <b>WEEKLY TRADING SUMMARY</b> {emoji}\n\n"
+        f"<b>Performance (7 Days):</b>\n"
+        f"• Total Trades: {stats.get('total_trades', 0)}\n"
+        f"• Win Rate: {stats.get('win_rate', 0)}%\n"
+        f"• Net P&L: <b>${stats.get('net_pnl', 0.0):.2f}</b>\n"
+        f"• Fees Paid: ${stats.get('total_fees', 0.0):.2f}\n\n"
+        f"<b>Highlights:</b>\n"
+        f"• Best Win: ${stats.get('top_winner', 0.0):.2f}\n"
+        f"• Worst Loss: ${stats.get('worst_loss', 0.0):.2f}\n"
+        f"• Max Drawdown: {stats.get('max_drawdown', 0.0)}%\n"
+        f"• Profit Factor: {stats.get('profit_factor', 0.0):.2f}\n"
+    )
+    
+    send_telegram_message(msg)
+
+def send_monthly_summary(stats):
+    """
+    Sends a monthly summary report via Telegram.
+    
+    Args:
+        stats: Dictionary containing monthly performance metrics
+    """
+    if not config.TELEGRAM_TOKEN:
+        return
+
+    emoji = "🚀" if stats.get('net_pnl', 0) >= 0 else "📉"
+    
+    msg = (
+        f"📈 <b>MONTHLY TRADING SUMMARY</b> {emoji}\n\n"
+        f"<b>Performance (30 Days):</b>\n"
+        f"• Total Trades: {stats.get('total_trades', 0)}\n"
+        f"• Win Rate: {stats.get('win_rate', 0)}%\n"
+        f"• Net P&L: <b>${stats.get('net_pnl', 0.0):.2f}</b>\n"
+        f"• Fees Paid: ${stats.get('total_fees', 0.0):.2f}\n\n"
+        f"<b>Key Metrics:</b>\n"
+        f"• Best Win: ${stats.get('top_winner', 0.0):.2f}\n"
+        f"• Worst Loss: ${stats.get('worst_loss', 0.0):.2f}\n"
+        f"• Max Drawdown: {stats.get('max_drawdown', 0.0)}%\n"
+        f"• Profit Factor: {stats.get('profit_factor', 0.0):.2f}\n"
+        f"• Avg Trade P&L: ${stats.get('avg_trade_pnl', 0.0):.2f}\n"
+    )
+    
+    send_telegram_message(msg)
+
+def send_yearly_summary(stats):
+    """
+    Sends a yearly summary report via Telegram.
+    
+    Args:
+        stats: Dictionary containing yearly performance metrics
+    """
+    if not config.TELEGRAM_TOKEN:
+        return
+
+    emoji = "🎉" if stats.get('net_pnl', 0) >= 0 else "📉"
+    
+    msg = (
+        f"📆 <b>YEARLY TRADING SUMMARY</b> {emoji}\n\n"
+        f"<b>Annual Performance:</b>\n"
+        f"• Total Trades: {stats.get('total_trades', 0)}\n"
+        f"• Win Rate: {stats.get('win_rate', 0)}%\n"
+        f"• Net P&L: <b>${stats.get('net_pnl', 0.0):.2f}</b>\n"
+        f"• Fees Paid: ${stats.get('total_fees', 0.0):.2f}\n\n"
+        f"<b>Annual Metrics:</b>\n"
+        f"• Best Win: ${stats.get('top_winner', 0.0):.2f}\n"
+        f"• Worst Loss: ${stats.get('worst_loss', 0.0):.2f}\n"
+        f"• Max Drawdown: {stats.get('max_drawdown', 0.0)}%\n"
+        f"• Profit Factor: {stats.get('profit_factor', 0.0):.2f}\n"
+        f"• Total Volume: ${stats.get('total_volume', 0.0):.2f}\n"
+        f"• ROI: {stats.get('roi', 0.0):.2f}%\n"
+    )
+    
+    send_telegram_message(msg)
