@@ -1,5 +1,5 @@
 # CryptoBot Code Review & Refactoring Report
-**Generated:** 2026-01-23  
+**Updated:** 2026-01-28 (v1.6)
 **Reviewed by:** AI Code Assistant
 
 ---
@@ -33,6 +33,7 @@ atr /= period  # BUG: Should be (len(klines) - 1)
 **Impact:** ATR value is incorrect when `len(klines) != period`, causing wrong volatility calculations.
 
 **Fix:** Divide by actual count: `atr /= (len(klines) - 1)`
+**Status:** FIXED (v1.4)
 
 ---
 
@@ -71,6 +72,7 @@ if bot:  # NameError if bot was never assigned
 ```
 
 **Fix:** Initialize `bot = None` at the start of the function.
+**Status:** FIXED (v1.5)
 
 ---
 
@@ -139,6 +141,7 @@ self.winning_trades = 0
 ```
 
 **Fix:** Remove the duplicate block.
+**Status:** FIXED (v1.4)
 
 ---
 
@@ -147,6 +150,7 @@ self.winning_trades = 0
 **Issue:** `import time`, `import logging` are imported inside methods repeatedly.
 
 **Fix:** Move all imports to the top of the file.
+**Status:** FIXED (v1.5)
 
 ---
 
@@ -190,11 +194,8 @@ def find_bot(identifier: str) -> Optional[BinanceTradingBot]:
 **Files:** All React components  
 **Issue:** `const API_BASE = 'http://localhost:5050'` is repeated in every component.
 
-**Fix:** Move to a shared config file:
-```javascript
-// src/config.js
-export const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5050';
-```
+**Fix:** Move to a shared config file: `src/config.js`
+**Status:** FIXED (v1.3)
 
 ---
 

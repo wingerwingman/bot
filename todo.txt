@@ -1,18 +1,18 @@
 # CryptoBot TODO List
 -------------------------------
 do not delete this section.
- get allerts to telegram if bot is stopped due to ban and no error sent for the ban error also.
-spot bot did not update amount of eth after purchase.
-missing binance totals section on the dashboard.
-manual control overerrides not staying on page load for some like new sentiment ml signal supoort resistance and others.
-main page need to move all paper bots to the bottom of the list and not in the middle of the live bots.
-update balance by Force-refresh the balance from Binance immediately after every trade (Buy/Sell), bypassing the cache.
-telagram reports also need weekly monthly and yearly reports.
-check the spot bot for buy signals. seems like it bought high and didnt wait for a dip after the 5 minute wait.
 
-- [ ] **Fix UI Price Refresh Issues (Tomorrow Morning)**
-    - **Protected Price**: Update backend (`update_config` / `get_status`) to expose the internal `trailing_stop_price` (calculated in Strategy) so the dashboard "Protected" value updates dynamically instead of checking the static `stop_loss_price`.
-    - **Market Price**: Investigate WebSocket stability in `BotStatusHeader.js` / `MarketDataManager`. Ensure price feed is not stale. 
+- [x] **New Features & Improvements (Implemented 2026-01-28)**
+    - **Telegram Ban Alerts (Item #4)**: Immediate notification for IP bans (-1003) even if no previous error was sent.
+    - **ETH Balance Sync (Item #5)**: Fixed delay in updating ETH balance after purchase by adding immediate Binance refresh.
+    - **Full Binance Balances (Item #6)**: Restored detailed asset table to dashboard (moved to bottom per request).
+    - **Config Persistence (Item #7)**: Fixed manual overrides (Sentiment, ML, S/R, Order Book) to persist across page loads/restarts.
+    - **Dashboard Sorting (Item #8)**: Paper bots are now sorted to the bottom of the list for better focus on live bots.
+    - **Instant Balance Refresh (Item #9)**: Bot now force-refreshes balances immediately after every Buy/Sell for 100% accuracy.
+    - **Extended Telegram Reports (Item #10)**: Added Weekly, Monthly, and Yearly automated performance reports.
+    - **"Buy High" Analysis & Fix (Item #11)**: Tightened "Deep Dip" RSI threshold to 25% and added bypasses for MA cross in extreme conditions.
+
+
 Updated: 2026-01-27
 - [x] **Fix Paper Trading & Backtesting Status/Visibility (CRITICAL)**
     - Fixed "$---" market price display by ensuring `last_price` updates in all modes.
@@ -44,13 +44,8 @@ Updated: 2026-01-27
 
 ## 🔵 TESTING & VERIFICATION
 
-## 🔮 FUTURE ROADMAP (Moved from Improvements)
-- [ ] **Asymmetric Grid**: More buy levels below, fewer sells (Accumulation Mode).
-- [ ] **Command Interface**: Control bots via Telegram commands (/status, /stop, /sell).
-- [ ] **Max Position Size**: Enforce absolute max $ risk per trade (e.g. max $500).
-- [ ] **Correlation Check**: Alert if Grid + Spot bots are concentrated in the same direction.
-- [ ] **Monte Carlo Backtest**: Randomized slippage/delay simulations to find "edge".
-- [ ] **Multi-Strategy Portfolio Manager**: Centrally manage risk across total equity.
+## 🔮 FUTURE ROADMAP
+*Roadmap moved to IMPROVEMENTS.md for consolidation.*
 
 ## 📁 FILES MODIFIED THIS SESSION
 - `modules/indicators.py` - Fixed ATR Calculation

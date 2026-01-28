@@ -1,4 +1,27 @@
-# Recent Fixes (Session 2026-01-27)
+# Recent Fixes (Session 2026-01-28)
+
+## 1. Binance Account Balances Price Mismatch
+- **Issue**: Backend `/api/balances` failed to calculate asset values because `market_data_manager.prices` switched to a dictionary format `{"price": X, "timestamp": Y}`, but the server expected a raw float.
+- **Fix**: Updated `server.py`'s `get_balances()` to correctly extract the `.get('price')` while maintaining backward compatibility with legacy float values.
+- **Affected Files**: `modules/server.py`.
+
+## 2. ZEC Paper Trading "Stuck" Entry
+- **Issue**: Paper trading bots were blocked by the Order Book spread check (liquid liquidity check) which is irrelevant for simulated trades and often fails on lower-volume assets like ZEC.
+- **Fix**: 
+    - Added a direct bypass to `check_order_book()` in `trading_bot.py` if `is_live_trading` is False.
+    - Added a "Deep Dip" bypass in `strategy.py`: if RSI < 25, the bot ignores the MA Cross trend filter to catch extreme oversold bounces.
+- **Affected Files**: `modules/trading_bot.py`, `modules/strategy.py`.
+
+## 3. Dashboard Data Overload & Sorting
+- **Issue**: The Binance Totals section was missing, and the list of bots was unsorted, making it hard to focus on live performance.
+- **Fix**: 
+    - Restored full "Binance Account Balances" table and moved it to the very bottom of the page.
+    - Implemented "Smart Sorting" in `LiveDashboard.js`: Live bots are pinned to the top, while Paper/Test bots are moved to the bottom.
+- **Affected Files**: `botfrontend/src/components/LiveDashboard.js`.
+
+---
+
+# Previous Fixes (Session 2026-01-27)
 
 ## 0. Paper Trading & Backtesting Price Status/Visibility
 - **Issue**: Bots in Paper or Backtest mode showed "$---" for market price and were hidden from the Spot Bot tab dropdown.

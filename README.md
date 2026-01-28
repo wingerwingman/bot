@@ -24,6 +24,10 @@ A powerful, modular trading bot with a **modern React Dashboard**, supporting mu
 - **Instant Readiness** - History pre-fill (200m) on startup eliminates the 3+ hour bot warmup phase
 - **Panic Button** - Global emergency shutdown across all bots directly from dashboard
 - **Heartbeat Monitoring** - Real-time thread health monitoring with Telegram stalls alerts
+- **Performance Reporting** - Automated Weekly, Monthly, and Yearly performance summaries via Telegram
+- **Deep Dip Entry** - Strategy bypasses trend filters when RSI < 25 to catch major oversold bounces
+- **Smart Dashboard Sorting** - Live bots prioritized at the top; Paper/Testing bots moved to bottom
+- **Instant Balance Refresh** - Bypasses cache immediately after trades for 100% accurate balance display
 
 
 ### 🎯 Spot Trading Strategy
@@ -235,4 +239,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Last updated: 2026-01-27* (v1.5 - Dashboard Clarity & Robustness Update)
+*Last updated: 2026-01-28* (v1.6 - Performance Reports & "Deep Dip" Strategy Update)

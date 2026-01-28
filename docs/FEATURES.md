@@ -70,6 +70,8 @@ CryptoBot/
 | | Settings Compare | `trading_bot.py` | current vs default parameter reporting. |
 | **Notifications** | Telegram Alerts | `notifier.py` | Real-time buy/sell/error notifications. |
 | | IP Ban Recovery | `server.py` | Auto-restarts once Binance ban lifted time is reached. |
+| | **Performance Reports** | `notifier.py` | Weekly/Monthly/Yearly automated Summaries. |
+| | **Deep Dip Strategy** | `strategy.py` | RSI < 25 bypasses trend filters for extreme oversold entries. |
 | **Security** | Database (ACID) | `modules/models.py` | SQLAlchemy ORM with SQLite for crash-proof storage. |
 | | Logger Rotation | `logger_setup.py` | 5MB x 5 rotation to prevent disk overflow. |
 | | Env-based Auth | `config.py`, `server.py` | Admin credentials via environment variables. |
